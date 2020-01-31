@@ -3,29 +3,30 @@ from adb_connector import *
 
 SkipDungeonChoose = False
 
-playtime = 80
+playtime = 60
 
-#screen resolution. Needed for future normalization
+# screen resolution. Needed for future normalization
 width = 1080
 heigth = 2220
 
 buttons = {
-    'pause': [20, 20],
-    'start': [540, 1700],
-    'collect': [330, 1490],
-    'ability_left': [210, 1500],
-    'ability_center': [540, 1500],
-    'ability_right': [870, 1500],
-    'spin_wheel_back': [85, 2140],
-    'lucky_wheel_start': [540, 1675],
+    'pause': [20 / width, 20 / heigth],
+    'start': [540 / width, 1700 / heigth],
+    'collect': [330 / width, 1490 / heigth],
+    'ability_left': [210 / width, 1500 / heigth],
+    'ability_center': [540 / width, 1500 / heigth],
+    'ability_right': [870 / width, 1500 / heigth],
+    'spin_wheel_back': [85 / width, 2140 / heigth],
+    'lucky_wheel_start': [540 / width, 1675 / heigth],
+    'ability_daemon_reject': [175 / width, 1790 / heigth]
 }
 
 # pointer base coordinates
-x = 530
-y = 1800
+x = 530 / width
+y = 1800 / heigth
 
-offsetx = 400
-offsety = 400
+offsetx = 400 / width
+offsety = 400 / heigth
 
 movements = {
     'n': [x, y, x, y - offsety],
@@ -40,11 +41,15 @@ movements = {
 
 
 def swipe(name, s):
-    adb_swipe(movements[name], s)
+    coord = movements[name]
+    # convert back from normalized values
+    adb_swipe([coord[0] * width, coord[1] * heigth, coord[2] * width, coord[3] * heigth], s)
 
 
 def tap(name):
-    adb_tap(buttons[name])
+    x, y = buttons[name]
+    # convert back from normalized values
+    adb_tap((x * width, y * heigth))
 
 
 def wait(s):
@@ -54,12 +59,12 @@ def wait(s):
 def goTroughDungeon():
     print("Going through dungeon")
     swipe('n', 1.5)
-    swipe('w', .5)
+    swipe('w', .40)
     swipe('n', .5)
-    swipe('e', .5)
-    swipe('e', .5)
+    swipe('e', .40)
+    swipe('e', .40)
     swipe('n', .5)
-    swipe('w', .55)
+    swipe('w', .40)
     swipe('n', 1)
 
 
@@ -85,22 +90,26 @@ def normal_lvl():
 
 def heal_lvl():
     swipe('n', 1.5)
+    tap('ability_daemon_reject')
     tap('ability_left')
     tap('spin_wheel_back')
     wait(.5)
     swipe('n', .6)
     tap('spin_wheel_back')
-    wait(.5)
+    wait(1)
     swipe('n', 1)
 
 
 def boss_lvl():
-    goTroughDungeon()
+    swipe('n', 2)
+    swipe('n', 2)
+    swipe('n', 2)
     letPlay()
     tap('lucky_wheel_start')
     wait(6)
     tap('spin_wheel_back')
     wait(1)
+    tap('ability_daemon_reject')
     tap('ability_left')
     tap('spin_wheel_back')  # guard not to click on watch
     wait(1)
@@ -109,6 +118,7 @@ def boss_lvl():
 
 def intro_lvl():
     wait(2)
+    tap('ability_daemon_reject')
     tap('ability_left')
     swipe('n', 3)
     wait(5)
@@ -117,23 +127,47 @@ def intro_lvl():
     swipe('n', 2)
 
 
-def play_cave(start_lvl=0):
+t_intro = 'intro'
+t_normal = 'normal'
+t_heal = 'heal'
+t_boss = 'boss'
+
+levels_type = {
+    0: t_intro,
+    1: t_normal,
+    2: t_heal,
+    3: t_normal,
+    4: t_heal,
+    5: t_boss,
+    6: t_normal,
+    7: t_heal,
+    8: t_normal,
+    9: t_heal,
+    10: t_boss,
+    11: t_normal,
+    12: t_heal,
+    13: t_normal,
+    14: t_heal,
+    15: t_boss,
+    17: t_heal,
+    18: t_normal,
+    19: t_heal,
+    20: t_boss,
+}
+
+
+def play_cave():
     global playtime
-    for lvl in range(start_lvl, 21):
-        if lvl == 0:
-            print("Level 0: intro")
+    for lvl in range(1, 21):
+        print("Level %d: boss" % levels_type[lvl])
+        if levels_type[lvl] == t_intro:
             intro_lvl()
-            playtime = 30 # set low playtime at first dungeon
-        elif lvl in [5, 10, 15, 20]:
-            print("Level %d: boss" % lvl)
-            boss_lvl()
-        elif lvl % 2 == 0:
-            print("Level %d: heal" % lvl)
-            heal_lvl()
-        else:
-            print("Level %d:" % lvl)
+        elif levels_type[lvl] == t_normal:
             normal_lvl()
-            playtime = 80 # set higher playtime after second
+        elif levels_type[lvl] == t_heal:
+            heal_lvl()
+        elif levels_type[lvl] == t_boss:
+            boss_lvl()
 
 
 def chooseCave():
@@ -150,7 +184,7 @@ def main():
     print("Usb debugging device: %s" % device)
     if not SkipDungeonChoose:
         chooseCave()
-    play_cave(10)
+    play_cave(11)
 
 
 if __name__ == "__main__":
