@@ -1,7 +1,9 @@
 import time
 from adb_connector import *
 
+# Change starting vars
 SkipDungeonChoose = False
+StartLevel = 0
 
 playtime = 60
 
@@ -79,6 +81,7 @@ def normal_lvl():
     goTroughDungeon()
     letPlay()
     tap('ability_left')
+    wait(1)
     tap('spin_wheel_back')  # guard not to click on watch
     wait(3)
     tap('ability_left')
@@ -92,9 +95,11 @@ def heal_lvl():
     swipe('n', 1.5)
     tap('ability_daemon_reject')
     tap('ability_left')
+    wait(1)
     tap('spin_wheel_back')
     wait(.5)
     swipe('n', .6)
+    wait(1)
     tap('spin_wheel_back')
     wait(1)
     swipe('n', 1)
@@ -102,8 +107,8 @@ def heal_lvl():
 
 def boss_lvl():
     swipe('n', 2)
-    swipe('n', 2)
-    swipe('n', 2)
+    swipe('n', 1.5)
+    swipe('n', 1.5)
     letPlay()
     tap('lucky_wheel_start')
     wait(6)
@@ -111,6 +116,7 @@ def boss_lvl():
     wait(1)
     tap('ability_daemon_reject')
     tap('ability_left')
+    wait(1)
     tap('spin_wheel_back')  # guard not to click on watch
     wait(1)
     swipe('n', 1)
@@ -149,6 +155,7 @@ levels_type = {
     13: t_normal,
     14: t_heal,
     15: t_boss,
+    16: t_normal,
     17: t_heal,
     18: t_normal,
     19: t_heal,
@@ -156,18 +163,32 @@ levels_type = {
 }
 
 
-def play_cave():
+def play_cave(startlvl=0):
+    if startlvl < 0 or startlvl > 20:
+        print("level out of range: %d" % startlvl)
+        exit(1)
     global playtime
-    for lvl in range(1, 21):
-        print("Level %d: boss" % levels_type[lvl])
+    for lvl in range(startlvl, 21):
+        print("Level %d: %s" % (lvl, str(levels_type[lvl])))
         if levels_type[lvl] == t_intro:
             intro_lvl()
         elif levels_type[lvl] == t_normal:
             normal_lvl()
         elif levels_type[lvl] == t_heal:
             heal_lvl()
+        elif lvl == 20:
+            boss_final()
         elif levels_type[lvl] == t_boss:
             boss_lvl()
+
+
+def boss_final():
+    wait(50)
+    tap('start')
+    wait(2)
+    swipe('n', 5)
+    wait(.5)
+    tap('start')  # this is to wxit
 
 
 def chooseCave():
@@ -184,7 +205,7 @@ def main():
     print("Usb debugging device: %s" % device)
     if not SkipDungeonChoose:
         chooseCave()
-    play_cave(11)
+    play_cave(StartLevel)
 
 
 if __name__ == "__main__":
