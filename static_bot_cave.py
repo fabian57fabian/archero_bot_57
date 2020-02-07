@@ -11,35 +11,45 @@ playtime = 60
 width = 1080
 heigth = 2220
 
-buttons = {
-    'pause': [20 / width, 20 / heigth],
-    'start': [540 / width, 1700 / heigth],
-    'collect': [330 / width, 1490 / heigth],
-    'ability_left': [210 / width, 1500 / heigth],
-    'ability_center': [540 / width, 1500 / heigth],
-    'ability_right': [870 / width, 1500 / heigth],
-    'spin_wheel_back': [85 / width, 2140 / heigth],
-    'lucky_wheel_start': [540 / width, 1675 / heigth],
-    'ability_daemon_reject': [175 / width, 1790 / heigth]
-}
 
-# pointer base coordinates
-x = 530 / width
-y = 1800 / heigth
+def getCoordinates():
+    # Do not change this parameters, they are made for normalization
+    calculus_width = 1080
+    calculus_heigth = 2220
 
-offsetx = 400 / width
-offsety = 400 / heigth
+    buttons = {
+        'pause': [20 / calculus_width, 20 / calculus_heigth],
+        'start': [540 / calculus_width, 1700 / calculus_heigth],
+        'collect': [330 / calculus_width, 1490 / calculus_heigth],
+        'ability_left': [210 / calculus_width, 1500 / calculus_heigth],
+        'ability_center': [540 / calculus_width, 1500 / calculus_heigth],
+        'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
+        'spin_wheel_back': [85 / calculus_width, 2140 / calculus_heigth],
+        'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
+        'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth]
+    }
 
-movements = {
-    'n': [x, y, x, y - offsety],
-    's': [x, y, x, y + offsety],
-    'e': [x, y, x + offsetx, y],
-    'w': [x, y, x - offsetx, y],
-    'ne': [x, y, x + offsetx, y - offsety],
-    'nw': [x, y, x - offsetx, y - offsety],
-    'se': [x, y, x + offsetx, y + offsety],
-    'sw': [x, y, x + offsety, y + offsety]
-}
+    # pointer base coordinates
+    x = 530 / calculus_width
+    y = 1800 / calculus_heigth
+
+    offsetx = 400 / calculus_width
+    offsety = 400 / calculus_heigth
+
+    movements = {
+        'n': [x, y, x, y - offsety],
+        's': [x, y, x, y + offsety],
+        'e': [x, y, x + offsetx, y],
+        'w': [x, y, x - offsetx, y],
+        'ne': [x, y, x + offsetx, y - offsety],
+        'nw': [x, y, x - offsetx, y - offsety],
+        'se': [x, y, x + offsetx, y + offsety],
+        'sw': [x, y, x + offsety, y + offsety]
+    }
+    return buttons, x, y, movements
+
+
+buttons, x, y, movements = {}, 0, 0, {}
 
 
 def swipe(name, s):
@@ -198,6 +208,8 @@ def chooseCave():
 
 
 def main():
+    global buttons, x, y, movements
+    buttons, x, y, movements = getCoordinates()
     device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")

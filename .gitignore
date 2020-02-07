@@ -7,6 +7,9 @@ __pycache__/*
 # All PyCharm data
 .idea/*
 
+# All out screens
+screens/out/*
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
