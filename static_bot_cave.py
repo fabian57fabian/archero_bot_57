@@ -2,8 +2,8 @@ import time
 from adb_connector import *
 
 # Change starting vars
-SkipDungeonChoose = False
 StartLevel = 0
+SkipDungeonChoose = StartLevel > 0
 
 playtime = 60
 
@@ -71,18 +71,19 @@ def wait(s):
 def goTroughDungeon():
     print("Going through dungeon")
     swipe('n', 1.5)
-    swipe('w', .40)
+    swipe('w', .32)
     swipe('n', .5)
-    swipe('e', .40)
-    swipe('e', .40)
+    swipe('e', .32)
+    swipe('e', .32)
     swipe('n', .5)
-    swipe('w', .40)
-    swipe('n', 1)
+    swipe('w', .32)
+    swipe('n', 1.5)
 
 
 def letPlay(time=playtime):
     print("Letting player play")
     for i in range(time, 0, -1):
+        # Check if screen is blocked then unlock it
         print(i)
         wait(1)
 

@@ -1,4 +1,13 @@
 import os
+from PIL import Image
+
+
+def adb_screen_getpixels():
+    os.system("adb exec-out screencap -p > screen.png")
+    pixval = []
+    with Image.open("screen.png", 'r') as im:
+        pixval = list(im.getdata())
+    return pixval
 
 
 def adb_swipe(locations, s):
