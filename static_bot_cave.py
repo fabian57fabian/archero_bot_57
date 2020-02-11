@@ -7,16 +7,18 @@ SkipDungeonChoose = StartLevel > 0
 
 playtime = 60
 
+# Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
+UseGeneratedData = False
+buttons_corrdinates_filename = "data.py"
+
 # screen resolution. Needed for future normalization
 width = 1080
 heigth = 2220
 
 
-def getCoordinates():
-    # Do not change this parameters, they are made for normalization
+def getDefaultButtons():
     calculus_width = 1080
     calculus_heigth = 2220
-
     buttons = {
         'pause': [20 / calculus_width, 20 / calculus_heigth],
         'start': [540 / calculus_width, 1700 / calculus_heigth],
@@ -28,6 +30,13 @@ def getCoordinates():
         'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
         'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth]
     }
+    return buttons
+
+
+def getCoordinates():
+    # Do not change this parameters, they are made for normalization
+    calculus_width = 1080
+    calculus_heigth = 2220
 
     # pointer base coordinates
     x = 530 / calculus_width
@@ -46,7 +55,7 @@ def getCoordinates():
         'se': [x, y, x + offsetx, y + offsety],
         'sw': [x, y, x + offsety, y + offsety]
     }
-    return buttons, x, y, movements
+    return x, y, movements
 
 
 buttons, x, y, movements = {}, 0, 0, {}
@@ -210,7 +219,8 @@ def chooseCave():
 
 def main():
     global buttons, x, y, movements
-    buttons, x, y, movements = getCoordinates()
+    x, y, movements = getCoordinates()
+    buttons = getGeneratedData() if UseGeneratedData else getDefaultButtons()
     device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")
@@ -219,6 +229,13 @@ def main():
     if not SkipDungeonChoose:
         chooseCave()
     play_cave(StartLevel)
+
+
+def getGeneratedData():
+    global buttons_corrdinates_filename
+    if os.path.exists(buttons_corrdinates_filename):
+        from data.py import getButtons
+        return getButtons()
 
 
 if __name__ == "__main__":
