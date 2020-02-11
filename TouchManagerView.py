@@ -32,7 +32,7 @@ class TouchManagerWindow(object):
         self.current_image_pixmap = []
         self.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
-        self.label_photo_fixed_size=[400,500]
+        self.label_photo_fixed_size = [400, 500]
 
     def setupUi(self, main_window):
         main_window.setObjectName("main_window")
@@ -119,6 +119,7 @@ class TouchManagerWindow(object):
             self.imagesLayout.addRow(self.files[path])
         self.files[self.selected].setStyleSheet(
             "QPushButton { background-color : %s; }" % self.model.ui_color)
+        self.update_image_draw()
 
     # This needs to stay in controller
     def image_clicked(self, path):
@@ -128,7 +129,8 @@ class TouchManagerWindow(object):
         self.selected = path
         self.update_image_draw()
 
-    def dict_changed(self, current_dict):
+    def dict_changed(self):
+        current_dict = self.model.currentDict
         self.dictLayout.deleteLater()
         self.dict_selected = list(current_dict.keys())[0]
         for button_pos in current_dict.items():
@@ -139,10 +141,11 @@ class TouchManagerWindow(object):
             self.dictLayout.addRow(self.dicts[button_pos[0]])
         self.dicts[self.dict_selected].setStyleSheet(
             "QPushButton { background-color : %s; }" % self.model.ui_color)
+        self.update_image_draw()
 
     def buttonLocationChanged(self, button_name):
-        new_location = self.model.getPositions(button_name)
-        self.dicts[button_name] = new_location
+        #new_location = self.model.getPositions(button_name)
+        # no update needed because self.dicts contains QLabels and don't hold info about location. So just update the view
         self.update_image_draw()
 
     # This needs to stay in controller
@@ -157,23 +160,25 @@ class TouchManagerWindow(object):
         self.update_image_draw()
 
     def update_image_draw(self):
-        path_complete = os.path.join(self.model.images_path, self.selected)
-        self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
-        self.current_image_size = [pixmap.width(), pixmap.height()]
-        if self.dict_selected != "":
-            location = self.model.getPositions(self.dict_selected)
-            if location is not None:
-                location[0] *= self.current_image_size[0]
-                location[1] *= self.current_image_size[1]
-                self.DrawLines(pixmap, location)
-        self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
-        pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
-        self.current_image_resized = [pixmap.width(), pixmap.height()]
-        self.photo.setPixmap(pixmap)
-        self.photo.mousePressEvent = self.getPixelValue
+        if self.selected != "":
+            path_complete = os.path.join(self.model.images_path, self.selected)
+            self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
+            self.current_image_size = [pixmap.width(), pixmap.height()]
+            if self.dict_selected != "":
+                location = self.model.getPositions(self.dict_selected)
+                if location is not None:
+                    location[0] *= self.current_image_size[0]
+                    location[1] *= self.current_image_size[1]
+                    self.DrawLines(pixmap, location)
+            self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
+            pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
+            self.current_image_resized = [pixmap.width(), pixmap.height()]
+            self.photo.setPixmap(pixmap)
+            self.photo.mousePressEvent = self.getPixelValue
 
     def getPixelValue(self, event):
-        x = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / self.current_image_resized[0]
+        x = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / \
+            self.current_image_resized[0]
         y = (event.pos().y()) / self.current_image_resized[1]
         if self.dict_selected != "":
             self.model.InvokeChangePosition(self.dict_selected, [x, y])
@@ -183,8 +188,8 @@ class TouchManagerWindow(object):
         [_x, _y] = location
         [w, h] = self.current_image_size
         # Qt.red
-        r,g,b = self.model.ui_lines_color_rgb
-        pen = QPen(QBrush(QColor(r,g,b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+        r, g, b = self.model.ui_lines_color_rgb
+        pen = QPen(QBrush(QColor(r, g, b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         painter.setPen(pen)
         painter.drawLine(0, _y, w, _y)
         # vertical line
