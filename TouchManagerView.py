@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from TouchManagerModel import TouchManagerModel
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow
 import os
 
 
@@ -25,7 +25,7 @@ class TouchManagerWindow(object):
         self.prev = QPushButton()
         self.export_btn = QPushButton()
         self.size_label = QLabel()
-        self.selected = ""
+        self.image_selected = ""
         self.dict_selected = ""
         self.files = {}
         self.dicts = {}
@@ -34,14 +34,16 @@ class TouchManagerWindow(object):
         self.current_image_resized = [0, 0]
         self.label_photo_fixed_size = [400, 500]
 
-    def setupUi(self, main_window):
+    def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
         main_window.resize(800, 600)
-
+        main_window.setMaximumWidth(800)
+        main_window.setMaximumHeight(600)
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
         lay_vertical_0 = QVBoxLayout()
         # self.folder_label = QtWidgets.QLabel()
+        self.folder_label.setAlignment(Qt.AlignCenter)
         self.folder_label.setText(self.model.images_path)
         self.folder_label.setFixedHeight(20)
         lay_vertical_0.addWidget(self.folder_label)
@@ -83,7 +85,7 @@ class TouchManagerWindow(object):
         lay_vertical_2 = QVBoxLayout()
         right_label = QtWidgets.QLabel(self.model.dict_out_name)
         right_label.setFixedHeight(20)
-        right_label.setAlignment(Qt.AlignRight)
+        right_label.setAlignment(Qt.AlignCenter)
         lay_vertical_2.addWidget(right_label)
         # Add dict Layout
         self.dictLayout.setSpacing(0)
@@ -111,22 +113,23 @@ class TouchManagerWindow(object):
     def source_changed(self, current_files):
         self.imagesLayout.deleteLater()
         self.photo.clear()
-        self.selected = current_files[0]
+        self.image_selected = current_files[0]
         for path in current_files:
             button = QtWidgets.QPushButton(path)
             button.clicked.connect(partial(self.image_clicked, path))
             self.files[path] = button
             self.imagesLayout.addRow(self.files[path])
-        self.files[self.selected].setStyleSheet(
+        self.files[self.image_selected].setStyleSheet(
             "QPushButton { background-color : %s; }" % self.model.ui_color)
         self.update_image_draw()
 
     # This needs to stay in controller
     def image_clicked(self, path):
-        self.files[self.selected].setStyleSheet("QPushButton { background-color : white; }")
+        self.files[self.image_selected].setStyleSheet("QPushButton { background-color : white; }")
         self.files[path].setStyleSheet("QPushButton { background-color : %s; }" % self.model.ui_color)
-        self.image_label.setText(path)
-        self.selected = path
+        # Removed because of extra labeling
+        # self.image_label.setText(path)
+        self.image_selected = path
         self.update_image_draw()
 
     def dict_changed(self):
@@ -144,7 +147,7 @@ class TouchManagerWindow(object):
         self.update_image_draw()
 
     def buttonLocationChanged(self, button_name):
-        #new_location = self.model.getPositions(button_name)
+        # new_location = self.model.getPositions(button_name)
         # no update needed because self.dicts contains QLabels and don't hold info about location. So just update the view
         self.update_image_draw()
 
@@ -160,8 +163,8 @@ class TouchManagerWindow(object):
         self.update_image_draw()
 
     def update_image_draw(self):
-        if self.selected != "":
-            path_complete = os.path.join(self.model.images_path, self.selected)
+        if self.image_selected != "":
+            path_complete = os.path.join(self.model.images_path, self.image_selected)
             self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
             self.current_image_size = [pixmap.width(), pixmap.height()]
             if self.dict_selected != "":
