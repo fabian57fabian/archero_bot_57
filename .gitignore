@@ -12,6 +12,7 @@ screens/out/*
 
 screen.png
 data.py
+default_dict.py
 
 # User-specific stuff
 .idea/**/workspace.xml
