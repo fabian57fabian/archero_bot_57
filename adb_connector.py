@@ -1,12 +1,13 @@
 import os
 from PIL import Image
+import numpy as np
 
 
 def adb_screen_getpixels():
     os.system("adb exec-out screencap -p > screen.png")
-    pixval = []
+    pixval = None
     with Image.open("screen.png", 'r') as im:
-        pixval = list(im.getdata())
+        pixval = np.array(im.getdata())
     return pixval
 
 

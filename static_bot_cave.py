@@ -16,6 +16,39 @@ width = 1080
 heigth = 2220
 
 
+# Those are normalized coordinates of data to be taken and trained into a simple nn to predict game status (multiclass)
+def getAttributesArr():
+    calculus_width = 1080
+    calculus_heigth = 2220
+    attr = [
+        [1024 / calculus_width, 530 / calculus_heigth],  # level up/initial ability choose (right up)
+        [50 / calculus_width, 530 / calculus_heigth],  # level up/initial ability choose (left up)
+        [1010 / calculus_width, 370 / calculus_heigth],  # blessing and devil (up right)
+        [50 / calculus_width, 370 / calculus_heigth],  # blessing and devil (up left)
+        [70 / calculus_width, 870 / calculus_heigth],  # Ending game green and ending final red (up left)
+        [1110 / calculus_width, 870 / calculus_heigth],  # Ending game green and ending final red (up right)
+        [713 / calculus_width, 1665 / calculus_heigth],
+        # special prize color (ad when blessing and devil is yellow) (center right)
+        [400 / calculus_width, 1665 / calculus_heigth],
+        # special prize color (ad when blessing and devil is yellow) (center left)
+        [193 / calculus_width, 1740 / calculus_heigth],  # Devil Reject
+        [896 / calculus_width, 1740 / calculus_heigth],  # Devil Accept
+        [113 / calculus_width, 1336 / calculus_heigth],  # Left ability background
+        [446 / calculus_width, 1336 / calculus_heigth],  # Center ability background
+        [784 / calculus_width, 1336 / calculus_heigth],  # Right ability background
+        [184 / calculus_width, 1690 / calculus_heigth],  # Left angel blessing background
+        [690 / calculus_width, 1690 / calculus_heigth],  # Right angel blessing background
+        [500 / calculus_width, 1900 / calculus_heigth],  # Left playing joystick blue
+        [570 / calculus_width, 1690 / calculus_heigth],  # Right playing joystick blue
+        [1060 / calculus_width, 60 / calculus_heigth],  # up right money grey count playing
+    ]
+    return attr
+
+
+def getAttributes(frame):
+    pass
+
+
 def getDefaultButtons():
     calculus_width = 1080
     calculus_heigth = 2220
@@ -31,6 +64,9 @@ def getDefaultButtons():
         'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth]
     }
     return buttons
+
+
+attributes = []
 
 
 def getCoordinates():
@@ -61,6 +97,10 @@ def getCoordinates():
 buttons, x, y, movements = {}, 0, 0, {}
 
 
+def getframe():
+    return adb_screen_getpixels().reshape(width, heigth, 4)
+
+
 def swipe(name, s):
     coord = movements[name]
     # convert back from normalized values
@@ -87,6 +127,12 @@ def goTroughDungeon():
     swipe('n', .5)
     swipe('w', .32)
     swipe('n', 1.5)
+
+
+def continous_status_check():
+    appeard = False
+    while not appeard:
+        arr = adb_screen_getpixels()
 
 
 def letPlay(time=playtime):
@@ -218,9 +264,14 @@ def chooseCave():
 
 
 def main():
-    global buttons, x, y, movements
+    global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
     buttons = getGeneratedData() if UseGeneratedData else getDefaultButtons()
+    attributes = getAttributesArr()
+    for a in attributes:
+        a[0] *= width
+        a[1] *= heigth
+    # Here attributes are not normalized but direct pixel values depending on width, height
     device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")

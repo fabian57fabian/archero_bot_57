@@ -172,8 +172,9 @@ class TouchManagerWindow(object):
                 if location is not None:
                     location[0] *= self.current_image_size[0]
                     location[1] *= self.current_image_size[1]
+                    self.size_label.setText("%d,%d" % (location[0], location[1]))
                     self.DrawLines(pixmap, location)
-            self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
+            #self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
             self.current_image_resized = [pixmap.width(), pixmap.height()]
             self.photo.setPixmap(pixmap)
