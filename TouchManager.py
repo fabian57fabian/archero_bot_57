@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from TouchManagerView import TouchManagerWindow
 from TouchManagerModel import TouchManagerModel
 
