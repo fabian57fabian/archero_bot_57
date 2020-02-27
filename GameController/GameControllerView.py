@@ -1,14 +1,9 @@
-from functools import partial
-
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
-
-from GameControllerModel import GameControllerModel
+from GameController.GameControllerModel import GameControllerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QMainWindow, \
     QInputDialog
-import os
-from GameControllerWidgets import QToolboxRun
+from GameController.GameControllerWidgets import QToolboxRun
 
 
 class GameControllerWindow(QtWidgets.QWidget):

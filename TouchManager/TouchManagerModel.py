@@ -14,7 +14,7 @@ class TouchManagerModel(QObject):
         self.images_path = "screens/samsung_s8+"
         self.manage_default_images_path()
         self.dict_out_name = 'data.py'
-        self.dict_path = "default_dict.py"
+        self.dict_path = "../default_dict.py"
         self.manage_default_dict_path()
         self.ui_color = "cyan"
         self.ui_lines_color_rgb = (255, 0, 255)

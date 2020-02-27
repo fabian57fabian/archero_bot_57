@@ -2,7 +2,7 @@ from functools import partial
 
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 
-from TouchManagerModel import TouchManagerModel
+from TouchManager.TouchManagerModel import TouchManagerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow

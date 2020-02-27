@@ -1,12 +1,6 @@
-from functools import partial
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QPushButton
 
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
-
-from GameControllerModel import GameControllerModel
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow
-import os
 
 class QToolboxRun(QtWidgets.QWidget):
     def __init__(self):

@@ -12,7 +12,7 @@ class GameControllerModel(QObject):
         super(GameControllerModel, self).__init__()
         # Default data
         self.dict_buttons = 'data.py'
-        self.ch_images_path = "images/"
+        self.ch_images_path = "../images/"
         self.ch_image_ext = ".png"
         self.chapters = ["1. Verdant Prairie",
                          "2. Storm Desert",
