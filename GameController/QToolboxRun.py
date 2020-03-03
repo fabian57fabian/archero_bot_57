@@ -8,8 +8,9 @@ class QToolboxRun(QWidget):
         super(QWidget, self).__init__()
         self.layoutMainHor = QHBoxLayout()
         self.elements = []
+        self.requested_size, _ = parent.get_toolbar_size()
         self.initUI()
-        #self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        # self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
 
     def add_element(self, name):
         button = QPushButton(name)
@@ -20,7 +21,7 @@ class QToolboxRun(QWidget):
 
     def initUI(self):
         self.setMinimumSize(1, 30)
-        self.setMaximumHeight(50)
+        self.setMaximumHeight(self.requested_size)
         for i in range(2):
             self.add_element("dungeon")
         self.layoutMainHor.setDirection(QBoxLayout.LeftToRight)

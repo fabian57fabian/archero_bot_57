@@ -8,30 +8,25 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, 
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
+from GameController.QDungeonSelector import QDungeonSelector
 
 
 class GameControllerWindow(QtWidgets.QWidget):
-
     def __init__(self, model: GameControllerModel):
         super().__init__()
         self.toolbar_w = 70
         self.toolbar_h = 70
         self.model = model
         self.main_layout = QGridLayout()
-        self.lblCurrentDungeon = QLabel()
+        self.dungeonSelector = QDungeonSelector(self, model)
         self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
         self.content_wid = QtWidgets.QWidget()
-        self.currentChapter = 1
         self.setupUi()
         # self.model.onSourceChanged.connect(self.source_changed)
 
-    def changeCurrentChapter(self, ch_number: int):
-        self.lblCurrentDungeon.clear()
-        pixmap = QtGui.QPixmap(self.model.getChapterImagePath(ch_number))
-        pixmap = pixmap.scaled(self.lblCurrentDungeon.width(), self.lblCurrentDungeon.height(), Qt.KeepAspectRatio)
-        self.lblCurrentDungeon.setPixmap(pixmap)
-        self.currentChapter = ch_number
+    def get_toolbar_size(self):
+        return self.toolbar_w, self.toolbar_h
 
     def setupUi(self):
         self.setObjectName("main_window")
@@ -51,16 +46,7 @@ class GameControllerWindow(QtWidgets.QWidget):
         self.main_layout.setRowStretch(1, 200)
         self.setLayout(self.main_layout)
 
-        # Init currentDungeonWidget
-        self.lblCurrentDungeon.setText("")
-        # self.lblCurrentDungeon.setStyleSheet("background-color: white")
-        self.lblCurrentDungeon.setAlignment(Qt.AlignCenter)
-        self.lblCurrentDungeon.setFixedWidth(self.toolbar_w)
-        self.lblCurrentDungeon.setFixedHeight(self.toolbar_h)
-        self.changeCurrentChapter(1)
-        self.lblCurrentDungeon.mousePressEvent = self.onChapterClick
-
-        self.main_layout.addWidget(self.lblCurrentDungeon, 0, 0)
+        self.main_layout.addWidget(self.dungeonSelector, 0, 0)
 
         self.widRun.setFixedHeight(self.toolbar_h)
         self.main_layout.addWidget(self.widRun, 0, 1)
@@ -78,15 +64,3 @@ class GameControllerWindow(QtWidgets.QWidget):
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)
 
-    def onChapterClick(self, event):
-        self.askForChapter()
-        pass
-
-    def askForChapter(self):
-        chapters = self.model.getChapters()
-        item, ok = QInputDialog.getItem(self, "Select chapter",
-                                        "Chapter:", chapters, self.currentChapter - 1, False)
-        if ok and item:
-            selected_ch = self.model.getChNumberFromString(item)
-            if selected_ch != -1:
-                self.changeCurrentChapter(selected_ch)
