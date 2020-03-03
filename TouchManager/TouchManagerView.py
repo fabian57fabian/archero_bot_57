@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, 
     QInputDialog, QLineEdit
 import os
 
-
 class TouchManagerWindow(QtWidgets.QWidget):
     def __init__(self, model: TouchManagerModel):
         super().__init__()
@@ -116,9 +115,13 @@ class TouchManagerWindow(QtWidgets.QWidget):
         self.screen_btn.clicked.connect(self.acquire_screen)
 
     def acquire_screen(self):
-        text, ok = QInputDialog.getText(self, "Get text", "Screenshot name:", QLineEdit.Normal, "")
-        if ok and text != '':
-            self.model.acquire_screen(text)
+        if self.model.is_device_connected():
+            text, ok = QInputDialog.getText(self, "Get text", "Screenshot name:", QLineEdit.Normal, "")
+            if ok and text != '':
+                self.model.acquire_screen(text)
+        else:
+            # TODO: show an error message
+            pass
 
     def change_folder(self, newfolder):
         self.folder_label.setText(newfolder)

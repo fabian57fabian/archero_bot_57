@@ -272,7 +272,7 @@ def main():
         a[0] *= width
         a[1] *= heigth
     # Here attributes are not normalized but direct pixel values depending on width, height
-    device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
+    device = get_device_id()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")
         exit(1)

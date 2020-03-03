@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
-from adb_connector import adb_screen
+from adb_connector import adb_screen, get_device_id
 
 
 class TouchManagerModel(QObject):
@@ -22,6 +22,9 @@ class TouchManagerModel(QObject):
         self.ui_lines_color_rgb = (255, 0, 255)
         self.currentFiles = []
         self.currentDict = {}
+
+    def is_device_connected(self):
+        return get_device_id() is not None
 
     def acquire_screen(self, name):
         filename = name + ".png"
