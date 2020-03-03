@@ -1,13 +1,15 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget
+from PyQt5 import QtCore
 
 
-class QToolboxRun(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
+class QToolboxRun(QWidget):
+    def __init__(self, parent=QWidget):
+        super(QWidget, self).__init__()
         self.layoutMainHor = QHBoxLayout()
         self.elements = []
         self.initUI()
+        #self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
 
     def add_element(self, name):
         button = QPushButton(name)
@@ -22,10 +24,7 @@ class QToolboxRun(QtWidgets.QWidget):
         for i in range(2):
             self.add_element("dungeon")
         self.layoutMainHor.setDirection(QBoxLayout.LeftToRight)
+        self.setContentsMargins(0, 0, 0, 0)
         self.layoutMainHor.setSpacing(0)
         self.layoutMainHor.setContentsMargins(0, 0, 0, 0)
-        #layout_intermediate = QVBoxLayout()
-        #wid = QtWidgets.QWidget()
-        #wid.setLayout(self.layoutMainHor)
-        #layout_intermediate.addWidget()
         self.setLayout(self.layoutMainHor)
