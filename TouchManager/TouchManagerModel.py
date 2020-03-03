@@ -1,5 +1,6 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
+from adb_connector import adb_screen
 
 
 class TouchManagerModel(QObject):
@@ -7,6 +8,7 @@ class TouchManagerModel(QObject):
     onDictionaryTapsChanged = pyqtSignal(dict)
     onButtonLocationChanged = pyqtSignal(str)
     onImageSelected = pyqtSignal()
+    onImageAdded = pyqtSignal(str)
 
     def __init__(self):
         super(TouchManagerModel, self).__init__()
@@ -20,6 +22,12 @@ class TouchManagerModel(QObject):
         self.ui_lines_color_rgb = (255, 0, 255)
         self.currentFiles = []
         self.currentDict = {}
+
+    def acquire_screen(self, name):
+        filename = name + ".png"
+        adb_screen(os.path.join(self.images_path, filename))
+        self.currentFiles = self.loadImagesFromSource(self.images_path)
+        self.onImageAdded.emit(filename)
 
     def manage_default_images_path(self):
         if not os.path.exists(self.images_path):
@@ -52,7 +60,7 @@ class TouchManagerModel(QObject):
         self.onDictionaryTapsChanged.emit(self.currentDict)
 
     def loadImagesFromSource(self, img_path):
-        return [file for file in sorted(os.listdir(self.images_path)) if file.endswith(".jpg")]
+        return [file for file in sorted(os.listdir(self.images_path))]  # if file.endswith(".jpg")]
 
     def loadDictionaryFromSource(self, dict_path):
         from default_dict import getButtons

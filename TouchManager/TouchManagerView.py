@@ -5,15 +5,17 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from TouchManager.TouchManagerModel import TouchManagerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
+    QInputDialog, QLineEdit
 import os
 
 
-class TouchManagerWindow(object):
-
+class TouchManagerWindow(QtWidgets.QWidget):
     def __init__(self, model: TouchManagerModel):
+        super().__init__()
         self.model = model
         self.model.onSourceChanged.connect(self.source_changed)
+        self.model.onImageAdded.connect(self.add_image)
         self.model.onDictionaryTapsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
         self.imagesLayout = QFormLayout()
@@ -24,6 +26,7 @@ class TouchManagerWindow(object):
         self.next = QPushButton()
         self.prev = QPushButton()
         self.export_btn = QPushButton()
+        self.screen_btn = QPushButton()
         self.size_label = QLabel()
         self.image_selected = ""
         self.dict_selected = ""
@@ -57,6 +60,10 @@ class TouchManagerWindow(object):
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setFixedWidth(200)
         lay_vertical_0.addWidget(scroll)
+
+        self.screen_btn.setText("Get screen")
+        lay_vertical_0.addWidget(self.screen_btn)
+
         lay_vertical_1 = QVBoxLayout()
         self.image_label.setFixedHeight(20)
         self.image_label.setAlignment(Qt.AlignCenter)
@@ -106,22 +113,31 @@ class TouchManagerWindow(object):
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
         self.export_btn.clicked.connect(self.model.save_data)
+        self.screen_btn.clicked.connect(self.acquire_screen)
+
+    def acquire_screen(self):
+        text, ok = QInputDialog.getText(self, "Get text", "Screenshot name:", QLineEdit.Normal, "")
+        if ok and text != '':
+            self.model.acquire_screen(text)
 
     def change_folder(self, newfolder):
         self.folder_label.setText(newfolder)
 
     def source_changed(self, current_files):
-        self.imagesLayout.deleteLater()
+        #self.imagesLayout.deleteLater()
         self.photo.clear()
         self.image_selected = current_files[0]
         for path in current_files:
-            button = QtWidgets.QPushButton(path)
-            button.clicked.connect(partial(self.image_clicked, path))
-            self.files[path] = button
-            self.imagesLayout.addRow(self.files[path])
+            self.add_image(path)
         self.files[self.image_selected].setStyleSheet(
             "QPushButton { background-color : %s; }" % self.model.ui_color)
         self.update_image_draw()
+
+    def add_image(self, filename):
+        button = QtWidgets.QPushButton(filename)
+        button.clicked.connect(partial(self.image_clicked, filename))
+        self.files[filename] = button
+        self.imagesLayout.addRow(self.files[filename])
 
     # This needs to stay in controller
     def image_clicked(self, path):
@@ -174,7 +190,7 @@ class TouchManagerWindow(object):
                     location[1] *= self.current_image_size[1]
                     self.size_label.setText("%d,%d" % (location[0], location[1]))
                     self.DrawLines(pixmap, location)
-            #self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
+            # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
             self.current_image_resized = [pixmap.width(), pixmap.height()]
             self.photo.setPixmap(pixmap)

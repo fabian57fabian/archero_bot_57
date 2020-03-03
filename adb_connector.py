@@ -3,6 +3,10 @@ from PIL import Image
 import numpy as np
 
 
+def adb_screen(filename: str = "screenshot.png"):
+    os.system("adb exec-out screencap -p > " + filename)
+
+
 def adb_screen_getpixels():
     os.system("adb exec-out screencap -p > screen.png")
     pixval = None
