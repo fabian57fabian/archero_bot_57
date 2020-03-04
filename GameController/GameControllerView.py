@@ -9,6 +9,7 @@ import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
 from GameController.QDungeonSelector import QDungeonSelector
+from GameController.QDeskArea import QDeskArea
 
 
 class GameControllerWindow(QtWidgets.QWidget):
@@ -21,7 +22,7 @@ class GameControllerWindow(QtWidgets.QWidget):
         self.dungeonSelector = QDungeonSelector(self, model)
         self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
-        self.content_wid = QtWidgets.QWidget()
+        self.content_wid = QDeskArea(self)  # QtWidgets.QWidget()
         self.setupUi()
         # self.model.onSourceChanged.connect(self.source_changed)
 
@@ -56,11 +57,10 @@ class GameControllerWindow(QtWidgets.QWidget):
 
         self.content_wid.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
+        # self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
         self.main_layout.addWidget(self.content_wid, 1, 1)
 
         self.setStyleSheet("background-color: #6e6e6e")
 
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)
-

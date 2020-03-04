@@ -22,8 +22,8 @@ class QToolboxRun(QWidget):
     def initUI(self):
         self.setMinimumSize(1, 30)
         self.setMaximumHeight(self.requested_size)
-        for i in range(2):
-            self.add_element("dungeon")
+        for i in range(1):
+            self.add_element("dungeon 1")
         self.layoutMainHor.setDirection(QBoxLayout.LeftToRight)
         self.setContentsMargins(0, 0, 0, 0)
         self.layoutMainHor.setSpacing(0)

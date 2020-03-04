@@ -7,39 +7,36 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QRect
+from PyQt5.QtWidgets import QWidget, QFormLayout, QFrame, QVBoxLayout
 
-class Ui_Form(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(100, 80)
-        Form.setStyleSheet("background-color: rgb(173, 127, 168);")
-        self.lblName = QtWidgets.QLabel(Form)
+
+class QActionTap(QWidget):
+    def __init__(self, parent=QWidget):
+        super(QActionTap, self).__init__(parent)
+        self.parent = parent
+        self.lblName = QtWidgets.QLabel()
+        self.cBoxDirection = QtWidgets.QComboBox()
+        self.lay = QVBoxLayout()
+        self.setupUi()
+
+    def setupUi(self):
+        self.setFixedSize(100, 60)
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setStyleSheet("background-color: rgb(173, 127, 168);")
         self.lblName.setGeometry(QtCore.QRect(25, 5, 50, 15))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.lblName.setFont(font)
         self.lblName.setAlignment(QtCore.Qt.AlignCenter)
         self.lblName.setObjectName("lblName")
-        self.cBoxDirection = QtWidgets.QComboBox(Form)
+        self.lblName.setText("Tap")
         self.cBoxDirection.setGeometry(QtCore.QRect(10, 40, 80, 23))
         self.cBoxDirection.setStyleSheet("background-color: rgb(238, 238, 236);")
         self.cBoxDirection.setObjectName("cBoxDirection")
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.lay.addWidget(self.lblName)
+        self.lay.addWidget(self.cBoxDirection)
 
-    def retranslateUi(self, Form):
-        _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.lblName.setText(_translate("Form", "click"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())
-
+        self.setLayout(self.lay)
+        QtCore.QMetaObject.connectSlotsByName(self)
