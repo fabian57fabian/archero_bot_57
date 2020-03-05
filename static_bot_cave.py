@@ -2,9 +2,9 @@ import time
 from adb_connector import *
 
 # Change starting vars
-StartLevel = 0
+StartLevel = 6
 SkipDungeonChoose = StartLevel > 0
-
+CheckLevelEnded = False
 playtime = 60
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
@@ -61,7 +61,10 @@ def getDefaultButtons():
         'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
         'spin_wheel_back': [85 / calculus_width, 2140 / calculus_heigth],
         'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
-        'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth]
+        'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth],
+        'click_neutral_away': [998 / calculus_width, 2102 / calculus_heigth],
+        'lock_swap_unlock': [543 / calculus_width, 1112 / calculus_heigth],
+        'lock_swap_unlock_up': [0.501235, 0.354569],
     }
     return buttons
 
@@ -101,6 +104,13 @@ def getframe():
     return adb_screen_getpixels().reshape(width, heigth, 4)
 
 
+def swipe_points(start, stop, s):
+    start = buttons[start]
+    stop = buttons[stop]
+    print("Swiping between points")
+    adb_swipe([start[0] * width, start[1] * heigth, stop[2] * width, stop[3] * heigth], s)
+
+
 def swipe(name, s):
     coord = movements[name]
     # convert back from normalized values
@@ -135,10 +145,35 @@ def continous_status_check():
         arr = adb_screen_getpixels()
 
 
+yellow = [255, 181, 0, 255]
+blue = [0, 140, 255, 255]
+px_blue = [540, 1110]
+px_yellow_skill = [100, 530]
+
+
+def pixel_equals(px1, px2):
+    return px1[0] == px2[0] and px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == blue[3]
+
+
 def letPlay(time=playtime):
     print("Letting player play")
     for i in range(time, 0, -1):
-        # Check if screen is blocked then unlock it
+        if CheckLevelEnded and i % 10 == 0:
+            tap('click_neutral_away')
+            wait(.5)
+            pixs = adb_screen_getpixels()
+            pixel_skill_appeard = pixs[px_yellow_skill[1] * width + px_yellow_skill[0]]
+            print("Got yellow pixel: [%d, %d, %d, %d]" % (
+                pixel_skill_appeard[0], pixel_skill_appeard[1], pixel_skill_appeard[2], pixel_skill_appeard[3]))
+            if pixel_equals(pixel_skill_appeard, yellow):
+                print("Found ability menu appeard")
+                break
+            pixel_blue = pixs[px_blue[1] * width + px_blue[0]]
+            print("Got blue pixel: [%d, %d, %d, %d]" % (
+                pixel_blue[0], pixel_blue[1], pixel_blue[2], pixel_blue[3]))
+            if pixel_equals(pixel_blue, blue):
+                swipe_points('lock_swap_unlock', 'lock_swap_unlock-up', 1)
+        # TODO: Check if screen is blocked then unlock it
         print(i)
         wait(1)
 
