@@ -1,12 +1,26 @@
 import os
 from PIL import Image
+import numpy as np
+
+
+def get_device_id():
+    try:
+        device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
+        device = None if device == '' else device
+        return device
+    except:
+        return None
+
+
+def adb_screen(filename: str = "screenshot.png"):
+    os.system("adb exec-out screencap -p > " + filename)
 
 
 def adb_screen_getpixels():
     os.system("adb exec-out screencap -p > screen.png")
-    pixval = []
+    pixval = None
     with Image.open("screen.png", 'r') as im:
-        pixval = list(im.getdata())
+        pixval = np.array(im.getdata())
     return pixval
 
 

@@ -3,6 +3,9 @@
 
 # Python cache
 __pycache__/*
+QWidgets/__pycache__/*
+GameController/__pycache__/*
+TouchManager/__pycache__/*
 
 # All PyCharm data
 .idea/*
@@ -11,6 +14,8 @@ __pycache__/*
 screens/out/*
 
 screen.png
+data.py
+default_dict.py
 
 # User-specific stuff
 .idea/**/workspace.xml
