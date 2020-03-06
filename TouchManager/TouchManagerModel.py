@@ -9,6 +9,7 @@ class TouchManagerModel(QObject):
     onButtonLocationChanged = pyqtSignal(str)
     onImageSelected = pyqtSignal()
     onImageAdded = pyqtSignal(str)
+    onPointAdded = pyqtSignal(str)
 
     def __init__(self):
         super(TouchManagerModel, self).__init__()
@@ -32,6 +33,10 @@ class TouchManagerModel(QObject):
         self.currentFiles = self.loadImagesFromSource(self.images_path)
         self.onImageAdded.emit(filename)
 
+    def add_point(self, point_name):
+        self.currentDict[point_name] = [.5, .5]
+        self.onPointAdded.emit(point_name)
+
     def manage_default_images_path(self):
         if not os.path.exists(self.images_path):
             os.makedirs(self.images_path)
@@ -49,7 +54,7 @@ class TouchManagerModel(QObject):
                                                   'ability_daemon_reject': [175 / 1080.0, 1790 / 2220.0],
                                                   'click_neutral_away': [998 / 1080.0, 2102 / 2220.0],
                                                   'lock_swap_unlock': [0.501235, 0.504569],
-                                                  'lock_swap_unlock_up': [0.501235, 0.354569],})
+                                                  'lock_swap_unlock_up': [0.501235, 0.354569], })
 
     def getPositions(self, dict_button):
         return self.currentDict[dict_button].copy() if dict_button in self.currentDict else None

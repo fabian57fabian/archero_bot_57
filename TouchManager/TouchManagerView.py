@@ -9,12 +9,14 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, 
     QInputDialog, QLineEdit
 import os
 
+
 class TouchManagerWindow(QtWidgets.QWidget):
     def __init__(self, model: TouchManagerModel):
         super().__init__()
         self.model = model
         self.model.onSourceChanged.connect(self.source_changed)
         self.model.onImageAdded.connect(self.add_image)
+        self.model.onPointAdded.connect(self.add_button)
         self.model.onDictionaryTapsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
         self.imagesLayout = QFormLayout()
@@ -26,6 +28,7 @@ class TouchManagerWindow(QtWidgets.QWidget):
         self.prev = QPushButton()
         self.export_btn = QPushButton()
         self.screen_btn = QPushButton()
+        self.add_point_btn = QPushButton()
         self.size_label = QLabel()
         self.image_selected = ""
         self.dict_selected = ""
@@ -64,9 +67,8 @@ class TouchManagerWindow(QtWidgets.QWidget):
         lay_vertical_0.addWidget(self.screen_btn)
 
         lay_vertical_1 = QVBoxLayout()
-        self.image_label.setFixedHeight(20)
-        self.image_label.setAlignment(Qt.AlignCenter)
-        lay_vertical_1.addWidget(self.image_label)
+        self.export_btn.setText("export")
+        lay_vertical_1.addWidget(self.export_btn)
 
         # self.photo = QtWidgets.QLabel()
         self.photo.setText("")
@@ -103,8 +105,8 @@ class TouchManagerWindow(QtWidgets.QWidget):
         scroll_btns.setFixedWidth(200)
         lay_vertical_2.addWidget(scroll_btns)
 
-        self.export_btn.setText("export")
-        lay_vertical_2.addWidget(self.export_btn)
+        self.add_point_btn.setText("Add point")
+        lay_vertical_2.addWidget(self.add_point_btn)
         layout_hor.addLayout(lay_vertical_0)
         layout_hor.addLayout(lay_vertical_1)
         layout_hor.addLayout(lay_vertical_2)
@@ -113,21 +115,31 @@ class TouchManagerWindow(QtWidgets.QWidget):
         main_window.setCentralWidget(centralwidget)
         self.export_btn.clicked.connect(self.model.save_data)
         self.screen_btn.clicked.connect(self.acquire_screen)
+        self.add_point_btn.clicked.connect(self.add_point)
 
     def acquire_screen(self):
         if self.model.is_device_connected():
-            text, ok = QInputDialog.getText(self, "Get text", "Screenshot name:", QLineEdit.Normal, "")
+            text, ok = QInputDialog.getText(self, "Get name", "Screenshot name:", QLineEdit.Normal, "")
             if ok and text != '':
                 self.model.acquire_screen(text)
         else:
             # TODO: show an error message
             pass
 
+    def add_point(self):
+        text, ok = QInputDialog.getText(self, "Get name", "Point name:", QLineEdit.Normal, "")
+        if ok and text != '':
+            if text not in self.model.currentDict:
+                self.model.add_point(text)
+            else:
+                # TODO: show an error message
+                pass
+
     def change_folder(self, newfolder):
         self.folder_label.setText(newfolder)
 
     def source_changed(self, current_files):
-        #self.imagesLayout.deleteLater()
+        # self.imagesLayout.deleteLater()
         self.photo.clear()
         self.image_selected = current_files[0]
         for path in current_files:
@@ -142,6 +154,12 @@ class TouchManagerWindow(QtWidgets.QWidget):
         self.files[filename] = button
         self.imagesLayout.addRow(self.files[filename])
 
+    def add_button(self, button_name):
+        button = QtWidgets.QPushButton(button_name)
+        button.clicked.connect(partial(self.button_pos_clicked, button_name))
+        self.dicts[button_name] = button
+        self.dictLayout.addRow(self.dicts[button_name])
+
     # This needs to stay in controller
     def image_clicked(self, path):
         self.files[self.image_selected].setStyleSheet("QPushButton { background-color : white; }")
@@ -153,14 +171,11 @@ class TouchManagerWindow(QtWidgets.QWidget):
 
     def dict_changed(self):
         current_dict = self.model.currentDict
-        self.dictLayout.deleteLater()
+        #self.dictLayout.deleteLater()
         self.dict_selected = list(current_dict.keys())[0]
         for button_pos in current_dict.items():
             # button = QtWidgets.QPushButton("%s, %dx%d" %(button_pos[0], button_pos[1][0],button_pos[1][1]))
-            button = QtWidgets.QPushButton(button_pos[0])
-            button.clicked.connect(partial(self.button_pos_clicked, button_pos[0]))
-            self.dicts[button_pos[0]] = button
-            self.dictLayout.addRow(self.dicts[button_pos[0]])
+            self.add_button(button_pos[0])
         self.dicts[self.dict_selected].setStyleSheet(
             "QPushButton { background-color : %s; }" % self.model.ui_color)
         self.update_image_draw()
