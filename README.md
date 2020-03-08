@@ -8,6 +8,16 @@ On linux :
 - Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
 - Enable __debug mode__ on your Smartphone
 
+### Disable Blue auto lock screen
+When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
+To disable it, follow this:
+
+- Open your gamea, and swipe UP FROM THE BOTTOM OF THE SCREEN. You will see the Game Tools icon in the bottom left. Click this.
+- Click on Advanced game features.
+- Turn Auto screen lock OFF 
+
+Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilepage/user-id/14128964) for this [post](https://us.community.samsung.com/t5/Galaxy-S8/Annoying-quot-Drag-Lock-icon-to-unlock-quot/td-p/539737) on samsung community.
+
 ## Usage
 Once cloned the repo, open your smartphone, open __Archero__ app and run the executable:
 

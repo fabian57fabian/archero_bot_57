@@ -1,11 +1,24 @@
 import time
 from adb_connector import *
 
-# Change starting vars
+# Change starting vars (if arguments selected, then they will be overwritten
 StartLevel = 6
+
+USE_ARGUMENTS = True
+
+if USE_ARGUMENTS:
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--starting-level", type=int, default=-1,
+                        help="Starting level in game for a dungeon. If not selected, automatically taps 'start' on main menu")
+    args = parser.parse_args()
+    if args.starting_level != -1:
+        StartLevel = args.starting_level
+
 SkipDungeonChoose = StartLevel > 0
 CheckLevelEnded = False
-playtime = 60
+playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
