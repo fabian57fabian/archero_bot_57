@@ -5,8 +5,9 @@ This is an archero bot that works on a mobile smartphone connected with usb cabl
 On linux :
 - Install __adb__, package using `$ apt install adb`
 - Install __Pillow__,__matplotlib__, __numpy__ packages using `$ pip install Pillow matplotlib numpy`
+- Install __pyqt5__ using `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
 - Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
-- Enable __debug mode__ on your Smartphone
+- Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
 
 ### Disable Blue auto lock screen
 When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
