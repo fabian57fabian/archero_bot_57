@@ -20,13 +20,27 @@ To disable it, follow this:
 Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilepage/user-id/14128964) for this [post](https://us.community.samsung.com/t5/Galaxy-S8/Annoying-quot-Drag-Lock-icon-to-unlock-quot/td-p/539737) on samsung community.
 
 ## Usage
-Once cloned the repo, open your smartphone, open __Archero__ app and run the executable:
-
+Once cloned the repo, open your smartphone, open __Archero__ app.
+open python static_bot_cave.py and change width, height according to your phone screen width and height [here](https://github.com/fabian57fabian/archero_bot_57/blob/35f7adfaa12b9f23444d57bab9f432283cf1078b/static_bot_cave.py#L13).
+open python static_bot_ruined_lands.py and change width, height according to your phone screen width and height [here](https://github.com/fabian57fabian/archero_bot_57/blob/35f7adfaa12b9f23444d57bab9f432283cf1078b/static_bot_ruined_lands.py#L13).
+### Slow and high loot
+Set dungeon to **The Cave** (number 6) and run the executable:
 ```console
 $ python static_bot_cave.py
 ```
+This will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 18 levels.
+Once it ends, he goes to main menu and checks another time if it has energy.
 
-To check button locations, use [TouchManager](TouchManager.py) script.
+### Fast and low loot
+Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script:
+```console
+$ python static_bot_ruined_lands.py
+```
+This will go to your avatar, remove the weapon, go back, check for energy and when available plays by dying at level 1.
+Then goes back to main level and repeats until no energy left.
+
+## Buttons location check
+If the program is clicking in wrong places, then use [TouchManager](TouchManager.py) script.
 Create a folder with all your screenshots.
 Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc856576cb986093dd3b352cb54c774df84/checkCoordinates.py#L46) to screenshots path.
 launch TouchManager script and use the interface.
@@ -41,3 +55,20 @@ This software works with following devices:
 - Samsung s8+
 
 More devices will be added and tested once coordinates will be normalized wrt screen res.
+
+## How it works
+The package adb lets us use various android tools like:
+- tapping on a screen coordinate
+- swiping between two points in an amount of time
+- taking a screenshot
+
+With those functions, i built a dictionary with needed coordinates (in datas/default_dict.py) to start with.
+
+All coordinates are normalized in [0, 1]. This is done because then we will set our screen width and height according to the phone screen used.
+
+Using the TouchManager app we can check each point location for each screenshot that we have (default folder images/samsungs8+).
+
+When we are in need to check something on the screen, we take a screenshot (saved as 'screen.png'), load the image as a list of pixels and get from it a set of pixel locations. Then check those with our needed pixels. All this is done in the game_screen_connector script.
+For example when checking if having 5 or more energy to play one game, we check that pixel corresponding to 5th bar of energy is blue:
+
+![Check_bar](wiki_data/check_energy_green_bar_location.png)
