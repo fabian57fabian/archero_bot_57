@@ -1,23 +1,7 @@
 import time
 from adb_connector import *
+from game_screen_connector import GameScreenConnector
 
-# Change starting vars (if arguments selected, then they will be overwritten
-StartLevel = 6
-
-USE_ARGUMENTS = True
-
-if USE_ARGUMENTS:
-    import argparse
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--starting-level", type=int, default=-1,
-                        help="Starting level in game for a dungeon. If not selected, automatically taps 'start' on main menu")
-    args = parser.parse_args()
-    if args.starting_level != -1:
-        StartLevel = args.starting_level
-
-SkipDungeonChoose = StartLevel > 0
-CheckLevelEnded = False
 playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
@@ -27,6 +11,8 @@ buttons_corrdinates_filename = "data.py"
 # screen resolution. Needed for future normalization
 width = 1080
 heigth = 2220
+
+screen_connector = GameScreenConnector(width, heigth)
 
 
 # Those are normalized coordinates of data to be taken and trained into a simple nn to predict game status (multiclass)
@@ -78,6 +64,7 @@ def getDefaultButtons():
         'click_neutral_away': [998 / calculus_width, 2102 / calculus_heigth],
         'lock_swap_unlock': [543 / calculus_width, 1112 / calculus_heigth],
         'lock_swap_unlock_up': [0.501235, 0.354569],
+        'close_end': [540 / calculus_width, 1993 / calculus_heigth],
     }
     return buttons
 
@@ -111,10 +98,6 @@ def getCoordinates():
 
 
 buttons, x, y, movements = {}, 0, 0, {}
-
-
-def getframe():
-    return adb_screen_getpixels().reshape(width, heigth, 4)
 
 
 def swipe_points(start, stop, s):
@@ -152,41 +135,16 @@ def goTroughDungeon():
     swipe('n', 1.5)
 
 
-def continous_status_check():
-    appeard = False
-    while not appeard:
-        arr = adb_screen_getpixels()
-
-
-yellow = [255, 181, 0, 255]
-blue = [0, 140, 255, 255]
-px_blue = [540, 1110]
-px_yellow_skill = [100, 530]
-
-
-def pixel_equals(px1, px2):
-    return px1[0] == px2[0] and px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == blue[3]
-
-
-def letPlay(time=playtime):
+def letPlay(_time=playtime):
     print("Letting player play")
-    for i in range(time, 0, -1):
+    for i in range(_time, 0, -1):
         if CheckLevelEnded and i % 10 == 0:
-            tap('click_neutral_away')
-            wait(.5)
-            pixs = adb_screen_getpixels()
-            pixel_skill_appeard = pixs[px_yellow_skill[1] * width + px_yellow_skill[0]]
-            print("Got yellow pixel: [%d, %d, %d, %d]" % (
-                pixel_skill_appeard[0], pixel_skill_appeard[1], pixel_skill_appeard[2], pixel_skill_appeard[3]))
-            if pixel_equals(pixel_skill_appeard, yellow):
-                print("Found ability menu appeard")
-                break
-            pixel_blue = pixs[px_blue[1] * width + px_blue[0]]
-            print("Got blue pixel: [%d, %d, %d, %d]" % (
-                pixel_blue[0], pixel_blue[1], pixel_blue[2], pixel_blue[3]))
-            if pixel_equals(pixel_blue, blue):
-                swipe_points('lock_swap_unlock', 'lock_swap_unlock-up', 1)
-        # TODO: Check if screen is blocked then unlock it
+            if screen_connector.checkEndFrame():
+                print("Game ended")
+                wait(5)
+                print("Going back to menu...")
+                tap('close_end')
+                raise Exception('ended')
         print(i)
         wait(1)
 
@@ -237,7 +195,7 @@ def boss_lvl():
 
 
 def intro_lvl():
-    wait(2)
+    wait(3)
     tap('ability_daemon_reject')
     tap('ability_left')
     swipe('n', 3)
@@ -315,19 +273,30 @@ def main():
     global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
     buttons = getGeneratedData() if UseGeneratedData else getDefaultButtons()
-    attributes = getAttributesArr()
-    for a in attributes:
-        a[0] *= width
-        a[1] *= heigth
+    # Not used general attributes
+    # attributes = getAttributesArr()
+    # for a in attributes:
+    #    a[0] *= width
+    #    a[1] *= heigth
     # Here attributes are not normalized but direct pixel values depending on width, height
     device = get_device_id()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")
         exit(1)
     print("Usb debugging device: %s" % device)
-    if not SkipDungeonChoose:
+    while True:
+        while not screen_connector.have_energy():
+            print("No energy, waiting for one minute")
+            wait(60)
         chooseCave()
-    play_cave(StartLevel)
+        try:
+            play_cave(StartLevel)
+        except Exception as exc:
+            if exc.args[0] == 'ended':
+                print("Game ended. Farmed a little bit...")
+            else:
+                print("Got an unknown exception: %s" % exc)
+                exit(1)
 
 
 def getGeneratedData():

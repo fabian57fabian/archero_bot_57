@@ -54,7 +54,8 @@ class TouchManagerModel(QObject):
                                                   'ability_daemon_reject': [175 / 1080.0, 1790 / 2220.0],
                                                   'click_neutral_away': [998 / 1080.0, 2102 / 2220.0],
                                                   'lock_swap_unlock': [0.501235, 0.504569],
-                                                  'lock_swap_unlock_up': [0.501235, 0.354569], })
+                                                  'lock_swap_unlock_up': [0.501235, 0.354569],
+                                                  'close_end': [540 / 1080, 1993 / 2220], })
 
     def getPositions(self, dict_button):
         return self.currentDict[dict_button].copy() if dict_button in self.currentDict else None

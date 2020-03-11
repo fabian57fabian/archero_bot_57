@@ -12,5 +12,6 @@ def getButtons():
         'click_neutral_away': [0.956037, 0.956306],
         'lock_swap_unlock': [0.501235, 0.504569],
         'lock_swap_unlock_up': [0.501235, 0.354569],
+        'close_end': [540 / 1080, 1993 / 2220],
     }
     return buttons
