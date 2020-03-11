@@ -6,8 +6,9 @@ playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
+data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
-
+buttons_corrdinates_default_filename = "default_dict.py"
 # screen resolution. Needed for future normalization
 width = 1080
 heigth = 2220
@@ -46,27 +47,6 @@ def getAttributesArr():
 
 def getAttributes(frame):
     pass
-
-
-def getDefaultButtons():
-    calculus_width = 1080
-    calculus_heigth = 2220
-    buttons = {
-        'pause': [20 / calculus_width, 20 / calculus_heigth],
-        'start': [540 / calculus_width, 1700 / calculus_heigth],
-        'collect': [330 / calculus_width, 1490 / calculus_heigth],
-        'ability_left': [210 / calculus_width, 1500 / calculus_heigth],
-        'ability_center': [540 / calculus_width, 1500 / calculus_heigth],
-        'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
-        'spin_wheel_back': [85 / calculus_width, 2140 / calculus_heigth],
-        'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
-        'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth],
-        'click_neutral_away': [998 / calculus_width, 2102 / calculus_heigth],
-        'lock_swap_unlock': [543 / calculus_width, 1112 / calculus_heigth],
-        'lock_swap_unlock_up': [0.501235, 0.354569],
-        'close_end': [540 / calculus_width, 1993 / calculus_heigth],
-    }
-    return buttons
 
 
 attributes = []
@@ -138,7 +118,7 @@ def goTroughDungeon():
 def letPlay(_time=playtime):
     print("Letting player play")
     for i in range(_time, 0, -1):
-        if CheckLevelEnded and i % 10 == 0:
+        if i % 10 == 0:
             if screen_connector.checkEndFrame():
                 print("Game ended")
                 wait(5)
@@ -272,7 +252,7 @@ def chooseCave():
 def main():
     global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
-    buttons = getGeneratedData() if UseGeneratedData else getDefaultButtons()
+    buttons = getGeneratedData()
     # Not used general attributes
     # attributes = getAttributesArr()
     # for a in attributes:
@@ -290,7 +270,7 @@ def main():
             wait(60)
         chooseCave()
         try:
-            play_cave(StartLevel)
+            play_cave()
         except Exception as exc:
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
@@ -299,11 +279,31 @@ def main():
                 exit(1)
 
 
+def import_method(folder, file, name):
+    """
+    loads a method from file (.py) inside a folder
+    :param folder:
+    :param file:
+    :param name:
+    :return:
+    """
+    module = folder + "." + file[:-3]
+    module = __import__(module, fromlist=[name])
+    return getattr(module, name)
+
+
 def getGeneratedData():
-    global buttons_corrdinates_filename
-    if os.path.exists(buttons_corrdinates_filename):
-        from data.py import getButtons
-        return getButtons()
+    global buttons_corrdinates_filename, buttons_corrdinates_default_filename, UseGeneratedData
+    if os.path.exists(os.path.join(data_pack, buttons_corrdinates_filename)):
+        method = import_method(data_pack, buttons_corrdinates_filename, "getButtons")
+        return method()
+    elif os.path.exists(os.path.join(data_pack, buttons_corrdinates_default_filename)):
+        method = import_method(data_pack, buttons_corrdinates_default_filename, "getButtons")
+        return method()
+    else:
+        print("No %s or d%s scripts are available. check your files." % (
+            buttons_corrdinates_filename, buttons_corrdinates_default_filename))
+        exit(1)
 
 
 if __name__ == "__main__":

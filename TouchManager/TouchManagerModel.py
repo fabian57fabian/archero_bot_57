@@ -16,9 +16,9 @@ class TouchManagerModel(QObject):
         # Default path for screens
         self.images_path = "screens/samsung_s8+"
         self.manage_default_images_path()
+        self.data_pack = 'datas'
         self.dict_out_name = 'data.py'
-        self.dict_path = "../default_dict.py"
-        self.manage_default_dict_path()
+        self.dict_path = "default_dict.py"
         self.ui_color = "cyan"
         self.ui_lines_color_rgb = (255, 0, 255)
         self.currentFiles = []
@@ -41,22 +41,6 @@ class TouchManagerModel(QObject):
         if not os.path.exists(self.images_path):
             os.makedirs(self.images_path)
 
-    def manage_default_dict_path(self):
-        if not os.path.exists(self.dict_path):
-            self.write_dict_file(self.dict_path, {'pause': [20 / 1080, 20 / 2220],
-                                                  'start': [540 / 1080.0, 1700 / 2220.0],
-                                                  'collect': [330 / 1080.0, 1490 / 2220.0],
-                                                  'ability_left': [210 / 1080.0, 1500 / 2220.0],
-                                                  'ability_center': [540 / 1080.0, 1500 / 2220.0],
-                                                  'ability_right': [870 / 1080.0, 1500 / 2220.0],
-                                                  'spin_wheel_back': [85 / 1080.0, 2140 / 2220.0],
-                                                  'lucky_wheel_start': [540 / 1080.0, 1675 / 2220.0],
-                                                  'ability_daemon_reject': [175 / 1080.0, 1790 / 2220.0],
-                                                  'click_neutral_away': [998 / 1080.0, 2102 / 2220.0],
-                                                  'lock_swap_unlock': [0.501235, 0.504569],
-                                                  'lock_swap_unlock_up': [0.501235, 0.354569],
-                                                  'close_end': [540 / 1080, 1993 / 2220], })
-
     def getPositions(self, dict_button):
         return self.currentDict[dict_button].copy() if dict_button in self.currentDict else None
 
@@ -75,8 +59,20 @@ class TouchManagerModel(QObject):
         return [file for file in sorted(os.listdir(self.images_path))]  # if file.endswith(".jpg")]
 
     def loadDictionaryFromSource(self, dict_path):
-        from default_dict import getButtons
-        return getButtons()
+        method = self.import_method(self.data_pack, dict_path, "getButtons")
+        return method()
+
+    def import_method(self,folder, file, name):
+        """
+        loads a method from file (.py) inside a folder
+        :param folder:
+        :param file:
+        :param name:
+        :return:
+        """
+        module = folder + "." + file[:-3]
+        module = __import__(module, fromlist=[name])
+        return getattr(module, name)
 
     def write_dict_file(self, path, dict_data):
         with open(path, "w") as outfile:

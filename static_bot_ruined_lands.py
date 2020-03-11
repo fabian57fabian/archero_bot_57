@@ -6,6 +6,7 @@ playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
+data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 
 # screen resolution. Needed for future normalization
@@ -162,11 +163,23 @@ def main():
         wait(2)
 
 
+def import_method(folder, file, name):
+    """
+    loads a method from file (.py) inside a folder
+    :param folder:
+    :param file:
+    :param name:
+    :return:
+    """
+    module = folder + "." + file[:-3]
+    module = __import__(module, fromlist=[name])
+    return getattr(module, name)
+
+
 def getGeneratedData():
     global buttons_corrdinates_filename
-    if os.path.exists(buttons_corrdinates_filename):
-        from data.py import getButtons
-        return getButtons()
+    method = import_method(data_pack, buttons_corrdinates_filename, "getButtons")
+    return method()
 
 
 if __name__ == "__main__":
