@@ -6,6 +6,7 @@ class GameScreenConnector:
     def __init__(self, width, height):
         self.width = width
         self.height = height
+        # This should be in format abgr
         self.end_data = self.load_end_data([190, 32, 24, 255])
         self.low_enegy_data = self.load_energy_data([41, 182, 37, 255])
 
@@ -24,7 +25,8 @@ class GameScreenConnector:
         return [energy_frame_attr, energy_frame_value]
 
     def pixel_equals(self, px1, px2):
-        return px1[0] == px2[0] and px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == px2[3]
+        # checking only RGB from ARGB
+        return px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == px2[3]
 
     def getFrameAttr(self, attributes):
         frame = adb_screen_getpixels()

@@ -155,6 +155,7 @@ def main():
         while not screen_connector.checkEndFrame():
             print("Still playing, waiting for 5 secs")
             time.sleep(5)
+        print("Game ended!!")
         wait(5)
         print("Going back to menu...")
         tap('close_end')
