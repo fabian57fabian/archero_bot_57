@@ -80,27 +80,6 @@ def getCoordinates():
 buttons, x, y, movements = {}, 0, 0, {}
 
 
-def getDefaultButtons():
-    calculus_width = 1080
-    calculus_heigth = 2220
-    buttons = {
-        'pause': [20 / calculus_width, 20 / calculus_heigth],
-        'start': [540 / calculus_width, 1700 / calculus_heigth],
-        'collect': [330 / calculus_width, 1490 / calculus_heigth],
-        'ability_left': [210 / calculus_width, 1500 / calculus_heigth],
-        'ability_center': [540 / calculus_width, 1500 / calculus_heigth],
-        'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
-        'spin_wheel_back': [85 / calculus_width, 2140 / calculus_heigth],
-        'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
-        'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth],
-        'click_neutral_away': [998 / calculus_width, 2102 / calculus_heigth],
-        'lock_swap_unlock': [543 / calculus_width, 1112 / calculus_heigth],
-        'lock_swap_unlock_up': [0.501235, 0.354569],
-        'close_end': [540 / calculus_width, 1993 / calculus_heigth],
-    }
-    return buttons
-
-
 def swipe(name, s):
     coord = movements[name]
     # convert back from normalized values
@@ -141,12 +120,27 @@ def play_lands():
 def main():
     global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
-    buttons = getGeneratedData() if UseGeneratedData else getDefaultButtons()
+    buttons = getGeneratedData()
     device = get_device_id()
     if device is None:
         print("Error: no device discovered. Start adb server before executing this.")
         exit(1)
     print("Usb debugging device: %s" % device)
+    # Wait and tap home in case some ad opos up
+    wait(5)
+    tap('menu_world')
+    # Remove armor
+    tap('menu_equipment')
+    wait(1)
+    tap('menu_avatar_weapon')
+    wait(1)
+    if screen_connector.onEquipMenu():
+        tap('menu_equip_weapon')
+        print("Removing armor...")
+    else:
+        print("Already no armor, returning to menu...")
+    wait(2)
+    tap('menu_world')
     while True:
         while not screen_connector.have_energy():
             print("No energy, waiting for one minute")
@@ -177,9 +171,17 @@ def import_method(folder, file, name):
 
 
 def getGeneratedData():
-    global buttons_corrdinates_filename
-    method = import_method(data_pack, buttons_corrdinates_filename, "getButtons")
-    return method()
+    global buttons_corrdinates_filename, buttons_corrdinates_default_filename, UseGeneratedData
+    if os.path.exists(os.path.join(data_pack, buttons_corrdinates_filename)):
+        method = import_method(data_pack, buttons_corrdinates_filename, "getButtons")
+        return method()
+    elif os.path.exists(os.path.join(data_pack, buttons_corrdinates_default_filename)):
+        method = import_method(data_pack, buttons_corrdinates_default_filename, "getButtons")
+        return method()
+    else:
+        print("No %s or d%s scripts are available. check your files." % (
+            buttons_corrdinates_filename, buttons_corrdinates_default_filename))
+        exit(1)
 
 
 if __name__ == "__main__":

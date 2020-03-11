@@ -62,7 +62,7 @@ class TouchManagerModel(QObject):
         method = self.import_method(self.data_pack, dict_path, "getButtons")
         return method()
 
-    def import_method(self,folder, file, name):
+    def import_method(self, folder, file, name):
         """
         loads a method from file (.py) inside a folder
         :param folder:
@@ -85,4 +85,4 @@ class TouchManagerModel(QObject):
             outfile.write("    return buttons")
 
     def save_data(self):
-        self.write_dict_file(self.dict_out_name, self.currentDict)
+        self.write_dict_file(self.data_pack + "/" + self.dict_out_name, self.currentDict)

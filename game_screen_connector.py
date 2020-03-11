@@ -8,6 +8,7 @@ class GameScreenConnector:
         self.height = height
         # This should be in format abgr
         self.end_data = self.load_end_data([190, 32, 24, 255])
+        self.equip_data = self.load_equip_data([231, 191, 105, 255])
         self.low_enegy_data = self.load_energy_data([41, 182, 37, 255])
 
     def load_end_data(self, ending_color):
@@ -17,6 +18,12 @@ class GameScreenConnector:
         end_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in end_frame_attr]
         frame_red_ending = [ending_color for _ in end_frame_attr]
         return [end_frame_attr, frame_red_ending]
+
+    def load_equip_data(self, eqip_color):
+        equip_frame_attr = [[855 / 1080, 1576 / 2220]]
+        equip_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in equip_frame_attr]
+        frame_equip = [eqip_color for _ in equip_frame_attr]
+        return [equip_frame_attr, frame_equip]
 
     def load_energy_data(self, energy_green):
         energy_frame_attr = [[373 / 1080, 65 / 2220]]
@@ -65,3 +72,10 @@ class GameScreenConnector:
         :return:
         """
         return self.check_screen_points_equal(self.low_enegy_data[0], self.low_enegy_data[1])
+
+    def onEquipMenu(self):
+        """
+        Returns True if have 5 or more energy left
+        :return:
+        """
+        return self.check_screen_points_equal(self.equip_data[0], self.equip_data[1])

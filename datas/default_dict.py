@@ -15,6 +15,7 @@ def getButtons():
         'lock_swap_unlock': [543 / calculus_width, 1112 / calculus_heigth],
         'lock_swap_unlock_up': [0.501235, 0.354569],
         'close_end': [540 / calculus_width, 1993 / calculus_heigth],
+        'menu_world': [540 / calculus_width, 2131 / calculus_heigth],
         'menu_equipment': [273 / calculus_width, 2131 / calculus_heigth],
         'menu_avatar_weapon': [166 / calculus_width, 226 / calculus_heigth],
         'menu_equip_weapon': [535 / calculus_width, 1780 / calculus_heigth],
