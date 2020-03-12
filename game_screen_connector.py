@@ -7,45 +7,26 @@ class GameScreenConnector:
         self.width = width
         self.height = height
         # This should be in format abgr
-        self.end_data = self.load_end_data([190, 32, 24, 255])
-        self.equip_data = self.load_equip_data([231, 191, 105, 255])
-        self.low_enegy_data = self.load_energy_data([41, 182, 37, 255])
-        self.lvl_up_data = self.load_lvlup_data([255, 181, 0, 255])
-        self.fortune_wheel_data = self.loadFortune_wh_data([255, 181, 0, 255])
+        self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+                         self.repeat_as_list([190, 32, 24, 255], 3)]
+        self.equip_data = [[[855 / 1080, 1576 / 2220]],
+                           self.repeat_as_list([231, 191, 105, 255], 1)]
+        self.low_enegy_data = [[[373 / 1080, 65 / 2220]],
+                               self.repeat_as_list([41, 182, 37, 255], 1)]
+        self.lvl_up_data = [[[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220]],
+                            self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+        self.fortune_wheel_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
+                                   self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+        self.devil_question_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
+                                    self.repeat_as_list([0, 0, 0, 255], 2)]  # Red magenta
+        self.mistery_vendor_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
+                                    self.repeat_as_list([4, 4, 4, 255], 2)]  # Yellow
 
-    def load_end_data(self, ending_color):
-        end_frame_attr = [[170 / 1080, 1230 / 2220],
-                          [890 / 1080, 1230 / 2220],
-                          [800 / 1080, 780 / 2220]]
-        end_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in end_frame_attr]
-        frame_red_ending = [ending_color for _ in end_frame_attr]
-        return [end_frame_attr, frame_red_ending]
-
-    def load_equip_data(self, eqip_color):
-        equip_frame_attr = [[855 / 1080, 1576 / 2220]]
-        equip_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in equip_frame_attr]
-        frame_equip = [eqip_color for _ in equip_frame_attr]
-        return [equip_frame_attr, frame_equip]
-
-    def load_energy_data(self, energy_green):
-        energy_frame_attr = [[373 / 1080, 65 / 2220]]
-        energy_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in energy_frame_attr]
-        energy_frame_value = [energy_green for _ in energy_frame_attr]
-        return [energy_frame_attr, energy_frame_value]
-
-    def load_lvlup_data(self, lvl_up_color_yellow):
-        lvl_up_frame_attr = [[70 / 1080, 530 / 2220],
-                             [1020 / 1080, 530 / 2220]]
-        lvl_up_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in lvl_up_frame_attr]
-        frame_yellow_ending = [lvl_up_color_yellow for _ in lvl_up_frame_attr]
-        return [lvl_up_frame_attr, frame_yellow_ending]
-
-    def loadFortune_wh_data(self, color_yellow):
-        for_wh_frame_attr = [[70 / 1080, 370 / 2220],
-                             [1020 / 1080, 370 / 2220]]
-        for_wh_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in for_wh_frame_attr]
-        frame_yellow_ending = [color_yellow for _ in for_wh_frame_attr]
-        return [for_wh_frame_attr, frame_yellow_ending]
+    def repeat_as_list(self, data, times=1):
+        new_arr = []
+        for i in range(times):
+            new_arr.append(data)
+        return new_arr
 
     def pixel_equals(self, px1, px2):
         # checking only RGB from ARGB
@@ -106,6 +87,6 @@ class GameScreenConnector:
         frame = adb_screen_getpixels()
         lvl_up = self.check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
         fortune_wheel = self.check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
-        devil_question = False
-        mistery_vendor = False
+        devil_question = self.check_screen_points_equal(frame, self.devil_question_data[0], self.devil_question_data[1])
+        mistery_vendor = self.check_screen_points_equal(frame, self.mistery_vendor_data[0], self.mistery_vendor_data[1])
         return lvl_up or fortune_wheel or devil_question or mistery_vendor

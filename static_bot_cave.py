@@ -311,4 +311,5 @@ def getGeneratedData():
 
 
 if __name__ == "__main__":
+    screen_connector.checkLevelEnded()
     main()
