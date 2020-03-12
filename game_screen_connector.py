@@ -6,21 +6,21 @@ class GameScreenConnector:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        # This should be in format abgr
+        # This should be in format rgba
         self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
                          self.repeat_as_list([190, 32, 24, 255], 3)]
         self.equip_data = [[[855 / 1080, 1576 / 2220]],
                            self.repeat_as_list([231, 191, 105, 255], 1)]
-        self.low_enegy_data = [[[373 / 1080, 65 / 2220]],
-                               self.repeat_as_list([41, 182, 37, 255], 1)]
+        self.low_enegy_data = [[[370 / 1080, 60 / 2220]],
+                               self.repeat_as_list([53, 199, 41, 255], 1)]
         self.lvl_up_data = [[[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220]],
                             self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
         self.fortune_wheel_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
                                    self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
         self.devil_question_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self.repeat_as_list([0, 0, 0, 255], 2)]  # Red magenta
+                                    self.repeat_as_list([243, 38, 81, 255], 2)]  # Red
         self.mistery_vendor_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self.repeat_as_list([4, 4, 4, 255], 2)]  # Yellow
+                                    self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
 
     def repeat_as_list(self, data, times=1):
         new_arr = []
@@ -29,13 +29,15 @@ class GameScreenConnector:
         return new_arr
 
     def pixel_equals(self, px1, px2):
-        # checking only RGB from ARGB
-        return px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == px2[3]
+        # checking only RGB from RGBA
+        return px1[0] == px2[0] and px1[1] == px2[1] and px1[2] == px2[2]
 
     def getFrameAttr(self, frame, attributes):
         attr_data = []
         for attr in attributes:
-            attr_data.append(frame[int(attr[1] * self.width + attr[0])])
+            x = int(attr[0] * self.width)
+            y = int(attr[1] * self.height)
+            attr_data.append(frame[int(y * self.width + x)])
         return attr_data
 
     def check_screen_points_equal(self, frame, points_list, points_value):
