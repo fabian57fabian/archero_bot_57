@@ -125,6 +125,10 @@ def letPlay(_time=playtime):
                 print("Going back to menu...")
                 tap('close_end')
                 raise Exception('ended')
+            elif screen_connector.checkLevelEnded():
+                print("Just leveled up!")
+                wait(1)
+                return
         print(i)
         wait(1)
 

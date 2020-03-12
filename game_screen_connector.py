@@ -10,6 +10,8 @@ class GameScreenConnector:
         self.end_data = self.load_end_data([190, 32, 24, 255])
         self.equip_data = self.load_equip_data([231, 191, 105, 255])
         self.low_enegy_data = self.load_energy_data([41, 182, 37, 255])
+        self.lvl_up_data = self.load_lvlup_data([255, 181, 0, 255])
+        self.fortune_wheel_data = self.loadFortune_wh_data([255, 181, 0, 255])
 
     def load_end_data(self, ending_color):
         end_frame_attr = [[170 / 1080, 1230 / 2220],
@@ -31,18 +33,31 @@ class GameScreenConnector:
         energy_frame_value = [energy_green for _ in energy_frame_attr]
         return [energy_frame_attr, energy_frame_value]
 
+    def load_lvlup_data(self, lvl_up_color_yellow):
+        lvl_up_frame_attr = [[70 / 1080, 530 / 2220],
+                             [1020 / 1080, 530 / 2220]]
+        lvl_up_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in lvl_up_frame_attr]
+        frame_yellow_ending = [lvl_up_color_yellow for _ in lvl_up_frame_attr]
+        return [lvl_up_frame_attr, frame_yellow_ending]
+
+    def loadFortune_wh_data(self, color_yellow):
+        for_wh_frame_attr = [[70 / 1080, 370 / 2220],
+                             [1020 / 1080, 370 / 2220]]
+        for_wh_frame_attr = [[el[0] * self.width, el[1] * self.height] for el in for_wh_frame_attr]
+        frame_yellow_ending = [color_yellow for _ in for_wh_frame_attr]
+        return [for_wh_frame_attr, frame_yellow_ending]
+
     def pixel_equals(self, px1, px2):
         # checking only RGB from ARGB
         return px1[1] == px2[1] and px1[2] == px2[2] and px1[3] == px2[3]
 
-    def getFrameAttr(self, attributes):
-        frame = adb_screen_getpixels()
+    def getFrameAttr(self, frame, attributes):
         attr_data = []
         for attr in attributes:
             attr_data.append(frame[int(attr[1] * self.width + attr[0])])
         return attr_data
 
-    def check_screen_points_equal(self, points_list, points_value):
+    def check_screen_points_equal(self, frame, points_list, points_value):
         """
         Gets 2 lists of x,y coordinates where to get values and list of values to comapre.
         Returns true if current frame have those values
@@ -53,7 +68,7 @@ class GameScreenConnector:
         if len(points_list) != len(points_value):
             print("Wrong size between points and values!")
             return False
-        attr_data = self.getFrameAttr(points_list)
+        attr_data = self.getFrameAttr(frame, points_list)
         for i in range(len(attr_data)):
             if not self.pixel_equals(attr_data[i], points_value[i]):
                 return False
@@ -64,18 +79,33 @@ class GameScreenConnector:
         Returns if we are on end frame
         :return:
         """
-        return self.check_screen_points_equal(self.end_data[0], self.end_data[1])
+        frame = adb_screen_getpixels()
+        return self.check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
 
     def have_energy(self):
         """
         Returns True if have 5 or more energy left
         :return:
         """
-        return self.check_screen_points_equal(self.low_enegy_data[0], self.low_enegy_data[1])
+        frame = adb_screen_getpixels()
+        return self.check_screen_points_equal(frame, self.low_enegy_data[0], self.low_enegy_data[1])
 
     def onEquipMenu(self):
         """
         Returns True if have 5 or more energy left
         :return:
         """
-        return self.check_screen_points_equal(self.equip_data[0], self.equip_data[1])
+        frame = adb_screen_getpixels()
+        return self.check_screen_points_equal(frame, self.equip_data[0], self.equip_data[1])
+
+    def checkLevelEnded(self):
+        """
+        Return True if level up screen reached
+        :return:
+        """
+        frame = adb_screen_getpixels()
+        lvl_up = self.check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
+        fortune_wheel = self.check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
+        devil_question = False
+        mistery_vendor = False
+        return lvl_up or fortune_wheel or devil_question or mistery_vendor
