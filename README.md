@@ -72,3 +72,7 @@ When we are in need to check something on the screen, we take a screenshot (save
 For example when checking if having 5 or more energy to play one game, we check that pixel corresponding to 5th bar of energy is blue:
 
 ![Check_bar](wiki_data/check_energy_green_bar_location.png)
+
+## Extra
+
+Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e.
