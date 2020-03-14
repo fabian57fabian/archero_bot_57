@@ -6,6 +6,8 @@ playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
+# Set this to true if keep receiving "No energy, wqiting for one minute"
+UseManualStart = True
 data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 buttons_corrdinates_default_filename = "default_dict.py"
@@ -269,9 +271,12 @@ def main():
         exit(1)
     print("Usb debugging device: %s" % device)
     while True:
-        while not screen_connector.have_energy():
-            print("No energy, waiting for one minute")
-            wait(60)
+        if UseManualStart:
+            a = input("Press enter to start a game (your energy bar must be at least 5)")
+        else:
+            while not screen_connector.have_energy():
+                print("No energy, waiting for one minute")
+                wait(60)
         chooseCave()
         try:
             play_cave()
