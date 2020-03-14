@@ -2,6 +2,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # Python cache
+datas/__pycache__/*
 __pycache__/*
 QWidgets/__pycache__/*
 GameController/__pycache__/*
