@@ -6,13 +6,18 @@ playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
+# Set this to true if keep receiving "No energy, wqiting for one minute"
+UseManualStart = True
 data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 
-# screen resolution. Needed for future normalization
-width = 1080
-heigth = 2220
-
+device = get_device_id()
+if device is None:
+    print("Error: no device discovered. Start adb server before executing this.")
+    exit(1)
+print("Usb debugging device: %s" % device)
+width, heigth = adb_get_size()
+print("Your resolution is %dx%d", (width, heigth))
 screen_connector = GameScreenConnector(width, heigth)
 
 
@@ -121,11 +126,6 @@ def main():
     global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
     buttons = getGeneratedData()
-    device = get_device_id()
-    if device is None:
-        print("Error: no device discovered. Start adb server before executing this.")
-        exit(1)
-    print("Usb debugging device: %s" % device)
     # Wait and tap home in case some ad opos up
     wait(5)
     tap('menu_world')
@@ -142,9 +142,12 @@ def main():
     wait(2)
     tap('menu_world')
     while True:
-        while not screen_connector.have_energy():
-            print("No energy, waiting for one minute")
-            wait(60)
+        if UseManualStart:
+            a = input("Press enter to start a game (your energy bar must be at least 5)")
+        else:
+            while not screen_connector.have_energy():
+                print("No energy, waiting for one minute")
+                wait(60)
         chooseLands()
         play_lands()
         while not screen_connector.checkEndFrame():

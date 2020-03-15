@@ -11,10 +11,14 @@ UseManualStart = True
 data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 buttons_corrdinates_default_filename = "default_dict.py"
-# screen resolution. Needed for future normalization
-width = 1080
-heigth = 2220
 
+device = get_device_id()
+if device is None:
+    print("Error: no device discovered. Start adb server before executing this.")
+    exit(1)
+print("Usb debugging device: %s" % device)
+width, heigth = adb_get_size()
+print("Your resolution is %dx%d", (width, heigth))
 screen_connector = GameScreenConnector(width, heigth)
 
 
@@ -265,11 +269,6 @@ def main():
     #    a[0] *= width
     #    a[1] *= heigth
     # Here attributes are not normalized but direct pixel values depending on width, height
-    device = get_device_id()
-    if device is None:
-        print("Error: no device discovered. Start adb server before executing this.")
-        exit(1)
-    print("Usb debugging device: %s" % device)
     while True:
         if UseManualStart:
             a = input("Press enter to start a game (your energy bar must be at least 5)")

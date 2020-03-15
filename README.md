@@ -20,9 +20,8 @@ To disable it, follow this:
 Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilepage/user-id/14128964) for this [post](https://us.community.samsung.com/t5/Galaxy-S8/Annoying-quot-Drag-Lock-icon-to-unlock-quot/td-p/539737) on samsung community.
 
 ## Usage
-Once cloned the repo, open your smartphone, open __Archero__ app.
-open python static_bot_cave.py and change width, height according to your phone screen width and height [here](https://github.com/fabian57fabian/archero_bot_57/blob/35f7adfaa12b9f23444d57bab9f432283cf1078b/static_bot_cave.py#L13).
-open python static_bot_ruined_lands.py and change width, height according to your phone screen width and height [here](https://github.com/fabian57fabian/archero_bot_57/blob/35f7adfaa12b9f23444d57bab9f432283cf1078b/static_bot_ruined_lands.py#L13).
+Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGeneratedData variable to True in next scripts if automatic energy level detection does not work.
+
 ### Slow and high loot
 Set dungeon to **The Cave** (number 6) and run the executable:
 ```console

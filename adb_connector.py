@@ -2,6 +2,11 @@ import os
 from PIL import Image
 import numpy as np
 
+"""
+Step 2: use this library
+https://pypi.org/project/pure-python-adb/
+"""
+
 
 def get_device_id():
     try:
@@ -14,6 +19,15 @@ def get_device_id():
 
 def adb_screen(filename: str = "screenshot.png"):
     os.system("adb exec-out screencap -p > " + filename)
+
+
+def adb_get_size():
+    os.system("adb exec-out screencap -p > test_size.png")
+    im = Image.open("screen.png", 'r')
+    w, h = im.size
+    im.close()
+    os.remove("test_size.png")
+    return w, h
 
 
 def adb_screen_getpixels():
