@@ -17,7 +17,7 @@ if device is None:
     exit(1)
 print("Usb debugging device: %s" % device)
 width, heigth = adb_get_size()
-print("Your resolution is %dx%d", (width, heigth))
+print("Your resolution is %dx%d" % (width, heigth))
 screen_connector = GameScreenConnector(width, heigth)
 
 
