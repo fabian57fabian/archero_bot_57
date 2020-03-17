@@ -7,7 +7,7 @@ playtime = 70
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
 # Set this to true if keep receiving "No energy, wqiting for one minute"
-UseManualStart = True
+UseManualStart = False
 data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 buttons_corrdinates_default_filename = "default_dict.py"
@@ -109,7 +109,7 @@ def wait(s):
     time.sleep(s)
 
 
-def goTroughDungeon():
+def goTroughDungeon_old():
     print("Going through dungeon")
     swipe('n', 1.5)
     swipe('w', .32)
@@ -117,8 +117,23 @@ def goTroughDungeon():
     swipe('e', .32)
     swipe('e', .32)
     swipe('n', .5)
-    swipe('w', .32)
+    swipe('w', .325)
     swipe('n', 1.5)
+
+
+def goTroughDungeon():
+    print("Going through dungeon")
+    swipe('n', 1.5)
+    swipe('w', .32)
+    swipe('n', .5)
+    swipe('e', .32)
+    swipe('e', .32)
+    swipe('n', .7)
+    swipe('w', .325)
+    swipe('w', .3)
+    swipe('n', 1.6)
+    swipe('e', .3)
+    swipe('n', 2)
 
 
 def letPlay(_time=playtime):
@@ -154,33 +169,35 @@ def normal_lvl():
 
 
 def heal_lvl():
-    swipe('n', 1.5)
+    swipe('n', 1.7)
     tap('ability_daemon_reject')
     tap('ability_left')
-    wait(1)
+    wait(1.2)
     tap('spin_wheel_back')
-    wait(.5)
-    swipe('n', .6)
-    wait(1)
+    wait(.9)
+    swipe('n', .9)
+    wait(1.2)
     tap('spin_wheel_back')
-    wait(1)
-    swipe('n', 1)
+    wait(1.2)
+    swipe('n', 1.2)
 
 
 def boss_lvl():
     swipe('n', 2)
     swipe('n', 1.5)
-    swipe('n', 1.5)
+    swipe('n', 1)
     letPlay()
     tap('lucky_wheel_start')
     wait(6)
     tap('spin_wheel_back')
-    wait(1)
+    wait(1.5)
     tap('ability_daemon_reject')
     tap('ability_left')
-    wait(1)
+    wait(1.5)
     tap('spin_wheel_back')  # guard not to click on watch
-    wait(1)
+    wait(1.5)
+    tap('ability_left')  # Extra guard for level up
+    wait(1.5)
     swipe('n', 1)
 
 

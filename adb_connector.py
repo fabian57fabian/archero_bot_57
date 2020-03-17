@@ -23,7 +23,7 @@ def adb_screen(filename: str = "screenshot.png"):
 
 def adb_get_size():
     os.system("adb exec-out screencap -p > test_size.png")
-    im = Image.open("screen.png", 'r')
+    im = Image.open("test_size.png", 'r')
     w, h = im.size
     im.close()
     os.remove("test_size.png")
