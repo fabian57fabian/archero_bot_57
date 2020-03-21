@@ -10,7 +10,7 @@ https://pypi.org/project/pure-python-adb/
 """
 
 print("Initializing ppadb library")
-os.system("adb devices")#this is done to make it connect (like __init__ )
+os.system("adb devices")  # this is done to make it connect (like __init__ )
 # Default is "127.0.0.1" and 5037
 _client = AdbClient(host="127.0.0.1", port=5037)
 devs = _client.devices()
@@ -30,6 +30,14 @@ def adb_get_size():
     w, h = im.size
     im.close()
     return w, h
+
+
+def adb_screen():
+    """
+    Executes a screen and saved it in current folder as 'screen.png'
+    :return:
+    """
+    os.system("adb exec-out screencap -p > screen.png")
 
 
 def adb_screen_getpixels():

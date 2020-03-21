@@ -26,6 +26,14 @@ def adb_get_size():
     return w, h
 
 
+def adb_screen():
+    """
+    Executes a screen and saved it in current folder as 'screen.png'
+    :return:
+    """
+    os.system("adb exec-out screencap -p > screen.png")
+
+
 def adb_screen_getpixels():
     os.system("adb exec-out screencap -p > screen.png")
     pixval = None
