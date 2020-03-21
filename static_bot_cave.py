@@ -1,5 +1,6 @@
 import time
-from adb_connector import *
+from pure_adb_connector import *
+#from adb_connector import *
 from game_screen_connector import GameScreenConnector
 
 playtime = 70
@@ -175,7 +176,7 @@ def heal_lvl():
     wait(1.2)
     tap('spin_wheel_back')
     wait(.9)
-    swipe('n', .9)
+    swipe('n', .8)
     wait(1.2)
     tap('spin_wheel_back')
     wait(1.2)

@@ -1,35 +1,41 @@
+from ppadb.client import Client as AdbClient
 import os
 from PIL import Image
 import numpy as np
+import io
 
 """
-Pay attention:
-This script uses os.system and os.popen to run commands through a shell. Try use pure adb connector.
+This is the library
+https://pypi.org/project/pure-python-adb/
 """
+
+print("Initializing ppadb library")
+os.system("adb devices")#this is done to make it connect (like __init__ )
+# Default is "127.0.0.1" and 5037
+_client = AdbClient(host="127.0.0.1", port=5037)
+devs = _client.devices()
+if len(devs) < 1:
+    print("No devices running.")
+    exit(1)
+my_device = _client.device(devs[0].get_serial_no())
 
 
 def get_device_id():
-    try:
-        device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
-        device = None if device == '' else device
-        return device
-    except:
-        return None
+    return my_device.get_serial_no()
 
 
 def adb_get_size():
-    os.system("adb exec-out screencap -p > test_size.png")
-    im = Image.open("test_size.png", 'r')
+    bytes_screen = my_device.screencap()
+    im = Image.open(io.BytesIO(bytes_screen))
     w, h = im.size
     im.close()
-    os.remove("test_size.png")
     return w, h
 
 
 def adb_screen_getpixels():
-    os.system("adb exec-out screencap -p > screen.png")
+    bytes_screen = my_device.screencap()
     pixval = None
-    with Image.open("screen.png", 'r') as im:
+    with Image.open(io.BytesIO(bytes_screen)) as im:
         pixval = np.array(im.getdata())
     return pixval
 
@@ -45,7 +51,7 @@ def adb_swipe(locations, s):
     s = int(s * 1000)
     x1, y1, x2, y2 = locations[0], locations[1], locations[2], locations[3]
     print("Swiping from (%d, %d) --> (%d, %d) in %d" % (int(x1), int(y1), int(x2), int(y2), s))
-    os.system("adb shell input swipe %d %d %d %d %d" % (int(x1), int(y1), int(x2), int(y2), s))
+    my_device.input_swipe(int(x1), int(y1), int(x2), int(y2), s)
 
 
 def adb_tap(coord):
@@ -57,7 +63,7 @@ def adb_tap(coord):
     """
     x, y = coord[0], coord[1]
     print("Tapping on (%d, %d)" % (int(x), int(y)))
-    os.system("adb shell input tap %d %d" % (int(x), int(y)))
+    my_device.input_tap(int(x), int(y))
 
 
 keycodes = {
@@ -152,4 +158,4 @@ keycodes = {
 def adb_tap_key(keycode: str):
     # global keycodes
     if keycode in keycodes:
-        os.system("adb shell input keyevent %d" % keycodes[keycode])
+        my_device.input_keyevent(keycodes[keycode])
