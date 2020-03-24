@@ -114,11 +114,17 @@ def wait(s):
 
 def exit_dungeon_uncentered():
     upper_line = screen_connector.getLineUpper()
+    print("Going trough door to exit...")
     swipe('n', 2)
+    wait(2)
     if not screen_connector.checkUpperLineHasChanged(upper_line):
+        print("Not exiting, trying right...")
         swipe('ne', 3)
+        wait(2)
         if not screen_connector.checkUpperLineHasChanged(upper_line):
+            print("Not exiting, trying left...")
             swipe('nw', 4)
+            wait(2)
             if not screen_connector.checkUpperLineHasChanged(upper_line):
                 raise Exception('unable_exit_dungeon')
 
