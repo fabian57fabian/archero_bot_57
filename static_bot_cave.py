@@ -113,15 +113,13 @@ def wait(s):
 
 
 def exit_dungeon_uncentered():
-    experience_bar_line = screen_connector.getLineExpBar()
+    upper_line = screen_connector.getLineUpper()
     swipe('n', 2)
-    if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+    if not screen_connector.checkUpperLineHasChanged(upper_line):
         swipe('ne', 3)
-        screen_connector.checkExpBarHasChanged(experience_bar_line)
-        if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+        if not screen_connector.checkUpperLineHasChanged(upper_line):
             swipe('nw', 4)
-            screen_connector.checkExpBarHasChanged(experience_bar_line)
-            if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+            if not screen_connector.checkUpperLineHasChanged(upper_line):
                 raise Exception('unable_exit_dungeon')
 
 

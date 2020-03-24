@@ -8,23 +8,24 @@ class GameScreenConnector:
         self.height = height
         # This should be in format rgba
         self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
-                         self.repeat_as_list([48, 98, 199, 255], 3)]
+                         self._repeat_as_list([48, 98, 199, 255], 3)]
         self.equip_data = [[[855 / 1080, 1576 / 2220]],
-                           self.repeat_as_list([231, 191, 105, 255], 1)]
+                           self._repeat_as_list([231, 191, 105, 255], 1)]
         self.low_enegy_data = [[[370 / 1080, 60 / 2220]],
-                               self.repeat_as_list([53, 199, 41, 255], 1)]
+                               self._repeat_as_list([53, 199, 41, 255], 1)]
         self.lvl_up_data = [[[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220]],
-                            self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+                            self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
         self.fortune_wheel_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                   self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+                                   self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
         self.devil_question_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self.repeat_as_list([243, 38, 81, 255], 2)]  # Red
+                                    self._repeat_as_list([243, 38, 81, 255], 2)]  # Red
         self.mistery_vendor_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self.repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+                                    self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
         # Line coordinates: x1,y1,x2,y2
         self.lineHorExpBarCoordinates = [180 / 1080, 170 / 2220, 890 / 1080, 170 / 2220]
+        self.lineHorUpCoordinates = [180 / 1080, 2 / 2220, 890 / 1080, 2 / 2220]
 
-    def repeat_as_list(self, data, times=1):
+    def _repeat_as_list(self, data, times=1):
         new_arr = []
         for i in range(times):
             new_arr.append(data)
@@ -44,7 +45,7 @@ class GameScreenConnector:
             attr_data.append(frame[int(y * self.width + x)])
         return attr_data
 
-    def check_screen_points_equal(self, frame, points_list, points_value):
+    def _check_screen_points_equal(self, frame, points_list, points_value):
         """
         Gets 2 lists of x,y coordinates where to get values and list of values to comapre.
         Returns true if current frame have those values
@@ -68,7 +69,7 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame()
-        return self.check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
+        return self._check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
 
     def getFrame(self):
         return adb_screen_getpixels()
@@ -80,7 +81,7 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame()
-        return self.check_screen_points_equal(frame, self.low_enegy_data[0], self.low_enegy_data[1])
+        return self._check_screen_points_equal(frame, self.low_enegy_data[0], self.low_enegy_data[1])
 
     def onEquipMenu(self, frame=None):
         """
@@ -88,7 +89,7 @@ class GameScreenConnector:
         :return:
         """
         frame = self.getFrame()
-        return self.check_screen_points_equal(frame, self.equip_data[0], self.equip_data[1])
+        return self._check_screen_points_equal(frame, self.equip_data[0], self.equip_data[1])
 
     def checkLevelEnded(self, frame=None):
         """
@@ -97,13 +98,13 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame()
-        lvl_up = self.check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
-        fortune_wheel = self.check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
-        devil_question = self.check_screen_points_equal(frame, self.devil_question_data[0], self.devil_question_data[1])
-        mistery_vendor = self.check_screen_points_equal(frame, self.mistery_vendor_data[0], self.mistery_vendor_data[1])
+        lvl_up = self._check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
+        fortune_wheel = self._check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
+        devil_question = self._check_screen_points_equal(frame, self.devil_question_data[0], self.devil_question_data[1])
+        mistery_vendor = self._check_screen_points_equal(frame, self.mistery_vendor_data[0], self.mistery_vendor_data[1])
         return lvl_up or fortune_wheel or devil_question or mistery_vendor
 
-    def getHorLine(self, hor_line, frame):
+    def _getHorLine(self, hor_line, frame):
         """
         Returns a horizontal line (list of colors) given hor_line [x1, y1, x2, y2] coordinates. If no frame given, it takes a screen.
         :param hor_line:
@@ -123,16 +124,17 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        return self.getHorLine(self.lineHorExpBarCoordinates, frame)
+        return self._getHorLine(self.lineHorExpBarCoordinates, frame)
 
-    def checkExpBarHasChanged(self, old_line_hor_bar, frame=None):
+    def getLineUpper(self, frame=None):
         """
-        Checks if old experience bar line is different that this one. If no frame given, it takes a screen.
-        :param old_line_hor_bar:
+        Returns the colors of Experience bar as a line. If no frame given, it takes a screen.
         :param frame:
         :return:
         """
-        current_exp_bar = self.getLineExpBar(frame)
+        return self._getHorLine(self.lineHorUpCoordinates, frame)
+
+    def _checkBarHasChanged(self, old_line_hor_bar, current_exp_bar):
         if len(old_line_hor_bar) != len(current_exp_bar):
             min_len = min(len(old_line_hor_bar), len(current_exp_bar))
             old_line_hor_bar = old_line_hor_bar[:min_len]
@@ -143,3 +145,21 @@ class GameScreenConnector:
                 changed = True
                 break
         return changed
+
+    def checkExpBarHasChanged(self, old_line_hor_bar, frame=None):
+        """
+        Checks if old experience bar line is different that this one. If no frame given, it takes a screen.
+        :param old_line_hor_bar:
+        :param frame:
+        :return:
+        """
+        return self._checkBarHasChanged(old_line_hor_bar, self.getLineExpBar(frame))
+
+    def checkUpperLineHasChanged(self, old_line, frame=None):
+        """
+        Checks if old upper line is different that this one. If no frame given, it takes a screen.
+        :param old_line:
+        :param frame:
+        :return:
+        """
+        return self._checkBarHasChanged(old_line, self.getLineUpper(frame))
