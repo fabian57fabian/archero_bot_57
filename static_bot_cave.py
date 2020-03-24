@@ -150,7 +150,8 @@ def goTroughDungeon():
     swipe('n', 2)
 
 
-def letPlay(_time=playtime):
+def letPlay(_time=playtime, is_boss=False):
+    check_exp_bar = not is_boss
     print("Auto attacking")
     experience_bar_line = screen_connector.getLineExpBar()
     for i in range(_time, 0, -1):
@@ -167,7 +168,7 @@ def letPlay(_time=playtime):
                 print("Just leveled up!")
                 wait(1)
                 return
-            elif screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
+            elif check_exp_bar and screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
                 print("Experience gained!")
                 wait(3)
                 return
@@ -207,7 +208,7 @@ def boss_lvl():
     swipe('n', 2)
     swipe('n', 1.5)
     swipe('n', 1)
-    letPlay()
+    letPlay(is_boss=True)
     tap('lucky_wheel_start')
     wait(6)
     tap('spin_wheel_back')

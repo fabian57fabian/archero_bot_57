@@ -21,8 +21,9 @@ class GameScreenConnector:
                                     self._repeat_as_list([243, 38, 81, 255], 2)]  # Red
         self.mistery_vendor_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
                                     self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+        self.yellow_experience = [255, 170, 16, 255]
         # Line coordinates: x1,y1,x2,y2
-        self.lineHorExpBarCoordinates = [180 / 1080, 170 / 2220, 890 / 1080, 170 / 2220]
+        self.lineHorExpBarCoordinates = [160 / 1080, 180 / 2220, 930 / 1080, 180 / 2220]
         self.lineHorUpCoordinates = [180 / 1080, 2 / 2220, 890 / 1080, 2 / 2220]
 
     def _repeat_as_list(self, data, times=1):
@@ -111,12 +112,13 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        x1, y1, x2, y2 = hor_line  # Those are normalized attributes in [0,1]
+        x1, y1, x2, y2 = hor_line[0] * self.width, hor_line[1] * self.height, hor_line[2] * self.width, hor_line[3] * self.height
         if frame is None:
             frame = self.getFrame()
-        start = int(round((y1 * self.height) * self.width, 0))
-        size = int((round(x2 * self.width, 0) - round(x1 * self.width, 0)))
-        return frame[start:start + size]
+        start = int(y1 * self.width + x1)
+        size = int(x2 - x1)
+        line= frame[start:start + size]
+        return line
 
     def getLineExpBar(self, frame=None):
         """
@@ -124,7 +126,14 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        return self._getHorLine(self.lineHorExpBarCoordinates, frame)
+        line = self._getHorLine(self.lineHorExpBarCoordinates, frame)
+        masked_yellow = []
+        for px in line:
+            if self.pixel_equals(px, self.yellow_experience, 3):
+                masked_yellow.append(px)
+            else:
+                masked_yellow.append([0, 0, 0, 0])
+        return masked_yellow
 
     def getLineUpper(self, frame=None):
         """
@@ -153,7 +162,8 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        return self._checkBarHasChanged(old_line_hor_bar, self.getLineExpBar(frame))
+        new_line = self.getLineExpBar(frame)
+        return self._checkBarHasChanged(old_line_hor_bar, new_line)
 
     def checkUpperLineHasChanged(self, old_line, frame=None):
         """
@@ -162,4 +172,5 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        return self._checkBarHasChanged(old_line, self.getLineUpper(frame))
+        new_line = self.getLineUpper(frame)
+        return self._checkBarHasChanged(old_line, new_line)
