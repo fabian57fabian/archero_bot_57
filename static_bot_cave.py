@@ -140,9 +140,10 @@ def goTroughDungeon():
 
 
 def letPlay(_time=playtime):
-    print("Letting player play")
+    print("Auto attacking")
     for i in range(_time, 0, -1):
         if i % 10 == 0:
+            print("Checking screen...")
             if screen_connector.checkEndFrame():
                 print("Game ended")
                 wait(5)
