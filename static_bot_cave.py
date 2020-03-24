@@ -2,20 +2,9 @@ import time
 from pure_adb_connector import *
 # from adb_connector import *
 from game_screen_connector import GameScreenConnector
-
-playtime = 70
-start_lvl = 0
 import sys
 
-if len(sys.argv) > 0:
-    try:
-        start_lvl = int(sys.argv[0])
-        if start_lvl < 0 or start_lvl > 20:
-            print("Given starting level '%s' is not a valid start level in [0,20]. Starting from zero")
-            start_lvl = 0
-    except:
-        print("Given starting level '%s' is not a valid start level. Starting from zero")
-        start_lvl = 0
+playtime = 70
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
@@ -320,12 +309,28 @@ def chooseCave():
     wait(3)
 
 
+def get_start_lvl_from_args():
+    start_lvl = 0
+    if len(sys.argv) > 0:
+        try:
+            arg =sys.argv[1]
+            start_lvl = int(arg)
+            if start_lvl < 0 or start_lvl > 20:
+                print("Given starting level '%s' is not a valid start level in [0,20]. Starting from zero" % arg)
+                start_lvl = 0
+        except:
+            print("Given starting level '%s' is not a valid start level. Starting from zero" % arg)
+            start_lvl = 0
+    return start_lvl
+
+
 def quick_test_functions():
     pass
 
 
 def main():
-    global buttons, x, y, movements, attributes, width, heigth, start_lvl
+    global buttons, x, y, movements, attributes, width, heigth
+    start_lvl = get_start_lvl_from_args()
     x, y, movements = getCoordinates()
     buttons = getGeneratedData()
     # Not used general attributes
@@ -336,13 +341,13 @@ def main():
     # Here attributes are not normalized but direct pixel values depending on width, height
     quick_test_functions()
     while True:
-        if UseManualStart:
-            a = input("Press enter to start a game (your energy bar must be at least 5)")
-        else:
-            while (not SkipEnergyCheck) and not screen_connector.have_energy():
-                print("No energy, waiting for one minute")
-                wait(60)
         if start_lvl == 0:
+            if UseManualStart:
+                a = input("Press enter to start a game (your energy bar must be at least 5)")
+            else:
+                while (not SkipEnergyCheck) and not screen_connector.have_energy():
+                    print("No energy, waiting for one minute")
+                    wait(60)
             chooseCave()
         try:
             play_cave(start_lvl)
