@@ -1,13 +1,31 @@
 # Archero Bot 57
 This is an archero bot that works on a mobile smartphone connected with usb cable.
 
-## Installation
-On linux :
+## Installation on Linux
+Follow these steps:
 - Install __adb__, package using `$ apt install adb`
 - Install __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__ packages using `$ pip install Pillow matplotlib numpy pure-python-adb`
 - Install __pyqt5__ using `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
 - Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
 - Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
+
+## Installation on Windows
+Follow these steps:
+- Install latest __python__ from [here](https://www.python.org/downloads/). When installing, make sure to select "Add to PATH" in first page of installation wizard
+- Install __Android Debug Bridge__:
+  - Download adb package from [here](https://www.androidworld.it/2017/01/07/adb-fastboot-download-windows-mac-linux-450541/)
+  - Extract the compressed file (Left click -> Extract Here)
+  - Rename the extracted folder to 'adb'
+  - Copy 'adb' folder into 'C:'
+  - Go to Control Panel -> System -> Advanced system settings -> Environment Variables
+  - Under "System variables" list, find 'Path', click on it and then click on 'Edit...' button below
+  - Click 'New' and in the created TextBox write 'C:\adb'
+  - Click 'OK' and then exit
+- Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter (one by one):
+  - pip install Pillow matplotlib numpy pure-python-adb pyqt5
+
+## Adb not working
+If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
 
 ### Disable Blue auto lock screen
 When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
