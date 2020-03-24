@@ -21,9 +21,11 @@ Follow these steps:
   - Under "System variables" list, find 'Path', click on it and then click on 'Edit...' button below
   - Click 'New' and in the created TextBox write 'C:\adb'
   - Click 'OK' and then exit
-- Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter (one by one):
-  - pip install Pillow matplotlib numpy pure-python-adb pyqt5
-Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
+- Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter:
+  
+  `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
+  
+- Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
 
 ## Adb not working
 If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
