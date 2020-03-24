@@ -32,7 +32,7 @@ class GameScreenConnector:
             new_arr.append(data)
         return new_arr
 
-    def pixel_equals(self, px_readed, px_expected, around=0):
+    def pixel_equals(self, px_readed, px_expected, around=5):
         # checking only RGB from RGBA
         return px_expected[0] - around <= px_readed[0] <= px_expected[0] + around \
                and px_expected[1] - around <= px_readed[1] <= px_expected[1] + around \
