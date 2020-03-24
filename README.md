@@ -41,6 +41,8 @@ Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilep
 ## Usage
 Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGeneratedData variable to True in next scripts if automatic energy level detection does not work.
 
+Remember to __disable notifications__ or __activate Do Not Disturb mode__.
+
 ### Slow and high loot
 Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py'):
 ```console
