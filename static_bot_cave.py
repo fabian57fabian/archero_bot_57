@@ -9,6 +9,8 @@ playtime = 70
 UseGeneratedData = False
 # Set this to true if keep receiving "No energy, wqiting for one minute"
 UseManualStart = False
+# Set this to true if want to automatically check for energy
+SkipEnergyCheck = False
 data_pack = 'datas'
 buttons_corrdinates_filename = "data.py"
 buttons_corrdinates_default_filename = "default_dict.py"
@@ -291,7 +293,7 @@ def main():
         if UseManualStart:
             a = input("Press enter to start a game (your energy bar must be at least 5)")
         else:
-            while not screen_connector.have_energy():
+            while (not SkipEnergyCheck) and not screen_connector.have_energy():
                 print("No energy, waiting for one minute")
                 wait(60)
         chooseCave()
