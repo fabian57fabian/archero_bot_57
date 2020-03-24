@@ -23,6 +23,7 @@ Follow these steps:
   - Click 'OK' and then exit
 - Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter (one by one):
   - pip install Pillow matplotlib numpy pure-python-adb pyqt5
+Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
 
 ## Adb not working
 If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
@@ -41,7 +42,7 @@ Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilep
 Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGeneratedData variable to True in next scripts if automatic energy level detection does not work.
 
 ### Slow and high loot
-Set dungeon to **The Cave** (number 6) and run the executable:
+Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py'):
 ```console
 $ python static_bot_cave.py
 ```
@@ -49,7 +50,7 @@ This will check your energy. If 5 or above, then starts a game and plays until h
 Once it ends, he goes to main menu and checks another time if it has energy.
 
 ### Fast and low loot
-Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script:
+Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script (for windows double-click on 'static_bot_cave.py'):
 ```console
 $ python static_bot_ruined_lands.py
 ```
@@ -60,12 +61,12 @@ Then goes back to main level and repeats until no energy left.
 If the program is clicking in wrong places, then use [TouchManager](TouchManager.py) script.
 Create a folder with all your screenshots.
 Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc856576cb986093dd3b352cb54c774df84/checkCoordinates.py#L46) to screenshots path.
-launch TouchManager script and use the interface.
+launch TouchManager script and use the interface (for windows double-click on 'checkCoordinates.py.').
 Current version: basic_usage.
 
-To execute archero bot by interface, use [GameController](GameController.py.py) script.
-Just launch it with python and start using it.
-Current version: not_ended.
+To execute archero bot by interface, use [GameController](GameController.py) script.
+Just launch it with python and start using it (for windows double-click on 'GameController.py.').
+Current version: not_working.
 
 ## Compatibility
 This software works with following devices:
