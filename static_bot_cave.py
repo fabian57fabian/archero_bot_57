@@ -112,6 +112,19 @@ def wait(s):
     time.sleep(s)
 
 
+def exit_dungeon_uncentered():
+    experience_bar_line = screen_connector.getLineExpBar()
+    swipe('n', 2)
+    if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+        swipe('ne', 3)
+        screen_connector.checkExpBarHasChanged(experience_bar_line)
+        if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+            swipe('nw', 4)
+            screen_connector.checkExpBarHasChanged(experience_bar_line)
+            if not screen_connector.checkExpBarHasChanged(experience_bar_line):
+                raise Exception('unable_exit_dungeon')
+
+
 def goTroughDungeon_old():
     print("Going through dungeon")
     swipe('n', 1.5)
@@ -156,7 +169,7 @@ def letPlay(_time=playtime):
                 print("Just leveled up!")
                 wait(1)
                 return
-            elif screen_connector.checkExpBarIsDifferent(experience_bar_line, frame):
+            elif screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
                 print("Experience gained!")
                 wait(3)
                 return
@@ -175,7 +188,7 @@ def normal_lvl():
     wait(1)
     tap('spin_wheel_back')  # guard not to click on watch or buy stuff (armor or others)
     wait(2)
-    swipe('n', 2)
+    exit_dungeon_uncentered()
 
 
 def heal_lvl():
@@ -189,7 +202,7 @@ def heal_lvl():
     wait(1.2)
     tap('spin_wheel_back')
     wait(1.2)
-    swipe('n', 1.2)
+    exit_dungeon_uncentered()
 
 
 def boss_lvl():
@@ -208,7 +221,7 @@ def boss_lvl():
     wait(1.5)
     tap('ability_left')  # Extra guard for level up
     wait(1.5)
-    swipe('n', 1)
+    exit_dungeon_uncentered()
 
 
 def intro_lvl():
@@ -314,6 +327,9 @@ def main():
         except Exception as exc:
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
+            elif exc.args[0] == 'unable_exit_dungeon':
+                print("Unable to exit a room in a dungeon. Waiting instead of causing troubles")
+                exit(1)
             else:
                 print("Got an unknown exception: %s" % exc)
                 exit(1)
