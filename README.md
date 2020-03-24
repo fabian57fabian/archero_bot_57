@@ -49,6 +49,10 @@ $ python static_bot_cave.py
 This will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 18 levels.
 Once it ends, he goes to main menu and checks another time if it has energy.
 
+This program is not perfect. Sometimes it will miss 'Taking the door on level end'. If it does that (once every 5-6 games) then close the program, manually end the game, return to main menu and restart the game.
+
+Even if it will fail, no harm will be done (it will not exit and click randomply on your phone).
+
 ### Fast and low loot
 Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script (for windows double-click on 'static_bot_cave.py'):
 ```console
