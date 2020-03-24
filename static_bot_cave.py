@@ -4,6 +4,18 @@ from pure_adb_connector import *
 from game_screen_connector import GameScreenConnector
 
 playtime = 70
+start_lvl = 0
+import sys
+
+if len(sys.argv) > 0:
+    try:
+        start_lvl = int(sys.argv[0])
+        if start_lvl < 0 or start_lvl > 20:
+            print("Given starting level '%s' is not a valid start level in [0,20]. Starting from zero")
+            start_lvl = 0
+    except:
+        print("Given starting level '%s' is not a valid start level. Starting from zero")
+        start_lvl = 0
 
 # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
 UseGeneratedData = False
@@ -330,9 +342,10 @@ def main():
             while (not SkipEnergyCheck) and not screen_connector.have_energy():
                 print("No energy, waiting for one minute")
                 wait(60)
-        chooseCave()
+        if start_lvl == 0:
+            chooseCave()
         try:
-            play_cave()
+            play_cave(start_lvl)
         except Exception as exc:
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
@@ -342,6 +355,7 @@ def main():
             else:
                 print("Got an unknown exception: %s" % exc)
                 exit(1)
+        start_lvl = 0
 
 
 def import_method(folder, file, name):
