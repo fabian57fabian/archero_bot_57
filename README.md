@@ -2,10 +2,10 @@
 This is an archero bot that works on a mobile smartphone connected with usb cable.
 
 ## Installation on Linux
-Follow these steps:
-- Install __adb__, package using `$ apt install adb`
-- Install __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__ packages using `$ pip install Pillow matplotlib numpy pure-python-adb`
-- Install __pyqt5__ using `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
+Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__, __pyqt5__:
+- `$ apt install adb`
+- `$ pip install Pillow matplotlib numpy pure-python-adb`
+- `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
 - Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
 - Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
 
