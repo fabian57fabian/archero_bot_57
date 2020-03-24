@@ -28,9 +28,11 @@ class GameScreenConnector:
             new_arr.append(data)
         return new_arr
 
-    def pixel_equals(self, px1, px2):
+    def pixel_equals(self, px_readed, px_expected, around=0):
         # checking only RGB from RGBA
-        return px1[0] == px2[0] and px1[1] == px2[1] and px1[2] == px2[2]
+        return px_expected[0]-around <= px_readed[0] <= px_expected[0]+around \
+               and px_expected[1]-around <= px_readed[1] <= px_expected[1]+around \
+               and px_expected[2]-around <= px_readed[2] <= px_expected[2]+around
 
     def getFrameAttr(self, frame, attributes):
         attr_data = []
@@ -53,7 +55,7 @@ class GameScreenConnector:
             return False
         attr_data = self.getFrameAttr(frame, points_list)
         for i in range(len(attr_data)):
-            if not self.pixel_equals(attr_data[i], points_value[i]):
+            if not self.pixel_equals(attr_data[i], points_value[i], around=2):
                 return False
         return True
 
