@@ -44,10 +44,11 @@ Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGenerat
 Remember to __disable notifications__ or __activate Do Not Disturb mode__.
 
 ### Slow and high loot
-Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py'):
+Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py' or open a CMD and write following line without '$'):
 ```console
 $ python static_bot_cave.py
 ```
+If you launch from terminal, it is possible to specify the starting level of first run (e.g. `python static_bot_cave.py 16`).
 This will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 18 levels.
 Once it ends, he goes to main menu and checks another time if it has energy.
 
@@ -56,7 +57,7 @@ This program is not perfect. Sometimes it will miss 'Taking the door on level en
 Even if it will fail, no harm will be done (it will not exit and click randomply on your phone).
 
 ### Fast and low loot
-Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script (for windows double-click on 'static_bot_cave.py'):
+Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script (for windows double-click on 'static_bot_cave.py' or open a CMD and write following line without '$'):
 ```console
 $ python static_bot_ruined_lands.py
 ```

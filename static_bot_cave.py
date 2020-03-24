@@ -325,7 +325,7 @@ def quick_test_functions():
 
 
 def main():
-    global buttons, x, y, movements, attributes, width, heigth
+    global buttons, x, y, movements, attributes, width, heigth, start_lvl
     x, y, movements = getCoordinates()
     buttons = getGeneratedData()
     # Not used general attributes
