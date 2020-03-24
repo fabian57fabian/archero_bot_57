@@ -269,8 +269,8 @@ def boss_final():
     tap('start')
     wait(2)
     swipe('n', 5)
-    wait(.5)
-    tap('start')  # this is to wxit
+    wait(5)
+    tap('close_end')  # this is to wxit
 
 
 def chooseCave():
