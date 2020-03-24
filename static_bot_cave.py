@@ -284,10 +284,14 @@ def play_cave(startlvl=0):
 
 
 def boss_final():
+    wait(2)
+    swipe('w', 3)
     wait(50)
     tap('start')
     wait(2)
     swipe('n', 5)
+    wait(.5)
+    swipe('ne', 3)
     wait(5)
     tap('close_end')  # this is to wxit
 
