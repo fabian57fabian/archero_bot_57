@@ -1,6 +1,6 @@
 import time
 from pure_adb_connector import *
-#from adb_connector import *
+# from adb_connector import *
 from game_screen_connector import GameScreenConnector
 
 playtime = 70
@@ -141,18 +141,24 @@ def goTroughDungeon():
 
 def letPlay(_time=playtime):
     print("Auto attacking")
+    experience_bar_line = screen_connector.getLineExpBar()
     for i in range(_time, 0, -1):
         if i % 10 == 0:
             print("Checking screen...")
-            if screen_connector.checkEndFrame():
+            frame = screen_connector.getFrame()
+            if screen_connector.checkEndFrame(frame):
                 print("Game ended")
                 wait(5)
                 print("Going back to menu...")
                 tap('close_end')
                 raise Exception('ended')
-            elif screen_connector.checkLevelEnded():
+            elif screen_connector.checkLevelEnded(frame):
                 print("Just leveled up!")
                 wait(1)
+                return
+            elif screen_connector.checkExpBarIsDifferent(experience_bar_line, frame):
+                print("Experience gained!")
+                wait(3)
                 return
         print(i)
         wait(1)
@@ -280,6 +286,10 @@ def chooseCave():
     wait(3)
 
 
+def quick_test_functions():
+    pass
+
+
 def main():
     global buttons, x, y, movements, attributes, width, heigth
     x, y, movements = getCoordinates()
@@ -290,6 +300,7 @@ def main():
     #    a[0] *= width
     #    a[1] *= heigth
     # Here attributes are not normalized but direct pixel values depending on width, height
+    quick_test_functions()
     while True:
         if UseManualStart:
             a = input("Press enter to start a game (your energy bar must be at least 5)")
