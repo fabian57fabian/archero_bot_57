@@ -191,23 +191,24 @@ def normal_lvl():
     tap('spin_wheel_back')  # guard not to click on watch
     wait(3)
     tap('ability_left')
-    wait(1)
-    tap('spin_wheel_back')  # guard not to click on watch or buy stuff (armor or others)
     wait(2)
+    tap('spin_wheel_back')  # guard not to click on watch or buy stuff (armor or others)
+    wait(1)
     exit_dungeon_uncentered()
 
 
 def heal_lvl():
     swipe('n', 1.7)
+    wait(1)
     tap('ability_daemon_reject')
     tap('ability_left')
-    wait(1.2)
+    wait(1.5)
     tap('spin_wheel_back')
-    wait(.9)
+    wait(1)
     swipe('n', .8)
-    wait(1.2)
+    wait(1.5)
     tap('spin_wheel_back')
-    wait(1.2)
+    wait(1.5)
     exit_dungeon_uncentered()
 
 
