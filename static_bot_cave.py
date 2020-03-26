@@ -170,6 +170,7 @@ def letPlay(_time=playtime, is_boss=False):
                 wait(5)
                 print("Going back to menu...")
                 tap('close_end')
+                wait(4) # Wait to go to the menu
                 raise Exception('ended')
             elif screen_connector.checkLevelEnded(frame):
                 print("Just leveled up!")
