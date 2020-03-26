@@ -153,7 +153,7 @@ def goTroughDungeon():
     swipe('w', .325)
     swipe('w', .3)
     swipe('n', 1.6)
-    swipe('e', .3)
+    swipe('e', .28)
     swipe('n', 2)
 
 
