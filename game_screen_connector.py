@@ -117,7 +117,7 @@ class GameScreenConnector:
             frame = self.getFrame()
         start = int(y1 * self.width + x1)
         size = int(x2 - x1)
-        line= frame[start:start + size]
+        line = frame[start:start + size]
         return line
 
     def getLineExpBar(self, frame=None):
@@ -143,14 +143,14 @@ class GameScreenConnector:
         """
         return self._getHorLine(self.lineHorUpCoordinates, frame)
 
-    def _checkBarHasChanged(self, old_line_hor_bar, current_exp_bar):
+    def _checkBarHasChanged(self, old_line_hor_bar, current_exp_bar, around=0):
         if len(old_line_hor_bar) != len(current_exp_bar):
             min_len = min(len(old_line_hor_bar), len(current_exp_bar))
             old_line_hor_bar = old_line_hor_bar[:min_len]
             current_exp_bar = current_exp_bar[:min_len]
         changed = False
         for i in range(len(old_line_hor_bar)):
-            if not self.pixel_equals(old_line_hor_bar[i], current_exp_bar[i], around=2):
+            if not self.pixel_equals(old_line_hor_bar[i], current_exp_bar[i], around=around):
                 changed = True
                 break
         return changed
@@ -163,7 +163,7 @@ class GameScreenConnector:
         :return:
         """
         new_line = self.getLineExpBar(frame)
-        return self._checkBarHasChanged(old_line_hor_bar, new_line)
+        return self._checkBarHasChanged(old_line_hor_bar, new_line, around=2)
 
     def checkUpperLineHasChanged(self, old_line, frame=None):
         """
@@ -173,4 +173,4 @@ class GameScreenConnector:
         :return:
         """
         new_line = self.getLineUpper(frame)
-        return self._checkBarHasChanged(old_line, new_line)
+        return self._checkBarHasChanged(old_line, new_line, around=0)

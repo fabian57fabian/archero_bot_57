@@ -114,6 +114,7 @@ def wait(s):
 
 
 def exit_dungeon_uncentered():
+    wait(2)
     upper_line = screen_connector.getLineUpper()
     print("Going trough door to exit...")
     swipe('n', 2)
@@ -170,7 +171,7 @@ def letPlay(_time=playtime, is_boss=False):
                 wait(5)
                 print("Going back to menu...")
                 tap('close_end')
-                wait(4) # Wait to go to the menu
+                wait(4)  # Wait to go to the menu
                 raise Exception('ended')
             elif screen_connector.checkLevelEnded(frame):
                 print("Just leveled up!")
@@ -187,6 +188,8 @@ def letPlay(_time=playtime, is_boss=False):
 def normal_lvl():
     goTroughDungeon()
     letPlay()
+    tap('spin_wheel_back')  # guard not to click on mistery vendor
+    wait(1)
     tap('ability_left')
     wait(1)
     tap('spin_wheel_back')  # guard not to click on watch
@@ -313,9 +316,9 @@ def chooseCave():
 
 def get_start_lvl_from_args():
     start_lvl = 0
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         try:
-            arg =sys.argv[1]
+            arg = sys.argv[1]
             start_lvl = int(arg)
             if start_lvl < 0 or start_lvl > 20:
                 print("Given starting level is not a valid start level in [0,20]. Starting from zero")
