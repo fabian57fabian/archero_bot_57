@@ -7,9 +7,9 @@ class GameScreenConnector:
         self.width = width
         self.height = height
         # This should be in format rgba
-        self.end_data = [[[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
+        self.timer_end_data = [[[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
                          self._repeat_as_list([219, 217, 207, 255], 4)]
-        self.timer_end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+        self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
                                self._repeat_as_list([48, 98, 199, 255], 3)]
         self.equip_data = [[[855 / 1080, 1576 / 2220]],
                            self._repeat_as_list([231, 191, 105, 255], 1)]
