@@ -110,14 +110,14 @@ def swipe_points(start, stop, s):
 
 def swipe(name, s):
     coord = movements[name]
-    print("Swiping %s in %d" % (print_names_movements[name], s))
+    print("Swiping %s in %f" % (print_names_movements[name], s))
     # convert back from normalized values
     adb_swipe([coord[0] * width, coord[1] * heigth, coord[2] * width, coord[3] * heigth], s)
 
 
 def tap(name):
     # convert back from normalized values
-    x, y = int(buttons[name][0] * width), int(buttons[name][0] * heigth)
+    x, y = int(buttons[name][0] * width), int(buttons[name][1] * heigth)
     print("Tapping on %s at [%d, %d]" % (name, x, y))
     adb_tap((x, y))
 
@@ -176,29 +176,43 @@ def goTroughDungeon():
 
 def letPlay(_time=playtime, is_boss=False):
     check_exp_bar = not is_boss
+    wait(2)
     print("Auto attacking")
     experience_bar_line = screen_connector.getLineExpBar()
+    recheck = False
     for i in range(_time, 0, -1):
-        if i % 10 == 0:
+        if i % 10 == 0 or recheck:
+            recheck = False
             print("Checking screen...")
             frame = screen_connector.getFrame()
-            if screen_connector.checkEndFrame(frame) or screen_connector.checkEndTimerAskFrame(frame):
+            state = screen_connector.getFrameState(frame)
+            if state == "unknown":
+                print("Unknown screen situation detected. Checking again...")
                 wait(2)
+                if screen_connector.getFrameState() == "unknown":
+                    raise Exception('unknown_screen_state')
+                else:
+                    recheck = True
+                    continue
+            elif state == "in_game":
+                print("In game. Playing but level not ended")
+            elif state == "endgame" or state == "repeat_endgame_question":
+                if state == "repeat_endgame_question":
+                    wait(5)
                 print("Game ended")
-                wait(5)
+                wait(1)
                 print("Going back to menu...")
                 tap('close_end')
                 wait(8)  # Wait to go to the menu
                 raise Exception('ended')
-            elif screen_connector.checkLevelEnded(frame):
-                print("Just leveled up!")
+            elif state == "leveled_up" or state == "fortune_wheel" or state == "devil_question" or state == "mistery_vendor" or state == "ad_ask":
+                print("Level ended. Collecting results for leveling up.")
                 wait(1)
                 return
             elif check_exp_bar and screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
                 print("Experience gained!")
                 wait(3)
                 return
-        print(i)
         wait(1)
 
 
@@ -347,8 +361,7 @@ def get_start_lvl_from_args():
 
 
 def quick_test_functions():
-    a = screen_connector.checkEndFrame()
-    print(a)
+    pass
 
 
 def main():
@@ -368,7 +381,7 @@ def main():
             if UseManualStart:
                 a = input("Press enter to start a game (your energy bar must be at least 5)")
             else:
-                while (not SkipEnergyCheck) and not screen_connector.have_energy():
+                while (not SkipEnergyCheck) and not screen_connector.checkFrame("least_5_energy"):
                     print("No energy, waiting for one minute")
                     wait(60)
             chooseCave()
@@ -379,6 +392,9 @@ def main():
                 print("Game ended. Farmed a little bit...")
             elif exc.args[0] == 'unable_exit_dungeon':
                 print("Unable to exit a room in a dungeon. Waiting instead of causing troubles")
+                exit(1)
+            elif exc.args[0] == "unknown_screen_state":
+                print("Unknows screen state. Exiting instead of doing trouble")
                 exit(1)
             else:
                 print("Got an unknown exception: %s" % exc)

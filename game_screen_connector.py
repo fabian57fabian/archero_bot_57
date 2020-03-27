@@ -1,5 +1,6 @@
 import time
 from adb_connector import *
+import json
 
 
 class GameScreenConnector:
@@ -8,32 +9,48 @@ class GameScreenConnector:
         self.width = width
         self.height = height
         # This should be in format rgba
-        self.timer_end_data = [[[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
-                               self._repeat_as_list([219, 217, 207, 255], 4)]
-        self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
-                         self._repeat_as_list([48, 98, 199, 255], 3)]
-        self.equip_data = [[[855 / 1080, 1576 / 2220]],
-                           self._repeat_as_list([231, 191, 105, 255], 1)]
-        self.low_enegy_data = [[[370 / 1080, 60 / 2220]],
-                               self._repeat_as_list([53, 199, 41, 255], 1)]
-        self.lvl_up_data = [[[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220]],
-                            self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
-        self.fortune_wheel_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                   self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
-        self.devil_question_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self._repeat_as_list([243, 38, 81, 255], 2)]  # Red
-        self.mistery_vendor_data = [[[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                                    self._repeat_as_list([255, 181, 0, 255], 2)]  # Yellow
+        self.coords_path = "datas/static_coords.json"
+        static_write = ""  # "
+        self.static_coords = {
+            "in_game": {"coordinates": [[53 / 1080, 45 / 2220], [53 / 1080, 65 / 2220], [53 / 1080, 85 / 2220], [76 / 1080, 45 / 2220], [76 / 1080, 65 / 2220], [76 / 1080, 85 / 2220]],
+                        "values": [[255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
+            "repeat_endgame_question": {"coordinates": [[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
+                                        "values": [[219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255]]},
+            "endgame": {"coordinates": [[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+                        "values": [[48, 98, 199, 255], [48, 98, 199, 255], [48, 98, 199, 255]]},
+            "angel_heal": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220]],
+                           "values": [[0, 118, 255, 255], [0, 118, 255, 255]]},
+            "least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]],
+                               "values": [[53, 199, 41, 255]]},
+            "leveled_up": {"coordinates": [[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220], [1430 / 1080, 80 / 2220], [1430 / 1080, 338 / 2220], [1430 / 1080, 410 / 2220], [1430 / 1080, 670 / 2220], [1430 / 1080, 740 / 2220], [1430 / 1080, 998 / 2220]],
+                           "values": [[255, 181, 0, 255], [255, 181, 0, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255]]},
+            "fortune_wheel": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
+                              "values": [[255, 181, 0, 255], [255, 181, 0, 255]]},
+            "devil_question": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
+                               "values": [[243, 38, 81, 255], [243, 38, 81, 255]]},
+            "ad_ask": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [460 / 1080, 1647 / 2220], [480 / 1080, 1647 / 2220]],
+                       "values": [[255, 181, 0, 255], [255, 181, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
+            "mistery_vendor": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [57 / 1080, 2126 / 2220], [89 / 1080, 2126 / 2220], [57 / 1080, 2161 / 2220], [89 / 1080, 2161 / 2220]],
+                               "values": [[255, 181, 0, 255], [255, 181, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
+            "equip_question_ask": {"coordinates": [[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+                                   "values": [[48, 98, 199, 255], [48, 98, 199, 255], [48, 98, 199, 255]]}
+        }
+        self._saveStaticCoords()
+        # """
+        self.static_coords = {}
+        self._loadStaticCoords()
         self.yellow_experience = [255, 170, 16, 255]
         # Line coordinates: x1,y1,x2,y2
         self.lineHorExpBarCoordinates = [160 / 1080, 180 / 2220, 930 / 1080, 180 / 2220]
         self.lineHorUpCoordinates = [180 / 1080, 2 / 2220, 890 / 1080, 2 / 2220]
 
-    def _repeat_as_list(self, data, times=1):
-        new_arr = []
-        for i in range(times):
-            new_arr.append(data)
-        return new_arr
+    def _loadStaticCoords(self):
+        with open(self.coords_path, 'r') as json_file:
+            self.static_coords = json.load(json_file)
+
+    def _saveStaticCoords(self):
+        with open(self.coords_path, 'w') as json_file:
+            json.dump(self.static_coords, json_file)
 
     def pixel_equals(self, px_readed, px_expected, around=5):
         # checking only RGB from RGBA
@@ -72,67 +89,53 @@ class GameScreenConnector:
         if self.debug: print("-----------------------------------")
         return equal
 
-    def checkEndFrame(self, frame=None):
+    def checkFrame(self, coords_name: str, frame=None):
         """
-        Returns if we are on end frame
+        Given a coordinates name it checkes if the Frame has those pixels.
+        If no Frame given , it will take a screenshot.
         :return:
         """
-        if self.debug: print("Checking end_data")
+        if coords_name not in self.static_coords.keys():
+            print("No coordinates called %s is saved in memory! Returning false." % coords_name)
+            return False
+        if self.debug: print("Checking %s" % (coords_name))
         if frame is None:
             frame = self.getFrame()
-        is_end_frame = self._check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
-        return is_end_frame
-
-    def checkEndTimerAskFrame(self, frame=None):
-        """
-        Returns if we are on asking "Reborn? countdown..." frame
-        :return:
-        """
-        if self.debug: print("Checking timer_end_data")
-        if frame is None:
-            frame = self.getFrame()
-        is_timer_end_frame = self._check_screen_points_equal(frame, self.timer_end_data[0], self.timer_end_data[1])
-        return is_timer_end_frame
+        is_equal = self._check_screen_points_equal(frame, self.static_coords[coords_name]["coordinates"], self.static_coords[coords_name]["values"])
+        return is_equal
 
     def getFrame(self):
         return adb_screen_getpixels()
 
-    def have_energy(self, frame=None):
+    def getFrameStateComplete(self, frame=None) -> dict:
         """
-        Returns True if have 5 or more energy left. If no frame given, it takes a screen.
+        Computes a complete check on given frame (takes a screen if none passed.
+        Returns a dictionary with all known states with boolean value assigned.
         :return:
         """
-        if self.debug: print("Checking low_enegy_data")
+        result = {}
         if frame is None:
             frame = self.getFrame()
-        return self._check_screen_points_equal(frame, self.low_enegy_data[0], self.low_enegy_data[1])
+        for k, v in self.static_coords.items():
+            if self.debug: print("Checking %s" % (k))
+            result[k] = self._check_screen_points_equal(frame, v["coordinates"], v["values"])
+        return result
 
-    def onEquipMenu(self, frame=None):
+    def getFrameState(self, frame=None) -> str:
         """
-        Returns True if have 5 or more energy left. If no frame given, it takes a screen.
+        Computes a complete check on given frame (takes a screen if none passed.
+        Returns a string with the name of current state, or unknown if no state found.
         :return:
         """
-        if self.debug: print("Checking equip_data")
+        state = "unknown"
         if frame is None:
             frame = self.getFrame()
-        return self._check_screen_points_equal(frame, self.equip_data[0], self.equip_data[1])
-
-    def checkLevelEnded(self, frame=None):
-        """
-        Return True if level up screen reached. If no frame given, it takes a screen.
-        :return:
-        """
-        if frame is None:
-            frame = self.getFrame()
-        if self.debug: print("Checking lvl_up_data")
-        lvl_up = self._check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
-        if self.debug: print("Checking fortune_wheel_data")
-        fortune_wheel = self._check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
-        if self.debug: print("Checking devil_question_data")
-        devil_question = self._check_screen_points_equal(frame, self.devil_question_data[0], self.devil_question_data[1])
-        if self.debug: print("Checking mistery_vendor_data")
-        mistery_vendor = self._check_screen_points_equal(frame, self.mistery_vendor_data[0], self.mistery_vendor_data[1])
-        return lvl_up or fortune_wheel or devil_question or mistery_vendor
+        for k, v in self.static_coords.items():
+            if self.debug: print("Checking %s" % (k))
+            if self._check_screen_points_equal(frame, v["coordinates"], v["values"]):
+                state = k
+                break
+        return state
 
     def _getHorLine(self, hor_line, frame):
         """

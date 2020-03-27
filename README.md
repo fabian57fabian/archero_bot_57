@@ -73,6 +73,16 @@ Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc8
 launch TouchManager script and use the interface (for windows double-click on 'checkCoordinates.py.').
 Current version: basic_usage.
 
+## Static coordinates check
+
+The bot takes screenshots over time and detecting what is currently on the screen is a requested operation before starting the bot.
+With this said you have to execute **check_static_coordinates.py** and checking that each row starts with **OK**.
+
+If some **NO_DETECTION** are found, don't start the bot.
+Other **MULTIPLE_DETECTIONS** are allowed.
+
+## Game controller (not currently working)
+
 To execute archero bot by interface, use [GameController](GameController.py) script.
 Just launch it with python and start using it (for windows double-click on 'GameController.py.').
 Current version: not_working.
