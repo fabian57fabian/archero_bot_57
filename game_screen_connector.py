@@ -4,13 +4,14 @@ from adb_connector import *
 
 class GameScreenConnector:
     def __init__(self, width, height):
+        self.debug = True
         self.width = width
         self.height = height
         # This should be in format rgba
         self.timer_end_data = [[[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
-                         self._repeat_as_list([219, 217, 207, 255], 4)]
+                               self._repeat_as_list([219, 217, 207, 255], 4)]
         self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
-                               self._repeat_as_list([48, 98, 199, 255], 3)]
+                         self._repeat_as_list([48, 98, 199, 255], 3)]
         self.equip_data = [[[855 / 1080, 1576 / 2220]],
                            self._repeat_as_list([231, 191, 105, 255], 1)]
         self.low_enegy_data = [[[370 / 1080, 60 / 2220]],
@@ -59,17 +60,24 @@ class GameScreenConnector:
         if len(points_list) != len(points_value):
             print("Wrong size between points and values!")
             return False
+        if self.debug: print("-----------------------------------")
+        if self.debug: print("|   Smartphone   |     Values     |")
         attr_data = self.getFrameAttr(frame, points_list)
+        equal = True
         for i in range(len(attr_data)):
+            if self.debug: print("| %4d %4d %4d | %4d %4d %4d |" % (attr_data[i][0], attr_data[i][1], attr_data[i][2], points_value[i][0], points_value[i][1], points_value[i][2]))
             if not self.pixel_equals(attr_data[i], points_value[i], around=2):
-                return False
-        return True
+                equal = False
+        if self.debug: print("|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
+        if self.debug: print("-----------------------------------")
+        return equal
 
     def checkEndFrame(self, frame=None):
         """
         Returns if we are on end frame
         :return:
         """
+        if self.debug: print("Checking end_data")
         if frame is None:
             frame = self.getFrame()
         is_end_frame = self._check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
@@ -80,6 +88,7 @@ class GameScreenConnector:
         Returns if we are on asking "Reborn? countdown..." frame
         :return:
         """
+        if self.debug: print("Checking timer_end_data")
         if frame is None:
             frame = self.getFrame()
         is_timer_end_frame = self._check_screen_points_equal(frame, self.timer_end_data[0], self.timer_end_data[1])
@@ -93,6 +102,7 @@ class GameScreenConnector:
         Returns True if have 5 or more energy left. If no frame given, it takes a screen.
         :return:
         """
+        if self.debug: print("Checking low_enegy_data")
         if frame is None:
             frame = self.getFrame()
         return self._check_screen_points_equal(frame, self.low_enegy_data[0], self.low_enegy_data[1])
@@ -102,7 +112,9 @@ class GameScreenConnector:
         Returns True if have 5 or more energy left. If no frame given, it takes a screen.
         :return:
         """
-        frame = self.getFrame()
+        if self.debug: print("Checking equip_data")
+        if frame is None:
+            frame = self.getFrame()
         return self._check_screen_points_equal(frame, self.equip_data[0], self.equip_data[1])
 
     def checkLevelEnded(self, frame=None):
@@ -112,9 +124,13 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame()
+        if self.debug: print("Checking lvl_up_data")
         lvl_up = self._check_screen_points_equal(frame, self.lvl_up_data[0], self.lvl_up_data[1])
+        if self.debug: print("Checking fortune_wheel_data")
         fortune_wheel = self._check_screen_points_equal(frame, self.fortune_wheel_data[0], self.fortune_wheel_data[1])
+        if self.debug: print("Checking devil_question_data")
         devil_question = self._check_screen_points_equal(frame, self.devil_question_data[0], self.devil_question_data[1])
+        if self.debug: print("Checking mistery_vendor_data")
         mistery_vendor = self._check_screen_points_equal(frame, self.mistery_vendor_data[0], self.mistery_vendor_data[1])
         return lvl_up or fortune_wheel or devil_question or mistery_vendor
 
@@ -175,6 +191,7 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
+        if self.debug: print("Checking LineExpBar has changed")
         new_line = self.getLineExpBar(frame)
         return self._checkBarHasChanged(old_line_hor_bar, new_line, around=2)
 
@@ -185,5 +202,6 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
+        if self.debug: print("Checking LineUpper has changed")
         new_line = self.getLineUpper(frame)
         return self._checkBarHasChanged(old_line, new_line, around=0)

@@ -117,14 +117,17 @@ def exit_dungeon_uncentered():
     wait(2)
     upper_line = screen_connector.getLineUpper()
     print("Going trough door to exit...")
+    wait(1)
     swipe('n', 2)
     wait(2)
     if not screen_connector.checkUpperLineHasChanged(upper_line):
         print("Not exiting, trying right...")
+        wait(1)
         swipe('ne', 3)
         wait(2)
         if not screen_connector.checkUpperLineHasChanged(upper_line):
             print("Not exiting, trying left...")
+            wait(1)
             swipe('nw', 4)
             wait(2)
             if not screen_connector.checkUpperLineHasChanged(upper_line):
@@ -331,7 +334,8 @@ def get_start_lvl_from_args():
 
 
 def quick_test_functions():
-    pass
+    a = screen_connector.checkEndFrame()
+    print(a)
 
 
 def main():
