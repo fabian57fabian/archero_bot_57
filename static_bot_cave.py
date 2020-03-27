@@ -166,7 +166,8 @@ def letPlay(_time=playtime, is_boss=False):
         if i % 10 == 0:
             print("Checking screen...")
             frame = screen_connector.getFrame()
-            if screen_connector.checkEndFrame(frame):
+            if screen_connector.checkEndFrame(frame) or screen_connector.checkEndTimerAskFrame(frame):
+                wait(2)
                 print("Game ended")
                 wait(5)
                 print("Going back to menu...")
@@ -205,7 +206,7 @@ def heal_lvl():
     swipe('n', 1.7)
     wait(1)
     tap('ability_daemon_reject')
-    tap('ability_left')
+    tap('ability_right')
     wait(1.5)
     tap('spin_wheel_back')
     wait(1)

@@ -7,8 +7,10 @@ class GameScreenConnector:
         self.width = width
         self.height = height
         # This should be in format rgba
-        self.end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
-                         self._repeat_as_list([48, 98, 199, 255], 3)]
+        self.end_data = [[[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
+                         self._repeat_as_list([219, 217, 207, 255], 4)]
+        self.timer_end_data = [[[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+                               self._repeat_as_list([48, 98, 199, 255], 3)]
         self.equip_data = [[[855 / 1080, 1576 / 2220]],
                            self._repeat_as_list([231, 191, 105, 255], 1)]
         self.low_enegy_data = [[[370 / 1080, 60 / 2220]],
@@ -70,7 +72,18 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame()
-        return self._check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
+        is_end_frame = self._check_screen_points_equal(frame, self.end_data[0], self.end_data[1])
+        return is_end_frame
+
+    def checkEndTimerAskFrame(self, frame=None):
+        """
+        Returns if we are on asking "Reborn? countdown..." frame
+        :return:
+        """
+        if frame is None:
+            frame = self.getFrame()
+        is_timer_end_frame = self._check_screen_points_equal(frame, self.timer_end_data[0], self.timer_end_data[1])
+        return is_timer_end_frame
 
     def getFrame(self):
         return adb_screen_getpixels()
