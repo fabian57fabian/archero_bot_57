@@ -58,7 +58,6 @@ def adb_swipe(locations, s):
     """
     s = int(s * 1000)
     x1, y1, x2, y2 = locations[0], locations[1], locations[2], locations[3]
-    print("Swiping from (%d, %d) --> (%d, %d) in %d" % (int(x1), int(y1), int(x2), int(y2), s))
     my_device.input_swipe(int(x1), int(y1), int(x2), int(y2), s)
 
 
@@ -70,7 +69,6 @@ def adb_tap(coord):
     coord (tuple(x, y)): coordinate of tap
     """
     x, y = coord[0], coord[1]
-    print("Tapping on (%d, %d)" % (int(x), int(y)))
     my_device.input_tap(int(x), int(y))
 
 

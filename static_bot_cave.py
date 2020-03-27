@@ -89,24 +89,37 @@ def getCoordinates():
 
 buttons, x, y, movements = {}, 0, 0, {}
 
+print_names_movements = {
+    "n": "up",
+    "s": "down",
+    "e": "right",
+    "w": "left",
+    "ne": "up-right",
+    "nw": "up-left",
+    "se": "down-right",
+    "sw": "down-left",
+}
+
 
 def swipe_points(start, stop, s):
     start = buttons[start]
     stop = buttons[stop]
-    print("Swiping between points")
+    print("Swiping between %s and %s in %f" % (start, stop, s))
     adb_swipe([start[0] * width, start[1] * heigth, stop[2] * width, stop[3] * heigth], s)
 
 
 def swipe(name, s):
     coord = movements[name]
+    print("Swiping %s in %d" % (print_names_movements[name], s))
     # convert back from normalized values
     adb_swipe([coord[0] * width, coord[1] * heigth, coord[2] * width, coord[3] * heigth], s)
 
 
 def tap(name):
-    x, y = buttons[name]
     # convert back from normalized values
-    adb_tap((x * width, y * heigth))
+    x, y = int(buttons[name][0] * width), int(buttons[name][0] * heigth)
+    print("Tapping on %s at [%d, %d]" % (name, x, y))
+    adb_tap((x, y))
 
 
 def wait(s):
