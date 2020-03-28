@@ -136,7 +136,8 @@ def main():
     wait(1)
     tap('menu_avatar_weapon')
     wait(1)
-    if screen_connector.onEquipMenu():
+    frame = screen_connector.getFrame()
+    if screen_connector._check_screen_points_equal([[855 / 1080, 1576 / 2220]], [[231, 191, 105, 255]]):
         tap('menu_equip_weapon')
         print("Removing armor...")
     else:
@@ -147,12 +148,12 @@ def main():
         if UseManualStart:
             a = input("Press enter to start a game (your energy bar must be at least 5)")
         else:
-            while (not SkipEnergyCheck) and not screen_connector.have_energy():
+            while (not SkipEnergyCheck) and not screen_connector.checkFrame("least_5_energy"):
                 print("No energy, waiting for one minute")
                 wait(60)
         chooseLands()
         play_lands()
-        while not screen_connector.checkEndFrame():
+        while not screen_connector.checkFrame("endgame"):
             print("Still playing, waiting for 5 secs")
             time.sleep(5)
         print("Game ended!!")

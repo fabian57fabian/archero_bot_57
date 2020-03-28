@@ -205,7 +205,7 @@ def letPlay(_time=playtime, is_boss=False):
                 tap('close_end')
                 wait(8)  # Wait to go to the menu
                 raise Exception('ended')
-            elif state == "leveled_up" or state == "fortune_wheel" or state == "devil_question" or state == "mistery_vendor" or state == "ad_ask":
+            elif state == "select_ability" or state == "fortune_wheel" or state == "devil_question" or state == "mistery_vendor" or state == "ad_ask":
                 print("Level ended. Collecting results for leveling up.")
                 wait(1)
                 return

@@ -10,33 +10,54 @@ class GameScreenConnector:
         self.height = height
         # This should be in format rgba
         self.coords_path = "datas/static_coords.json"
-        static_write = ""  # "
+        static_write = """
         self.static_coords = {
             "in_game": {"coordinates": [[53 / 1080, 45 / 2220], [53 / 1080, 65 / 2220], [53 / 1080, 85 / 2220], [76 / 1080, 45 / 2220], [76 / 1080, 65 / 2220], [76 / 1080, 85 / 2220]],
                         "values": [[255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
+            "menu_shop": {"coordinates": [[26 / 1080, 2070 / 2220], [386 / 1080, 2070 / 2220], [566 / 1080, 2070 / 2220], [746 / 1080, 2070 / 2220], [926 / 1080, 2070 / 2220]],
+                          "values": [[128, 113, 87], [219, 216, 209], [219, 216, 209], [219, 216, 209], [219, 216, 209]], "around": 6},
+            "menu_equip": {"coordinates": [[26 / 1080, 2070 / 2220], [206 / 1080, 2070 / 2220], [566 / 1080, 2070 / 2220], [746 / 1080, 2070 / 2220], [926 / 1080, 2070 / 2220]],
+                           "values": [[219, 216, 209], [128, 113, 87], [219, 216, 209], [219, 216, 209], [219, 216, 209]], "around": 6},
+            "menu_home": {"coordinates": [[26 / 1080, 2070 / 2220], [206 / 1080, 2070 / 2220], [386 / 1080, 2070 / 2220], [746 / 1080, 2070 / 2220], [926 / 1080, 2070 / 2220]],
+                          "values": [[219, 216, 209], [219, 216, 209], [128, 113, 87], [219, 216, 209], [219, 216, 209]], "around": 6},
+            "menu_talents": {"coordinates": [[26 / 1080, 2070 / 2220], [206 / 1080, 2070 / 2220], [386 / 1080, 2070 / 2220], [566 / 1080, 2070 / 2220], [926 / 1080, 2070 / 2220]],
+                             "values": [[219, 216, 209], [219, 216, 209], [219, 216, 209], [128, 113, 87], [219, 216, 209]], "around": 6},
+            "menu_events": {"coordinates": [[26 / 1080, 2070 / 2220], [206 / 1080, 2070 / 2220], [386 / 1080, 2070 / 2220], [566 / 1080, 2070 / 2220], [746 / 1080, 2070 / 2220]],
+                            "values": [[219, 216, 209], [219, 216, 209], [219, 216, 209], [219, 216, 209], [128, 113, 87]], "around": 6},
+            "on_pause": {"coordinates": [[512 / 1080, 1595 / 2220], [567 / 1080, 1627 / 2220], [512 / 1080, 1656 / 2220], [280 / 1080, 1876 / 2220], [539 / 1080, 1864 / 2220]],
+                         "values": [[255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
             "repeat_endgame_question": {"coordinates": [[200 / 1080, 900 / 2220], [200 / 1080, 1200 / 2220], [900 / 1080, 900 / 2220], [900 / 1080, 1200 / 2220]],
                                         "values": [[219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255]]},
             "endgame": {"coordinates": [[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
                         "values": [[48, 98, 199, 255], [48, 98, 199, 255], [48, 98, 199, 255]]},
             "angel_heal": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220]],
                            "values": [[0, 118, 255, 255], [0, 118, 255, 255]]},
-            "least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]],
-                               "values": [[53, 199, 41, 255]]},
-            "leveled_up": {"coordinates": [[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220], [1430 / 1080, 80 / 2220], [1430 / 1080, 338 / 2220], [1430 / 1080, 410 / 2220], [1430 / 1080, 670 / 2220], [1430 / 1080, 740 / 2220], [1430 / 1080, 998 / 2220]],
-                           "values": [[255, 181, 0, 255], [255, 181, 0, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255]]},
-            "fortune_wheel": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
-                              "values": [[255, 181, 0, 255], [255, 181, 0, 255]]},
+            "least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]],  # , [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
+                               "values": [[53, 199, 41, 255]],  # , [32, 82, 117, 255], [32, 82, 117, 255]],
+                               "around": 5},
+            "select_ability": {"coordinates": [[70 / 1080, 530 / 2220], [1020 / 1080, 530 / 2220], [80 / 1080, 1430 / 2220], [338 / 1080, 1430 / 2220], [410 / 1080, 1430 / 2220], [670 / 1080, 1430 / 2220], [740 / 1080, 1430 / 2220], [998 / 1080, 1430 / 2220]],
+                               "values": [[255, 181, 0, 255], [255, 181, 0, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255]]},
+            "fortune_wheel": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [540 / 1080, 1020 / 2220]],
+                              "values": [[255, 181, 0, 255], [255, 181, 0, 255], [186, 106, 48, 255]]},
             "devil_question": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220]],
                                "values": [[243, 38, 81, 255], [243, 38, 81, 255]]},
-            "ad_ask": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [460 / 1080, 1647 / 2220], [480 / 1080, 1647 / 2220]],
-                       "values": [[255, 181, 0, 255], [255, 181, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
+            "ad_ask": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [69 / 1080, 2121 / 2220], [88 / 1080, 2121 / 2220], [114 / 1080, 2121 / 2220]],
+                       "values": [[255, 181, 0, 255], [255, 181, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
             "mistery_vendor": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [57 / 1080, 2126 / 2220], [89 / 1080, 2126 / 2220], [57 / 1080, 2161 / 2220], [89 / 1080, 2161 / 2220]],
                                "values": [[255, 181, 0, 255], [255, 181, 0, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255], [255, 255, 255, 255]]},
-            "equip_question_ask": {"coordinates": [[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
-                                   "values": [[48, 98, 199, 255], [48, 98, 199, 255], [48, 98, 199, 255]]}
+            "equip_question_ask": {"coordinates": [[170 / 1080, 1230 / 2220]],  # unnecessary prizes check, [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
+                                   "values": [[48, 98, 199, 255]]},  # unnecessary prizes check , [48, 98, 199, 255], [48, 98, 199, 255]]}
+            "check_equip_backpack": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [240 / 1080, 1654 / 2220], [485 / 1080, 1654 / 2220]],  # green sometimes gray, removed, [840 / 1080, 1654 / 2220], [610 / 1080, 1654 / 2220]],
+                                     "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [75, 160, 235, 255]],  # green sometimes gray, removed,[95, 220, 34, 255], [95, 220, 34, 255],],
+                                     "around": 20},
+            "check_equip_active": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [540 / 1080, 1642 / 2220], [540 / 1080, 1747 / 2220]],
+                                   "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [46, 115, 240, 255]],
+                                   "around": 20},
         }
+        # green = [95, 220, 34, 255] +-10
+        # blue = [75, 160, 235, 255] +-20
         self._saveStaticCoords()
-        # """
+        """
         self.static_coords = {}
         self._loadStaticCoords()
         self.yellow_experience = [255, 170, 16, 255]
@@ -66,12 +87,13 @@ class GameScreenConnector:
             attr_data.append(frame[int(y * self.width + x)])
         return attr_data
 
-    def _check_screen_points_equal(self, frame, points_list, points_value):
+    def _check_screen_points_equal(self, frame, points_list, points_value, around=2):
         """
         Gets 2 lists of x,y coordinates where to get values and list of values to comapre.
         Returns true if current frame have those values
         :param points_list: a list of x,y coordinates (absolute, not normalized)
         :param points_value: a list (same size of points_list) with values for equals check (values are 4d)
+        :param around: an integer for interval of search: +around and -around.
         :return:
         """
         if len(points_list) != len(points_value):
@@ -83,7 +105,7 @@ class GameScreenConnector:
         equal = True
         for i in range(len(attr_data)):
             if self.debug: print("| %4d %4d %4d | %4d %4d %4d |" % (attr_data[i][0], attr_data[i][1], attr_data[i][2], points_value[i][0], points_value[i][1], points_value[i][2]))
-            if not self.pixel_equals(attr_data[i], points_value[i], around=2):
+            if not self.pixel_equals(attr_data[i], points_value[i], around=around):
                 equal = False
         if self.debug: print("|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
         if self.debug: print("-----------------------------------")
@@ -101,7 +123,8 @@ class GameScreenConnector:
         if self.debug: print("Checking %s" % (coords_name))
         if frame is None:
             frame = self.getFrame()
-        is_equal = self._check_screen_points_equal(frame, self.static_coords[coords_name]["coordinates"], self.static_coords[coords_name]["values"])
+        around = 2 if "around" not in self.static_coords[coords_name].keys() else self.static_coords[coords_name]["around"]
+        is_equal = self._check_screen_points_equal(frame, self.static_coords[coords_name]["coordinates"], self.static_coords[coords_name]["values"], around=around)
         return is_equal
 
     def getFrame(self):
@@ -117,8 +140,9 @@ class GameScreenConnector:
         if frame is None:
             frame = self.getFrame()
         for k, v in self.static_coords.items():
-            if self.debug: print("Checking %s" % (k))
-            result[k] = self._check_screen_points_equal(frame, v["coordinates"], v["values"])
+            around = 2 if "around" not in self.static_coords[k].keys() else self.static_coords[k]["around"]
+            if self.debug: print("Checking %s, around = %d" % (k, around))
+            result[k] = self._check_screen_points_equal(frame, v["coordinates"], v["values"], around=around)
         return result
 
     def getFrameState(self, frame=None) -> str:
@@ -131,8 +155,9 @@ class GameScreenConnector:
         if frame is None:
             frame = self.getFrame()
         for k, v in self.static_coords.items():
-            if self.debug: print("Checking %s" % (k))
-            if self._check_screen_points_equal(frame, v["coordinates"], v["values"]):
+            around = 2 if "around" not in self.static_coords[k].keys() else self.static_coords[k]["around"]
+            if self.debug: print("Checking %s, around = %d" % (k, around))
+            if self._check_screen_points_equal(frame, v["coordinates"], v["values"], around=around):
                 state = k
                 break
         return state
