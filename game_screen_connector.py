@@ -136,8 +136,8 @@ class GameScreenConnector:
         if self.debug: print("Checking %s" % (coords_name))
         if frame is None:
             frame = self.getFrame()
-        around = 2 if "around" not in self.dict_to_take[coords_name].keys() else self.dict_to_take[coords_name]["around"]
-        is_equal = self._check_screen_points_equal(frame, self.dict_to_take[coords_name]["coordinates"], self.dict_to_take[coords_name]["values"], around=around)
+        around = 2 if "around" not in dict_to_take[coords_name].keys() else dict_to_take[coords_name]["around"]
+        is_equal = self._check_screen_points_equal(frame, dict_to_take[coords_name]["coordinates"], dict_to_take[coords_name]["values"], around=around)
         return is_equal
 
     def getFrame(self):
