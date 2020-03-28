@@ -8,7 +8,20 @@ Watch the installation video:
 
 [![Watch the video](https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/video_thumbnail.png)](https://www.youtube.com/watch?v=XZTI_USaY-4)
 
+## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
+It was originally build to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart.
+
+- Supported OS:
+  - Windows
+  - Ubuntu/Linux distro
+
+- Tested smartphones:
+  - samsung s8/s8+, s10e
+
+- Tested resolutions
+  - 1080x2220 is fullt working. All tests show good coordinates positioning.
+  - failing 1080x1920, but working on...
 
 ## Installation on Linux
 Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__, __pyqt5__:
@@ -35,9 +48,6 @@ Follow these steps:
   `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
   
 - Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
-
-## Adb not working
-If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
 
 ### Disable Blue auto lock screen
 When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
@@ -96,12 +106,6 @@ To execute archero bot by interface, use [GameController](GameController.py) scr
 Just launch it with python and start using it (for windows double-click on 'GameController.py.').
 Current version: not_working.
 
-## Compatibility
-This software works with following devices:
-- Samsung s8+
-
-More devices will be added and tested once coordinates will be normalized wrt screen res.
-
 ## How it works
 The package adb lets us use various android tools like:
 - tapping on a screen coordinate
@@ -119,6 +123,11 @@ For example when checking if having 5 or more energy to play one game, we check 
 
 ![Check_bar](wiki_data/check_energy_green_bar_location.png)
 
+## Issue: Adb not working
+If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
+
 ## Extra
 
 Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e.
+For any bug open an issue.
+If not having a github account, email me at **fabian_57@yahoo.it**.
