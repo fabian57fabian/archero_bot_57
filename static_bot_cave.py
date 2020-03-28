@@ -241,31 +241,31 @@ def reactGamePopups():
         print("state: %s" % state)
         if state == "select_ability":
             tap('ability_left')
-            wait(1)
+            wait(3)
         elif state == "fortune_wheel":
             tap('lucky_wheel_start')
             wait(6)
         elif state == "repeat_endgame_question":
             tap('spin_wheel_back')
-            wait(2)
+            wait(3)
         elif state == "devil_question":
             tap('ability_daemon_reject')
-            wait(2)
+            wait(3)
         elif state == "ad_ask":
             tap('spin_wheel_back')
-            wait(2)
+            wait(3)
         elif state == "mistery_vendor":
             tap('spin_wheel_back')
-            wait(2)
+            wait(3)
         elif state == "special_gift_respin":
             tap('spin_wheel_back')
-            wait(2)
+            wait(3)
         elif state == "angel_heal":
             tap('heal_right')
-            wait(1)
+            wait(3)
         elif state == "on_pause":
             tap('resume')
-            wait(1)
+            wait(3)
         elif state == "endgame":
             raise Exception('ended')
         i += 1
