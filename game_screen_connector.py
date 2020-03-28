@@ -30,8 +30,11 @@ class GameScreenConnector:
                                         "values": [[219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255], [219, 217, 207, 255]]},
             "endgame": {"coordinates": [[170 / 1080, 1230 / 2220], [890 / 1080, 1230 / 2220], [800 / 1080, 780 / 2220]],
                         "values": [[48, 98, 199, 255], [48, 98, 199, 255], [48, 98, 199, 255]]},
-            "angel_heal": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220]],
-                           "values": [[0, 118, 255, 255], [0, 118, 255, 255]]},
+            "angel_heal": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220], [156 / 1080, 1590 / 2220], [414 / 1080, 1590 / 2220], [666 / 1080, 1590 / 2220], [924 / 1080, 1590 / 2220]],
+                           "values": [[0, 118, 255, 255], [0, 118, 255, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255]],
+                           "around": 5},
+            "special_gift_respin": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220], [540 / 1080, 1020 / 2220]],
+                                    "values": [[0, 118, 255, 255], [0, 118, 255, 255], [186, 106, 48, 255]]},
             "least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]],  # , [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
                                "values": [[53, 199, 41, 255]],  # , [32, 82, 117, 255], [32, 82, 117, 255]],
                                "around": 5},
@@ -61,9 +64,14 @@ class GameScreenConnector:
         self.static_coords = {}
         self._loadStaticCoords()
         self.yellow_experience = [255, 170, 16, 255]
+        self.green_hp = [77, 171, 56, 255]
+        self.black_hp = [25, 25, 25, 255]
         # Line coordinates: x1,y1,x2,y2
-        self.lineHorExpBarCoordinates = [160 / 1080, 180 / 2220, 930 / 1080, 180 / 2220]
-        self.lineHorUpCoordinates = [180 / 1080, 2 / 2220, 890 / 1080, 2 / 2220]
+        self.hor_lines = {
+            "hor_exp_bar": [160 / 1080, 180 / 2220, 930 / 1080, 180 / 2220],
+            "hor_up_line": [180 / 1080, 2 / 2220, 890 / 1080, 2 / 2220],
+            "hor_hp_bar": [0 / 1080, 952 / 2220, 1080 / 1080, 952 / 2220]  # [326 / 1080, 952 / 2220, 760 / 1080, 952 / 2220]  # line thru life bar. Edges are external door width}
+        }
 
     def _loadStaticCoords(self):
         with open(self.coords_path, 'r') as json_file:
@@ -183,7 +191,7 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        line = self._getHorLine(self.lineHorExpBarCoordinates, frame)
+        line = self._getHorLine(self.hor_lines["hor_exp_bar"], frame)
         masked_yellow = []
         for px in line:
             if self.pixel_equals(px, self.yellow_experience, 3):
@@ -192,13 +200,51 @@ class GameScreenConnector:
                 masked_yellow.append([0, 0, 0, 0])
         return masked_yellow
 
-    def getLineUpper(self, frame=None):
+    def getPlayerDecentering(self) -> (int, str):
+        line = self.getLineHpBar()
+        first = 0
+        last = 0
+        for i, el in enumerate(line):
+            if self.pixel_equals(self.green_hp, el, 2):
+                if first == 0:
+                    first = i
+                last = i
+        center_px = (last + first) / 2
+        center_diff = int((self.width / 2) - center_px)
+        dir = "right" if center_diff < 0 else "left"
+        print("Character on the %s side by %dpx" % (dir, abs(center_diff)))
+        return center_diff, dir
+
+    def getLineHpBar(self, frame=None):
         """
         Returns the colors of Experience bar as a line. If no frame given, it takes a screen.
         :param frame:
         :return:
         """
-        return self._getHorLine(self.lineHorUpCoordinates, frame)
+        line = self._getHorLine(self.hor_lines["hor_hp_bar"], frame)
+        masked_green = []
+        i = 0
+        for px in line:
+            i += 1
+            if i == 452:
+                a = 0
+            if self.pixel_equals(px, self.green_hp, 12) or self.pixel_equals(px, self.black_hp, 25):
+                masked_green.append(self.green_hp)
+            else:
+                masked_green.append([0, 0, 0, 0])
+        return masked_green
+
+    def getHorLine(self, line_name: str, frame=None):
+        """
+        Returns the colors of Experience bar as a line. If no frame given, it takes a screen.
+        :param line_name: line x,y coordinates
+        :param frame:
+        :return:
+        """
+        if line_name not in self.hor_lines:
+            print("Given line name '%s' is not a known horizontal line name." % line_name)
+            return []
+        return self._getHorLine(self.hor_lines[line_name], frame)
 
     def _checkBarHasChanged(self, old_line_hor_bar, current_exp_bar, around=0):
         if len(old_line_hor_bar) != len(current_exp_bar):
@@ -231,5 +277,5 @@ class GameScreenConnector:
         :return:
         """
         if self.debug: print("Checking LineUpper has changed")
-        new_line = self.getLineUpper(frame)
-        return self._checkBarHasChanged(old_line, new_line, around=0)
+        new_line = self.getHorLine("hor_up_line", frame)
+        return self._checkBarHasChanged(old_line, new_line, around=10)

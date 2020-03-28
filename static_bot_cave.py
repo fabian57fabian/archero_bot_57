@@ -128,8 +128,20 @@ def wait(s):
 
 
 def exit_dungeon_uncentered():
+    # Center
+    px, dir = screen_connector.getPlayerDecentering()
+    wait(0.5)
+    if dir == 'left':
+        swipe('ne', 3)
+    elif dir == 'right':
+        swipe('nw', 3)
+    else:
+        swipe('n', 2)
+
+
+def exit_dungeon_uncentered_old():
     wait(2)
-    upper_line = screen_connector.getLineUpper()
+    upper_line = screen_connector.getHorLine("hor_up_line")
     print("Going trough door to exit...")
     wait(1)
     swipe('n', 2)
