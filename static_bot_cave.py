@@ -132,9 +132,9 @@ def exit_dungeon_uncentered():
     px, dir = screen_connector.getPlayerDecentering()
     wait(0.5)
     if dir == 'left':
-        swipe('ne', 3)
+        swipe('ne', 4)
     elif dir == 'right':
-        swipe('nw', 3)
+        swipe('nw', 4)
     else:
         swipe('n', 2)
 
@@ -228,10 +228,15 @@ def letPlay(_time=playtime, is_boss=False):
                 return
         wait(1)
 
+max_loops_game = 20
 
 def reactGamePopups():
     state = ""
+    i = 0
     while state != "in_game":
+        if i > max_loops_game:
+            print("Max loops reached")
+            exit(1)
         state = screen_connector.getFrameState()
         print("state: %s" % state)
         if state == "select_ability":
@@ -263,6 +268,7 @@ def reactGamePopups():
             wait(1)
         elif state == "endgame":
             raise Exception('ended')
+        i += 1
 
 
 def normal_lvl():
