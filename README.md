@@ -1,8 +1,12 @@
 # Archero Bot 57
 
 <p align="center">
-  <img src="https://github.com/fabian57fabian/archero_bot_57/blob/master/logo_small.png">
+  <img src="https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/logo_small.png">
 </p>
+
+Watch the installation video:
+
+[![Watch the video](https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/video_thumbnail.png)](https://www.youtube.com/watch?v=XZTI_USaY-4)
 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
 
