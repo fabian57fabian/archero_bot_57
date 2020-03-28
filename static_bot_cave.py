@@ -24,6 +24,7 @@ print("Usb debugging device: %s" % device)
 width, heigth = adb_get_size()
 print("Your resolution is %dx%d" % (width, heigth))
 screen_connector = GameScreenConnector(width, heigth)
+screen_connector.debug = False
 
 
 # Those are normalized coordinates of data to be taken and trained into a simple nn to predict game status (multiclass)
@@ -216,7 +217,47 @@ def letPlay(_time=playtime, is_boss=False):
         wait(1)
 
 
+def reactGamePopups():
+    state = ""
+    while state != "in_game":
+        state = screen_connector.getFrameState()
+        print("state: %s" % state)
+        if state == "select_ability":
+            tap('ability_left')
+            wait(1)
+        elif state == "fortune_wheel":
+            tap('lucky_wheel_start')
+            wait(6)
+        elif state == "repeat_endgame_question":
+            tap('spin_wheel_back')
+            wait(2)
+        elif state == "devil_question":
+            tap('spin_wheel_back')
+            wait(2)
+        elif state == "ad_ask":
+            tap('spin_wheel_back')
+            wait(2)
+        elif state == "mistery_vendor":
+            tap('spin_wheel_back')
+            wait(2)
+        elif state == "angel_heal":
+            tap('heal_right')
+            wait(1)
+        elif state == "on_pause":
+            tap('resume')
+            wait(1)
+        elif state == "endgame":
+            raise Exception('ended')
+
+
 def normal_lvl():
+    goTroughDungeon()
+    letPlay()
+    reactGamePopups()
+    exit_dungeon_uncentered()
+
+
+def normal_lvl_manual():
     goTroughDungeon()
     letPlay()
     tap('spin_wheel_back')  # guard not to click on mistery vendor
@@ -234,6 +275,14 @@ def normal_lvl():
 
 def heal_lvl():
     swipe('n', 1.7)
+    reactGamePopups()
+    swipe('n', .8)
+    reactGamePopups()
+    exit_dungeon_uncentered()
+
+
+def heal_lvl_manual():
+    swipe('n', 1.7)
     wait(1)
     tap('ability_daemon_reject')
     tap('ability_right')
@@ -248,6 +297,14 @@ def heal_lvl():
 
 
 def boss_lvl():
+    swipe('n', 2)
+    swipe('n', 1.5)
+    letPlay(is_boss=True)
+    reactGamePopups()
+    exit_dungeon_uncentered()
+
+
+def boss_lvl_manual():
     swipe('n', 2)
     swipe('n', 1.5)
     swipe('n', 1)

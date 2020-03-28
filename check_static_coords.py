@@ -14,14 +14,14 @@ def getImageFrame(path: str):
 
 
 # width, heigth = adb_get_size()
-#width, heigth = 1080, 1920
+# width, heigth = 1080, 1920
 width, heigth = 1080, 2220
 
 screen_conector = GameScreenConnector(width, heigth)
 screen_conector.debug = len(sys.argv) > 1
 static_coords = screen_conector.static_coords
 
-#screens_path = "../archero_my_screens/Craciun"
+# screens_path = "../archero_my_screens/Craciun"
 screens_path = "screens/samsung_s8+"
 files = os.listdir(screens_path)
 files.sort()
