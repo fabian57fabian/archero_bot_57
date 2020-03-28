@@ -35,9 +35,6 @@ class GameScreenConnector:
                            "around": 5},
             "special_gift_respin": {"coordinates": [[50 / 1080, 367 / 2220], [1020 / 1080, 367 / 2220], [540 / 1080, 1020 / 2220]],
                                     "values": [[0, 118, 255, 255], [0, 118, 255, 255], [186, 106, 48, 255]]},
-            "least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]],  # , [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
-                               "values": [[53, 199, 41, 255]],  # , [32, 82, 117, 255], [32, 82, 117, 255]],
-                               "around": 5},
             "select_ability": {"coordinates": [[70 / 1080, 490 / 2220], [1020 / 1080, 490 / 2220], [80 / 1080, 1430 / 2220], [338 / 1080, 1430 / 2220], [410 / 1080, 1430 / 2220], [670 / 1080, 1430 / 2220], [740 / 1080, 1430 / 2220], [998 / 1080, 1430 / 2220]],
                                "values": [[255, 181, 0, 255], [255, 181, 0, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255], [101, 200, 2, 255]]},
             "fortune_wheel": {"coordinates": [[70 / 1080, 370 / 2220], [1020 / 1080, 370 / 2220], [540 / 1080, 1020 / 2220]],
@@ -55,8 +52,11 @@ class GameScreenConnector:
                                      "around": 20},
             "check_equip_active": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [540 / 1080, 1642 / 2220], [540 / 1080, 1747 / 2220]],
                                    "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [46, 115, 240, 255]],
-                                   "around": 20},
+                                   "around": 20}
         }
+        self.static_checks_on_frame = {"least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]] , [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
+                                   "values": [[53, 199, 41, 255]] , [32, 82, 117, 255], [32, 82, 117, 255]],"around": 5}
+		}
         # green = [95, 220, 34, 255] +-10
         # blue = [75, 160, 235, 255] +-20
         self._saveStaticCoords()
@@ -125,14 +125,19 @@ class GameScreenConnector:
         If no Frame given , it will take a screenshot.
         :return:
         """
-        if coords_name not in self.static_coords.keys():
+        dict_to_take = []
+        if coords_name in self.static_coords.keys():
+            dict_to_take = self.static_coords
+        elif coords_name in self.static_checks_on_frame.keys():
+            dict_to_take = self.static_coords
+        else:
             print("No coordinates called %s is saved in memory! Returning false." % coords_name)
             return False
         if self.debug: print("Checking %s" % (coords_name))
         if frame is None:
             frame = self.getFrame()
-        around = 2 if "around" not in self.static_coords[coords_name].keys() else self.static_coords[coords_name]["around"]
-        is_equal = self._check_screen_points_equal(frame, self.static_coords[coords_name]["coordinates"], self.static_coords[coords_name]["values"], around=around)
+        around = 2 if "around" not in self.dict_to_take[coords_name].keys() else self.dict_to_take[coords_name]["around"]
+        is_equal = self._check_screen_points_equal(frame, self.dict_to_take[coords_name]["coordinates"], self.dict_to_take[coords_name]["values"], around=around)
         return is_equal
 
     def getFrame(self):
