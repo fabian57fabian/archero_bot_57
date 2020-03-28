@@ -252,6 +252,9 @@ def reactGamePopups():
         elif state == "mistery_vendor":
             tap('spin_wheel_back')
             wait(2)
+        elif state == "special_gift_respin":
+            tap('spin_wheel_back')
+            wait(2)
         elif state == "angel_heal":
             tap('heal_right')
             wait(1)
