@@ -50,13 +50,9 @@ class GameScreenConnector:
             "check_equip_backpack": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [240 / 1080, 1654 / 2220], [485 / 1080, 1654 / 2220]],  # green sometimes gray, removed, [840 / 1080, 1654 / 2220], [610 / 1080, 1654 / 2220]],
                                      "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [75, 160, 235, 255]],  # green sometimes gray, removed,[95, 220, 34, 255], [95, 220, 34, 255],],
                                      "around": 20},
-            "check_equip_active": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [540 / 1080, 1642 / 2220], [540 / 1080, 1747 / 2220]],
-                                   "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [46, 115, 240, 255]],
-                                   "around": 20}
+            "check_equip_active": {"coordinates": [[125 / 1080, 480 / 2220], [960 / 1080, 480 / 2220], [540 / 1080, 1642 / 2220], [540 / 1080, 1747 / 2220]], "values": [[231, 191, 105, 255], [231, 191, 105, 255], [75, 160, 235, 255], [46, 115, 240, 255]],"around": 20}
         }
-        self.static_checks_on_frame = {"least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220]] , [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
-                                   "values": [[53, 199, 41, 255]] , [32, 82, 117, 255], [32, 82, 117, 255]],"around": 5}
-		}
+        self.static_checks_on_frame = {"least_5_energy": {"coordinates": [[370 / 1080, 60 / 2220] , [55 / 1080, 225 / 2220] , [140 / 1080, 225 / 2220]],"values": [[53, 199, 41, 255] , [32, 82, 117, 255], [32, 82, 117, 255]],"around": 5}}
         # green = [95, 220, 34, 255] +-10
         # blue = [75, 160, 235, 255] +-20
         self._saveStaticCoords()
@@ -129,7 +125,7 @@ class GameScreenConnector:
         if coords_name in self.static_coords.keys():
             dict_to_take = self.static_coords
         elif coords_name in self.static_checks_on_frame.keys():
-            dict_to_take = self.static_coords
+            dict_to_take = self.static_checks_on_frame
         else:
             print("No coordinates called %s is saved in memory! Returning false." % coords_name)
             return False
