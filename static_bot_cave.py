@@ -244,7 +244,7 @@ def reactGamePopups():
             tap('spin_wheel_back')
             wait(2)
         elif state == "devil_question":
-            tap('spin_wheel_back')
+            tap('ability_daemon_reject')
             wait(2)
         elif state == "ad_ask":
             tap('spin_wheel_back')
