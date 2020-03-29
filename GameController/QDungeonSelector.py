@@ -1,12 +1,12 @@
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QBoxLayout, QVBoxLayout, QPushButton, QWidget,QInputDialog
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QInputDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from GameController.GameControllerModel import GameControllerModel
 
 
 class QDungeonSelector(QWidget):
-    def __init__(self, parent:QWidget, model: GameControllerModel):
+    def __init__(self, parent: QWidget, model: GameControllerModel):
         super(QWidget, self).__init__()
         self.model = model
         self.lblCurrentDungeon = QLabel()
@@ -20,17 +20,19 @@ class QDungeonSelector(QWidget):
         self.lblCurrentDungeon.setText("")
         self.lblCurrentDungeon.setStyleSheet("background-color: white")
         self.lblCurrentDungeon.setAlignment(Qt.AlignCenter)
-        self.lblCurrentDungeon.setFixedWidth(self.requested_w-10)
-        self.lblCurrentDungeon.setFixedHeight(self.requested_h-10)
+        self.lblCurrentDungeon.setFixedWidth(self.requested_w - 10)
+        self.lblCurrentDungeon.setFixedHeight(self.requested_h - 10)
         self.changeCurrentChapter(1)
         self.lblCurrentDungeon.mousePressEvent = self.onChapterClick
         self.layoutMainHor.addWidget(self.lblCurrentDungeon)
         self.layoutMainHor.setSpacing(0)
         self.layoutMainHor.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layoutMainHor)
+        self.SelectionEnabled = False
 
     def onChapterClick(self, event):
-        self.askForChapter()
+        if self.SelectionEnabled:
+            self.askForChapter()
 
     def askForChapter(self):
         chapters = self.model.getChapters()

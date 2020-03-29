@@ -24,7 +24,7 @@ class QToolboxActions(QtWidgets.QWidget):
         button_tap = QPushButton("Tap")
         button_tap.setStyleSheet("background-color: rgb(173, 127, 168);")
         button_tap.setFixedSize(w, h)
-        self.infoLbl.setText("Actions:")
+        self.infoLbl.setText("Quick\nactions:")
         self.infoLbl.setStyleSheet("background-color: rgba(0,0,0,0%); color: white")
         self.infoLbl.setAlignment(Qt.AlignCenter)
         self.layoutMainVer.addWidget(self.infoLbl)
