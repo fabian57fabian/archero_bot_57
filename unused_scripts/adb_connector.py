@@ -37,7 +37,7 @@ def adb_screen(name:str = "screen.png"):
 def adb_screen_getpixels():
     os.system("adb exec-out screencap -p > screen.png")
     pixval = None
-    with Image.open("screen.png", 'r') as im:
+    with Image.open("../screen.png", 'r') as im:
         pixval = np.array(im.getdata())
     return pixval
 

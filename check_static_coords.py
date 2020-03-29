@@ -15,7 +15,8 @@ def getImageFrame(path: str):
 
 # width, heigth = adb_get_size()
 # width, heigth = 1080, 1920
-width, heigth = 1080, 2220
+#width, heigth = 1080, 2220
+width, heigth = 1080, 2280
 
 excluded = ["time_prize_3.png", "time_prize_unavailable.png"]
 
@@ -24,7 +25,8 @@ screen_conector.debug = len(sys.argv) > 1
 static_coords = screen_conector.static_coords
 
 # screens_path = "../archero_my_screens/Craciun"
-screens_path = "screens/samsung_s8+"
+screens_path = "screens/1080x2280"
+print("Images folder:: %s"% screens_path)
 files = os.listdir(screens_path)
 files.sort()
 all_ok = True

@@ -43,7 +43,7 @@ def getCoordinates():
 
 # Having cellphones with big screens make image show too big. change this paramenter in [0,1] to resize automatically
 resize_factor_show = 1
-images_path = 'screens/samsung_s8+/'
+images_path = '../screens/1080x2220/'
 save_images = False
 # All saved images goes to screens_out folder if save_images is true
 
@@ -78,7 +78,7 @@ for image_path in os.listdir(images_path):
         plt.imshow(im)
         plt.title(choise + "->" + image_path)
         if save_images:
-            plt.savefig(os.path.join("screens/out/", "_" + image_path))
+            plt.savefig(os.path.join("../screens/out/", "_" + image_path))
         plt.show()
         # im.show()
         # a = input("press enter to contine")

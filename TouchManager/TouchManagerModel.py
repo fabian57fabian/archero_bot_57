@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
-from adb_connector import adb_screen, get_device_id
+from pure_adb_connector import adb_screen, get_device_id
 
 
 class TouchManagerModel(QObject):
@@ -14,7 +14,7 @@ class TouchManagerModel(QObject):
     def __init__(self):
         super(TouchManagerModel, self).__init__()
         # Default path for screens
-        self.images_path = "screens/samsung_s8+"
+        self.images_path = "screens/1080x2220"
         self.manage_default_images_path()
         self.data_pack = 'datas'
         self.dict_out_name = 'data.py'

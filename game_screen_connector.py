@@ -1,5 +1,5 @@
 import time
-from adb_connector import *
+from pure_adb_connector import *
 import json
 
 
