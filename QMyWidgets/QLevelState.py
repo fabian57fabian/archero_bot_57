@@ -31,8 +31,8 @@ class QLevelState(QWidget):
         self.logs = QtWidgets.QPlainTextEdit()
         self.lay = QVBoxLayout()
 
-        self.color_played = (213, 216, 220)
-        self.color_playing = (86, 101, 115)
+        self.color_played = (86, 101, 115)
+        self.color_playing = (213, 216, 220)
         self.color_not_played = (33, 47, 61)
 
         self.state = PlayState.ToBePlayed
@@ -69,7 +69,6 @@ class QLevelState(QWidget):
             return self.levels_colors[level_name]
 
     def setupUi(self):
-        self.setFixedSize(150, 350)
         self.frame.setFixedSize(80, 80)
         self.frame.setStyleSheet(
             "background-color: rgb({}, {}, {}); border-radius: 5px;".format(self.level_color[0], self.level_color[1],

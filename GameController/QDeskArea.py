@@ -1,3 +1,5 @@
+import math
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout
@@ -21,11 +23,13 @@ class QDeskArea(QWidget):
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.setStyleSheet("background-color: rgb(43, 43, 43)")
         self.chapersState = []
+        self.rows = 2
         self.initUI()
         self.initconnectors()
 
     def initconnectors(self):
         self.model.onLevelChanged.connect(self.levelChanged)
+        self.model.onAddLog.connect(self.logArrived)
 
     def levelChanged(self, new_level):
         for i, levelState in enumerate(self.chapersState):
@@ -35,6 +39,9 @@ class QDeskArea(QWidget):
                 levelState.SetState(PlayState.Playing)
             else:
                 levelState.SetState(PlayState.ToBePlayed)
+
+    def logArrived(self, log: str):
+        self.chapersState[self.model.currentLevel].addLog(log)
 
     def build_add_btn(self):
         button = QPushButton(self)
@@ -50,17 +57,27 @@ class QDeskArea(QWidget):
     def initUI(self):
         self.setLayout(self.main_layout)
         self.chapersState = []
-        for i, v in self.model.getLevelsNames().items():
+        level_names = self.model.getLevelsNames()
+        v_layouts = []
+        line_elements = math.ceil(len(level_names) / self.rows)
+        for i in range(line_elements):
+            lay = QVBoxLayout()
+            lay.setAlignment(Qt.AlignTop)
+            v_layouts.append(lay)
+            self.box.addLayout(lay)
+        for i, v in level_names.items():
             color = self.getColorByLevel(v)
             object = QLevelState(i, v, color, parent=self)
+            object.setFixedSize(150, 300)
             self.chapersState.append(object)
-            self.box.addWidget(object)
+            v_layouts[i % line_elements].addWidget(object)
+            # self.box.addWidget(object)
         # self.insertMockupData()
         self.widget.setLayout(self.box)
 
         # Scroll Area Properties
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        #self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        #self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(self.widget)
         self.scroll.setAlignment(Qt.AlignCenter)
