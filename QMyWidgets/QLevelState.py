@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout,QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt
 import enum
 
@@ -43,6 +43,10 @@ class QLevelState(QWidget):
     def addLog(self, log: str):
         self.logs.appendPlainText(log)
 
+    def reset(self):
+        self.SetState(PlayState.ToBePlayed)
+        self.logs.clear()
+
     def SetState(self, state: PlayState):
         self.state = state
         self.updateState()
@@ -55,7 +59,8 @@ class QLevelState(QWidget):
             color = self.color_playing
         elif self.state == PlayState.ToBePlayed:
             color = self.color_not_played
-        self.setStyleSheet("background-color: rgb({}, {}, {}); border-radius: 5px;".format(color[0], color[1], color[2]))
+        self.setStyleSheet(
+            "background-color: rgb({}, {}, {}); border-radius: 5px;".format(color[0], color[1], color[2]))
 
     def color_from_level(self, level_name: str):
         if level_name not in self.levels_colors:
@@ -66,12 +71,14 @@ class QLevelState(QWidget):
     def setupUi(self):
         self.setFixedSize(150, 350)
         self.frame.setFixedSize(80, 80)
-        self.frame.setStyleSheet("background-color: rgb({}, {}, {}); border-radius: 5px;".format(self.level_color[0], self.level_color[1], self.level_color[2]))
+        self.frame.setStyleSheet(
+            "background-color: rgb({}, {}, {}); border-radius: 5px;".format(self.level_color[0], self.level_color[1],
+                                                                            self.level_color[2]))
         self.frame.setGeometry(0, 0, 0, 0)
         fram_lay = QHBoxLayout()
 
         self.lay.setAlignment(Qt.AlignTop)
-        #self.lay.setAlignment(Qt.AlignVCenter)
+        # self.lay.setAlignment(Qt.AlignVCenter)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         frame_lay = QVBoxLayout()
         font = QtGui.QFont()

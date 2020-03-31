@@ -10,10 +10,12 @@ from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
 from GameController.QDungeonSelector import QDungeonSelector
 from GameController.QDeskArea import QDeskArea
+from GameController.QDungeonControl import QDungeonController
+from GameController.GameControllerController import GameControllerController
 
 
 class GameControllerWindow(QWidget):
-    def __init__(self, model: GameControllerModel):
+    def __init__(self, model: GameControllerModel, controller: GameControllerController):
         super(QWidget, self).__init__()
         self.toolbar_w = 70
         self.toolbar_h = 70
@@ -22,7 +24,8 @@ class GameControllerWindow(QWidget):
         self.dungeonSelector = QDungeonSelector(self, model)
         self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
-        self.content_wid = QDeskArea(self)  # QtWidgets.QWidget()
+        self.controlWidget = QDungeonController(self, controller, model)
+        self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.setupUi()
         # self.model.onSourceChanged.connect(self.source_changed)
 
@@ -58,9 +61,17 @@ class GameControllerWindow(QWidget):
         self.content_wid.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
         # self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
-        self.main_layout.addWidget(self.content_wid, 1, 1)
+        lay_content = QVBoxLayout()
+        lay_content.addWidget(self.controlWidget)
+        lay_content.addWidget(self.content_wid)
+
+        self.main_layout.addLayout(lay_content, 1, 1)
+        # self.main_layout.addWidget(self.content_wid, 1, 1)
 
         self.setStyleSheet("background-color: #6e6e6e")
 
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)
+
+    def initSignals(self):
+        pass

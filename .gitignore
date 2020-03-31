@@ -4,7 +4,7 @@
 # Python cache
 datas/__pycache__/*
 __pycache__/*
-QWidgets/__pycache__/*
+QMyWidgets/__pycache__/*
 GameController/__pycache__/*
 TouchManager/__pycache__/*
 

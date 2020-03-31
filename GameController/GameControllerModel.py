@@ -14,6 +14,8 @@ class GameControllerModel(QObject):
         self.dict_buttons = 'data.py'
         self.ch_images_path = "images/"
         self.ch_image_ext = ".png"
+        self.icon_path = "icons"
+        self.icons_dataset = self.load_icons()
         self.chapters = ["1. Verdant Prairie",
                          "2. Storm Desert",
                          "3. Abandoned Dungeon",
@@ -32,6 +34,14 @@ class GameControllerModel(QObject):
     def load_data(self):
         pass
 
+    def load_icons(self):
+        icons_dts = {}
+        icons_dts['play'] = "Play.png"
+        icons_dts['pause'] = "Pause.png"
+        icons_dts['skip'] = "End.png"
+        icons_dts['stop'] = "Stop.png"
+        return icons_dts
+
     def getChapters(self) -> list:
         return self.chapters
 
@@ -43,3 +53,10 @@ class GameControllerModel(QObject):
             if ch == ch_str:
                 return i + 1
         return -1
+
+    def getIconPath(self, icon_name):
+        if icon_name in self.icons_dataset.keys():
+            path = os.path.join(self.icon_path, self.icons_dataset[icon_name])
+        else:
+            path = os.path.join(self.icon_path, "Error-Delete-Icon.png")
+        return path

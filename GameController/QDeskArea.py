@@ -4,12 +4,15 @@ from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, Q
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, uic
-from QWidgets.QLevelState import QLevelState, PlayState
-
+from QMyWidgets.QLevelState import QLevelState, PlayState
+from GameController.GameControllerController import GameControllerController
+from GameController.GameControllerModel import GameControllerModel
 
 class QDeskArea(QWidget):
-    def __init__(self, parent=QWidget):
+    def __init__(self, parent: QWidget, controller: GameControllerController, model: GameControllerModel):
         super(QWidget, self).__init__()
+        self.model = model
+        self.controller = controller
         self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
         self.widget = QWidget()  # Widget that contains the collection of Vertical Box
         self.box = QHBoxLayout()  # The H Box that contains the V Boxes of  labels and buttons
@@ -26,6 +29,10 @@ class QDeskArea(QWidget):
         button.setStyleSheet("background-color: white; border-radius: 13px;text-align: center")
         return button
 
+    def resetCurrentDungeon(self):
+        for levelState in self.chapersState:
+            levelState.reset()
+
     def initUI(self):
         self.setLayout(self.main_layout)
         self.chapersState = []
@@ -34,7 +41,7 @@ class QDeskArea(QWidget):
             object = QLevelState(i, v, color, parent=self)
             self.chapersState.append(object)
             self.box.addWidget(object)
-        self.TestLookGood()
+        # self.insertMockupData()
         self.widget.setLayout(self.box)
 
         # Scroll Area Properties
@@ -50,7 +57,7 @@ class QDeskArea(QWidget):
 
         # self.setGeometry(600, 100, 1000, 900)
 
-    def TestLookGood(self):
+    def insertMockupData(self):
         current = 3
         for i, object in enumerate(self.chapersState):
             if i < current:
