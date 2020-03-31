@@ -1,6 +1,7 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
 from CaveDungeonEngine import CaveEngine
+import _thread
 
 
 class GameControllerModel(QObject):
@@ -77,4 +78,7 @@ class GameControllerModel(QObject):
         return path
 
     def playDungeon(self):
-        self.engine.start_infinite_play()
+        try:
+            _thread.start_new_thread(self.engine.start_infinite_play, (2,))
+        except Exception as e:
+            print("Error: unable to start thread: %s" % str(e))

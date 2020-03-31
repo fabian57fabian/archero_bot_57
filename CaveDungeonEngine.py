@@ -71,7 +71,7 @@ class CaveEngine(QObject):
         super(QObject, self).__init__()
         self.buttons = self.getGeneratedData()
         self.x, self.y, self.movements = self.getCoordinates()
-        self.width, self.heigth = 0,0
+        self.width, self.heigth = 0, 0
         self.screen_connector = None
         self.initConnection()
 
@@ -350,6 +350,7 @@ class CaveEngine(QObject):
             print("level out of range: %d" % startlvl)
             exit(1)
         for lvl in range(startlvl, 21):
+            self.onLevelUp.emit(lvl)
             print("Level %d: %s" % (lvl, str(self.levels_type[lvl])))
             if self.levels_type[lvl] == self.t_intro:
                 self.intro_lvl()
@@ -383,12 +384,12 @@ class CaveEngine(QObject):
         pass
 
     def start_infinite_play(self, start_lvl: int = 0):
-        self.quick_test_functions()
         while True:
             self.start_one_game(start_lvl)
             start_lvl = 0
 
     def start_one_game(self, start_lvl):
+        print("New game. Starting from level %d" % start_lvl)
         if start_lvl == 0:
             if self.UseManualStart:
                 a = input("Press enter to start a game (your energy bar must be at least 5)")
