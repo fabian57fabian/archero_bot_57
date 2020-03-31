@@ -28,8 +28,8 @@ class QDeskArea(QWidget):
         self.initconnectors()
 
     def initconnectors(self):
-        self.model.onLevelChanged.connect(self.levelChanged)
-        self.model.onAddLog.connect(self.logArrived)
+        self.model.engine.levelChanged.connect(self.levelChanged)
+        self.model.engine.addLog.connect(self.logArrived)
 
     def levelChanged(self, new_level):
         for i, levelState in enumerate(self.chapersState):
@@ -69,6 +69,8 @@ class QDeskArea(QWidget):
             color = self.getColorByLevel(v)
             object = QLevelState(i, v, color, parent=self)
             object.setFixedSize(150, 300)
+            if i == self.model.engine.currentLevel:
+                object.SetState(PlayState.Playing)
             self.chapersState.append(object)
             v_layouts[i % line_elements].addWidget(object)
             # self.box.addWidget(object)
@@ -76,8 +78,8 @@ class QDeskArea(QWidget):
         self.widget.setLayout(self.box)
 
         # Scroll Area Properties
-        #self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        #self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(self.widget)
         self.scroll.setAlignment(Qt.AlignCenter)

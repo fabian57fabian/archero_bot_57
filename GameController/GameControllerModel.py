@@ -33,9 +33,6 @@ class GameWorker(QObject):
 
 
 class GameControllerModel(QObject):
-    onLevelChanged = pyqtSignal(int)
-    onAddLog = pyqtSignal(str)
-
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
@@ -44,7 +41,6 @@ class GameControllerModel(QObject):
         super(QObject, self).__init__()
         # Default data
         self.engine = CaveEngine()
-        self.currentLevel = 0
         self.dict_buttons = 'data.py'
         self.ch_images_path = "images/"
         self.ch_image_ext = ".png"
@@ -65,18 +61,6 @@ class GameControllerModel(QObject):
                          "13. Lava Land",
                          "14. Eskimo Lands"]
         # self.worker = GameWorker(self.engine, self.engine.start_infinite_play)
-        self.initConnectors()
-
-    def initConnectors(self):
-        self.engine.levelChanged.connect(self.onChangeCurrentLevel)
-        self.engine.addLog.connect(self.onAddLogArrived)
-
-    def onChangeCurrentLevel(self, lvl: int):
-        self.currentLevel = lvl
-        self.onLevelChanged.emit(lvl)
-
-    def onAddLogArrived(self, log: str):
-        self.onAddLog.emit(log)
 
     def load_data(self):
         pass
@@ -86,9 +70,10 @@ class GameControllerModel(QObject):
 
     def load_icons(self):
         icons_dts = {}
+        icons_dts['prev'] = "Start.png"
         icons_dts['play'] = "Play.png"
         icons_dts['pause'] = "Pause.png"
-        icons_dts['skip'] = "End.png"
+        icons_dts['next'] = "End.png"
         icons_dts['stop'] = "Stop.png"
         return icons_dts
 
@@ -112,8 +97,6 @@ class GameControllerModel(QObject):
         return path
 
     def playDungeon(self):
-        self.engine.currentLevel = 6  # .changeCurrentLevel(2)
-        # self.worker.run()
         thread1 = threading.Thread(target=self.engine.start_infinite_play)  # , args=(100,))
         thread1.start()
         print("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")

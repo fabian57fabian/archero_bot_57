@@ -15,7 +15,13 @@ class GameControllerController(QObject):
         super(QObject, self).__init__()
         self.model = model
         # Set intial states
-        self.controllerStates = {'play': True, 'pause': False, 'skip': False, 'stop': False}
+        self.controllerStates = {'prev': False, 'play': True, 'pause': False, 'next': True, 'stop': False}
+        self.model.engine.levelChanged.connect(self.adjustNewLevelUI)
+
+    def adjustNewLevelUI(self, new_level):
+        self.controllerStates['prev'] = new_level != 0
+        self.controllerStates['next'] = new_level != self.model.engine.MAX_LEVEL
+        self.onChangeEnableStatesButtons.emit(self.controllerStates)
 
     def playRequested(self):
         self.controllerStates['play'] = False
@@ -32,8 +38,13 @@ class GameControllerController(QObject):
         self.controllerStates['skip'] = False
         self.onChangeEnableStatesButtons.emit(self.controllerStates)
 
-    def skipRequested(self):
-        pass
+    def prevRequested(self):
+        if self.model.engine.currentLevel > 0:
+            self.model.engine.changeCurrentLevel(self.model.engine.currentLevel - 1)
+
+    def nextRequested(self):
+        if self.model.engine.currentLevel <= self.model.engine.MAX_LEVEL:
+            self.model.engine.changeCurrentLevel(self.model.engine.currentLevel + 1)
 
     def stopRequested(self):
         self.controllerStates['play'] = False
