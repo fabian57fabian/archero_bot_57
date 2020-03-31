@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QWidget, QFormLayout, QVBoxLayout, QHBoxLayout
 
 class QActionWalk(QWidget):
     def __init__(self, parent=QWidget):
-        super(QActionWalk, self).__init__(parent)
+        super(QWidget, self).__init__()
         self.parent = parent
         self.lblName = QtWidgets.QLabel(self)
         self.cBoxDirection = QtWidgets.QComboBox(self)

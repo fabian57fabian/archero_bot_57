@@ -6,13 +6,13 @@ from TouchManager.TouchManagerModel import TouchManagerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QLineEdit
+    QInputDialog, QLineEdit, QWidget
 import os
 
 
-class TouchManagerWindow(QtWidgets.QWidget):
+class TouchManagerWindow(QWidget):
     def __init__(self, model: TouchManagerModel):
-        super().__init__()
+        super(QWidget, self).__init__()
         self.model = model
         self.model.onSourceChanged.connect(self.source_changed)
         self.model.onImageAdded.connect(self.add_image)

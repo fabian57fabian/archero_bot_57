@@ -9,7 +9,7 @@ from QWidgets.QLevelState import QLevelState, PlayState
 
 class QDeskArea(QWidget):
     def __init__(self, parent=QWidget):
-        super(QDeskArea, self).__init__()
+        super(QWidget, self).__init__()
         self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
         self.widget = QWidget()  # Widget that contains the collection of Vertical Box
         self.box = QHBoxLayout()  # The H Box that contains the V Boxes of  labels and buttons

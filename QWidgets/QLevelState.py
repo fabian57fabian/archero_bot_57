@@ -20,7 +20,7 @@ class PlayState(enum.Enum):
 
 class QLevelState(QWidget):
     def __init__(self, level_num: int, level_name: str, color: tuple, parent=QWidget):
-        super(QLevelState, self).__init__()
+        super(QWidget, self).__init__()
         self.level_num = level_num
         self.level_name = level_name
         self.level_color = color

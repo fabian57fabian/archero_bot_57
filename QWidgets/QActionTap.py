@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QWidget, QFormLayout, QFrame, QVBoxLayout
 
 class QActionTap(QWidget):
     def __init__(self, parent=QWidget):
-        super(QActionTap, self).__init__(parent)
+        super(QWidget, self).__init__()
         self.parent = parent
         self.lblName = QtWidgets.QLabel()
         self.cBoxDirection = QtWidgets.QComboBox()

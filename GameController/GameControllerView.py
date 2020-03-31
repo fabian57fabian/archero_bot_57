@@ -4,7 +4,7 @@ from GameController.GameControllerModel import GameControllerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QGridLayout
+    QInputDialog, QGridLayout, QWidget
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
@@ -12,9 +12,9 @@ from GameController.QDungeonSelector import QDungeonSelector
 from GameController.QDeskArea import QDeskArea
 
 
-class GameControllerWindow(QtWidgets.QWidget):
+class GameControllerWindow(QWidget):
     def __init__(self, model: GameControllerModel):
-        super().__init__()
+        super(QWidget, self).__init__()
         self.toolbar_w = 70
         self.toolbar_h = 70
         self.model = model

@@ -12,7 +12,7 @@ class TouchManagerModel(QObject):
     onPointAdded = pyqtSignal(str)
 
     def __init__(self):
-        super(TouchManagerModel, self).__init__()
+        super(QObject, self).__init__()
         # Default path for screens
         self.images_path = "screens/1080x2220"
         self.manage_default_images_path()

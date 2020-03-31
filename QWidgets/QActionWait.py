@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QWidget, QFormLayout, QVBoxLayout
 
 class QActionWait(QWidget):
     def __init__(self, parent=QWidget):
-        super(QActionWait, self).__init__(parent)
+        super(QWidget, self).__init__()
         self.lblName = QtWidgets.QLabel()
         self.lineEdit = QtWidgets.QLineEdit()
         self.lay = QVBoxLayout()

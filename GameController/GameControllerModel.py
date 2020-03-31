@@ -9,7 +9,7 @@ class GameControllerModel(QObject):
     # onImageSelected = pyqtSignal()
 
     def __init__(self):
-        super(GameControllerModel, self).__init__()
+        super(QObject, self).__init__()
         # Default data
         self.dict_buttons = 'data.py'
         self.ch_images_path = "images/"
