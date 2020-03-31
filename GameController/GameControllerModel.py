@@ -1,7 +1,17 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
 from CaveDungeonEngine import CaveEngine
-import _thread
+# import _thread
+from threading import Thread
+
+
+class GameWorker(Thread):
+    def __init__(self, function):
+        super().__init__()
+        self.function = function
+
+    def run(self):
+        self.function()
 
 
 class GameControllerModel(QObject):
@@ -36,6 +46,7 @@ class GameControllerModel(QObject):
                          "13. Lava Land",
                          "14. Eskimo Lands"]
         self.initConnectors()
+        self.worker = GameWorker(self.engine.start_infinite_play)
 
     def initConnectors(self):
         self.engine.onLevelUp.connect(self.onChangeCurrentLevel)
@@ -78,7 +89,8 @@ class GameControllerModel(QObject):
         return path
 
     def playDungeon(self):
-        try:
-            _thread.start_new_thread(self.engine.start_infinite_play, (2,))
-        except Exception as e:
-            print("Error: unable to start thread: %s" % str(e))
+        self.worker.run()
+        # try:
+        #     _thread.start_new_thread(self.engine.start_infinite_play, (0,))
+        # except Exception as e:
+        #     print("Error: unable to start thread: %s" % str(e))
