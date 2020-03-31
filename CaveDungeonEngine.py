@@ -9,11 +9,13 @@ import sys
 
 
 class CaveEngine(QObject):
-    onLevelUp = pyqtSignal(int)
+    levelChanged = pyqtSignal(int)
+    addLog = pyqtSignal(str)
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
+    MAX_LEVEL = 20
 
     playtime = 70
     # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
@@ -69,11 +71,13 @@ class CaveEngine(QObject):
 
     def __init__(self):
         super(QObject, self).__init__()
+        self.currentLevel = 0
         self.buttons = self.getGeneratedData()
         self.x, self.y, self.movements = self.getCoordinates()
         self.width, self.heigth = 0, 0
         self.screen_connector = None
         self.initConnection()
+        self.disableLogs = False
 
     def initConnection(self):
         device = get_device_id()
@@ -85,6 +89,13 @@ class CaveEngine(QObject):
         print("Your resolution is %dx%d" % (self.width, self.heigth))
         self.screen_connector = GameScreenConnector(self.width, self.heigth)
         self.screen_connector.debug = False
+
+    def log(self, log: str):
+        """
+        Logs an important move in the bot game
+        """
+        if not self.disableLogs:
+            self.addLog.emit(log)
 
     def getCoordinates(self):
         # Do not change this parameters, they are made for normalization
@@ -119,10 +130,12 @@ class CaveEngine(QObject):
     def swipe(self, name, s):
         coord = self.movements[name]
         print("Swiping %s in %f" % (self.print_names_movements[name], s))
+        self.log("Swipe %s in %.2f" % (self.print_names_movements[name], s))
         # convert back from normalized values
         adb_swipe([coord[0] * self.width, coord[1] * self.heigth, coord[2] * self.width, coord[3] * self.heigth], s)
 
     def tap(self, name):
+        self.log("Tap %s" % name)
         # convert back from normalized values
         x, y = int(self.buttons[name][0] * self.width), int(self.buttons[name][1] * self.heigth)
         print("Tapping on %s at [%d, %d]" % (name, x, y))
@@ -161,9 +174,11 @@ class CaveEngine(QObject):
                 self.wait(2)
                 if not self.screen_connector.checkUpperLineHasChanged(upper_line):
                     raise Exception('unable_exit_dungeon')
+        self.log("Exit level")
 
     def goTroughDungeon_old(self):
         print("Going through dungeon")
+        self.log("Cross dungeon (old)")
         self.swipe('n', 1.5)
         self.swipe('w', .32)
         self.swipe('n', .5)
@@ -175,6 +190,8 @@ class CaveEngine(QObject):
 
     def goTroughDungeon(self):
         print("Going through dungeon")
+        self.log("Cross dungeon")
+        self.disableLogs = True
         self.swipe('n', 1.5)
         self.swipe('w', .32)
         self.swipe('n', .5)
@@ -186,11 +203,13 @@ class CaveEngine(QObject):
         self.swipe('n', 1.6)
         self.swipe('e', .28)
         self.swipe('n', 2)
+        self.disableLogs = False
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss
         self.wait(2)
         print("Auto attacking")
+        self.log("Auto attacking")
         experience_bar_line = self.screen_connector.getLineExpBar()
         recheck = False
         for i in range(_time, 0, -1):
@@ -213,6 +232,7 @@ class CaveEngine(QObject):
                     if state == "repeat_endgame_question":
                         self.wait(5)
                     print("Game ended")
+                    self.log("Game over")
                     self.wait(1)
                     print("Going back to menu...")
                     self.tap('close_end')
@@ -224,11 +244,13 @@ class CaveEngine(QObject):
                     return
                 elif check_exp_bar and self.screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
                     print("Experience gained!")
+                    self.log("Gained experience")
                     self.wait(3)
                     return
             self.wait(1)
 
     def reactGamePopups(self, ):
+        self.log("Continous screen check")
         state = ""
         i = 0
         while state != "in_game":
@@ -345,23 +367,28 @@ class CaveEngine(QObject):
         self.wait(5)
         self.swipe('n', 2)
 
-    def play_cave(self, startlvl=0):
-        if startlvl < 0 or startlvl > 20:
-            print("level out of range: %d" % startlvl)
+    def play_cave(self):
+        self.levelChanged.emit(self.currentLevel)
+        if self.currentLevel < 0 or self.currentLevel > 20:
+            print("level out of range: %d" % self.currentLevel)
             exit(1)
-        for lvl in range(startlvl, 21):
-            self.onLevelUp.emit(lvl)
-            print("Level %d: %s" % (lvl, str(self.levels_type[lvl])))
-            if self.levels_type[lvl] == self.t_intro:
+        while self.currentLevel <= self.MAX_LEVEL:
+            print("Level %d: %s" % (self.currentLevel, str(self.levels_type[self.currentLevel])))
+            if self.levels_type[self.currentLevel] == self.t_intro:
                 self.intro_lvl()
-            elif self.levels_type[lvl] == self.t_normal:
+            elif self.levels_type[self.currentLevel] == self.t_normal:
                 self.normal_lvl()
-            elif self.levels_type[lvl] == self.t_heal:
+            elif self.levels_type[self.currentLevel] == self.t_heal:
                 self.heal_lvl()
-            elif self.levels_type[lvl] == self.t_final_boss:
+            elif self.levels_type[self.currentLevel] == self.t_final_boss:
                 self.boss_final()
-            elif self.levels_type[lvl] == self.t_boss:
+            elif self.levels_type[self.currentLevel] == self.t_boss:
                 self.boss_lvl()
+            self.changeCurrentLevel(self.currentLevel + 1)
+
+    def changeCurrentLevel(self, new_lvl):
+        self.currentLevel = new_lvl
+        self.levelChanged.emit(self.currentLevel)
 
     def boss_final(self):
         self.wait(2)
@@ -383,14 +410,14 @@ class CaveEngine(QObject):
     def quick_test_functions(self):
         pass
 
-    def start_infinite_play(self, start_lvl: int = 0):
+    def start_infinite_play(self):
         while True:
-            self.start_one_game(start_lvl)
-            start_lvl = 0
+            self.start_one_game()
+            self.currentLevel = 0
 
-    def start_one_game(self, start_lvl):
-        print("New game. Starting from level %d" % start_lvl)
-        if start_lvl == 0:
+    def start_one_game(self):
+        print("New game. Starting from level %d" % self.currentLevel)
+        if self.currentLevel == 0:
             if self.UseManualStart:
                 a = input("Press enter to start a game (your energy bar must be at least 5)")
             else:
@@ -399,7 +426,7 @@ class CaveEngine(QObject):
                     self.wait(60)
             self.chooseCave()
         try:
-            self.play_cave(start_lvl)
+            self.play_cave()
         except Exception as exc:
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")

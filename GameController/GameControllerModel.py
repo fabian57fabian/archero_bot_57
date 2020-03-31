@@ -1,21 +1,40 @@
 import os
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import pyqtSignal, QObject, QThread
 from CaveDungeonEngine import CaveEngine
+
+import threading
+
+
 # import _thread
-from threading import Thread
+# from threading import Thread
 
 
-class GameWorker(Thread):
-    def __init__(self, function):
+class GameWorker(QObject):
+    levelChanged = pyqtSignal(int)
+    addLog = pyqtSignal(str)
+
+    def __init__(self, engine, function):
         super().__init__()
         self.function = function
+        self.engine = engine
+        self.engine.levelChanged.connect(self.onChangeCurrentLevel)
+        self.engine.addLog.connect(self.onAddLogArrived)
 
+    def onAddLogArrived(self, l):
+        self.addLog.emit(l)
+
+    def onChangeCurrentLevel(self, i):
+        self.levelChanged.emit(i)
+
+    @QtCore.pyqtSlot()
     def run(self):
         self.function()
 
 
 class GameControllerModel(QObject):
     onLevelChanged = pyqtSignal(int)
+    onAddLog = pyqtSignal(str)
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
@@ -45,15 +64,19 @@ class GameControllerModel(QObject):
                          "12. Dungeon of Traps",
                          "13. Lava Land",
                          "14. Eskimo Lands"]
+        # self.worker = GameWorker(self.engine, self.engine.start_infinite_play)
         self.initConnectors()
-        self.worker = GameWorker(self.engine.start_infinite_play)
 
     def initConnectors(self):
-        self.engine.onLevelUp.connect(self.onChangeCurrentLevel)
+        self.engine.levelChanged.connect(self.onChangeCurrentLevel)
+        self.engine.addLog.connect(self.onAddLogArrived)
 
     def onChangeCurrentLevel(self, lvl: int):
         self.currentLevel = lvl
         self.onLevelChanged.emit(lvl)
+
+    def onAddLogArrived(self, log: str):
+        self.onAddLog.emit(log)
 
     def load_data(self):
         pass
@@ -89,7 +112,11 @@ class GameControllerModel(QObject):
         return path
 
     def playDungeon(self):
-        self.worker.run()
+        self.engine.currentLevel = 6  # .changeCurrentLevel(2)
+        # self.worker.run()
+        thread1 = threading.Thread(target=self.engine.start_infinite_play)  # , args=(100,))
+        thread1.start()
+        print("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
         # try:
         #     _thread.start_new_thread(self.engine.start_infinite_play, (0,))
         # except Exception as e:
