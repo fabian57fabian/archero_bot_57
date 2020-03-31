@@ -64,6 +64,11 @@ Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGenerat
 
 Remember to __disable notifications__ or __activate Do Not Disturb mode__.
 
+### New interface!
+A new interface was added. Launch **GameController.py** in order to play the game.
+
+The interface is not complete but provides basic view and play operations.
+
 ### Slow and high loot
 Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py' or open a CMD and write following line without '$'):
 ```console

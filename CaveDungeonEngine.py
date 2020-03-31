@@ -1,11 +1,20 @@
 import time
+
+from PyQt5.QtCore import QObject, pyqtSignal
+
 from pure_adb_connector import *
 # from pure_adb_connector import *
 from game_screen_connector import GameScreenConnector
 import sys
 
 
-class CaveEngine:
+class CaveEngine(QObject):
+    onLevelUp = pyqtSignal(int)
+
+    # onDictionaryTapsChanged = pyqtSignal(dict)
+    # onButtonLocationChanged = pyqtSignal(str)
+    # onImageSelected = pyqtSignal()
+
     playtime = 70
     # Set this to true if you want to use generated data with TouchManager. Uses below coordinates path
     UseGeneratedData = False
@@ -31,6 +40,7 @@ class CaveEngine:
     t_normal = 'normal'
     t_heal = 'heal'
     t_boss = 'boss'
+    t_final_boss = 'final_boss'
 
     levels_type = {
         0: t_intro,
@@ -53,11 +63,19 @@ class CaveEngine:
         17: t_heal,
         18: t_normal,
         19: t_heal,
-        20: t_boss,
+        20: t_final_boss,
     }
     max_loops_game = 20
 
     def __init__(self):
+        super(QObject, self).__init__()
+        self.buttons = self.getGeneratedData()
+        self.x, self.y, self.movements = self.getCoordinates()
+        self.width, self.heigth = 0,0
+        self.screen_connector = None
+        self.initConnection()
+
+    def initConnection(self):
         device = get_device_id()
         if device is None:
             print("Error: no device discovered. Start adb server before executing this.")
@@ -67,8 +85,6 @@ class CaveEngine:
         print("Your resolution is %dx%d" % (self.width, self.heigth))
         self.screen_connector = GameScreenConnector(self.width, self.heigth)
         self.screen_connector.debug = False
-        self.buttons = self.getGeneratedData()
-        self.x, self.y, self.movements = self.getCoordinates()
 
     def getCoordinates(self):
         # Do not change this parameters, they are made for normalization
@@ -341,7 +357,7 @@ class CaveEngine:
                 self.normal_lvl()
             elif self.levels_type[lvl] == self.t_heal:
                 self.heal_lvl()
-            elif lvl == 20:
+            elif self.levels_type[lvl] == self.t_final_boss:
                 self.boss_final()
             elif self.levels_type[lvl] == self.t_boss:
                 self.boss_lvl()
@@ -366,7 +382,7 @@ class CaveEngine:
     def quick_test_functions(self):
         pass
 
-    def start_infinite_play(self, start_lvl: int):
+    def start_infinite_play(self, start_lvl: int = 0):
         self.quick_test_functions()
         while True:
             self.start_one_game(start_lvl)

@@ -1,9 +1,11 @@
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
+from CaveDungeonEngine import CaveEngine
 
 
 class GameControllerModel(QObject):
-    # onSourceChanged = pyqtSignal(list)
+    onLevelChanged = pyqtSignal(int)
+
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
@@ -11,6 +13,8 @@ class GameControllerModel(QObject):
     def __init__(self):
         super(QObject, self).__init__()
         # Default data
+        self.engine = CaveEngine()
+        self.currentLevel = 0
         self.dict_buttons = 'data.py'
         self.ch_images_path = "images/"
         self.ch_image_ext = ".png"
@@ -30,9 +34,20 @@ class GameControllerModel(QObject):
                          "12. Dungeon of Traps",
                          "13. Lava Land",
                          "14. Eskimo Lands"]
+        self.initConnectors()
+
+    def initConnectors(self):
+        self.engine.onLevelUp.connect(self.onChangeCurrentLevel)
+
+    def onChangeCurrentLevel(self, lvl: int):
+        self.currentLevel = lvl
+        self.onLevelChanged.emit(lvl)
 
     def load_data(self):
         pass
+
+    def getLevelsNames(self):
+        return self.engine.levels_type
 
     def load_icons(self):
         icons_dts = {}
@@ -60,3 +75,6 @@ class GameControllerModel(QObject):
         else:
             path = os.path.join(self.icon_path, "Error-Delete-Icon.png")
         return path
+
+    def playDungeon(self):
+        self.engine.start_infinite_play()

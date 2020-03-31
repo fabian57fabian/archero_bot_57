@@ -9,20 +9,35 @@ from GameController.GameControllerModel import GameControllerModel
 
 
 class GameControllerController(QObject):
-    onChangeEnableStatesButtons = pyqtSignal(list)
+    onChangeEnableStatesButtons = pyqtSignal(dict)
 
     def __init__(self, model: GameControllerModel):
         super(QObject, self).__init__()
         self.model = model
+        # Set intial states
+        self.controllerStates = {'play': True, 'pause': False, 'skip': False, 'stop': False}
 
     def playRequested(self):
-        self.onChangeEnableStatesButtons.emit([('play', False),('pause', True), ('stop', False)])
+        self.controllerStates['play'] = False
+        self.controllerStates['pause'] = False
+        self.controllerStates['stop'] = False
+        self.controllerStates['skip'] = False
+        self.onChangeEnableStatesButtons.emit(self.controllerStates)
+        self.model.playDungeon()
 
     def pauseRequested(self):
-        self.onChangeEnableStatesButtons.emit([('pause', False), ('play', True), ('stop', True)])
+        self.controllerStates['play'] = False
+        self.controllerStates['pause'] = False
+        self.controllerStates['stop'] = False
+        self.controllerStates['skip'] = False
+        self.onChangeEnableStatesButtons.emit(self.controllerStates)
 
     def skipRequested(self):
         pass
 
     def stopRequested(self):
-        self.onChangeEnableStatesButtons.emit([('pause', False), ('play', True), ('stop', True)])
+        self.controllerStates['play'] = False
+        self.controllerStates['pause'] = False
+        self.controllerStates['stop'] = False
+        self.controllerStates['skip'] = False
+        self.onChangeEnableStatesButtons.emit(self.controllerStates)

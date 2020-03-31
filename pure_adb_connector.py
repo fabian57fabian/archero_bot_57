@@ -8,23 +8,43 @@ import io
 This is the library
 https://pypi.org/project/pure-python-adb/
 """
+checkConnected = False
+connected = False
+my_device = None
 
-print("Initializing ppadb library")
-os.system("adb devices")  # this is done to make it connect (like __init__ )
-# Default is "127.0.0.1" and 5037
-_client = AdbClient(host="127.0.0.1", port=5037)
-devs = _client.devices()
-if len(devs) < 1:
-    print("No devices running.")
-    exit(1)
-my_device = _client.device(devs[0].get_serial_no())
+
+def connect():
+    print("Initializing ppadb library")
+    os.system("adb devices")  # this is done to make it connect (like __init__ )
+    # Default is "127.0.0.1" and 5037
+    _client = AdbClient(host="127.0.0.1", port=5037)
+    devs = _client.devices()
+    if len(devs) < 1:
+        print("No devices running.")
+        exit(1)
+    my_device = _client.device(devs[0].get_serial_no())
+    return my_device
+
+
+if checkConnected:
+    my_device = connect()
+
+
+def _checkConnected():
+    global connected
+    if not connected:
+        global my_device
+        my_device = connect()
+        connected = True
 
 
 def get_device_id():
+    _checkConnected()
     return my_device.get_serial_no()
 
 
 def adb_get_size():
+    _checkConnected()
     bytes_screen = my_device.screencap()
     im = Image.open(io.BytesIO(bytes_screen))
     w, h = im.size
@@ -32,15 +52,17 @@ def adb_get_size():
     return w, h
 
 
-def adb_screen(name:str = "screen.png"):
+def adb_screen(name: str = "screen.png"):
+    _checkConnected()
     """
     Executes a screen and saved it in current folder as 'screen.png'
     :return:
     """
-    os.system("adb exec-out screencap -p > "+name)
+    os.system("adb exec-out screencap -p > " + name)
 
 
 def adb_screen_getpixels():
+    _checkConnected()
     bytes_screen = my_device.screencap()
     pixval = None
     with Image.open(io.BytesIO(bytes_screen)) as im:
@@ -49,6 +71,7 @@ def adb_screen_getpixels():
 
 
 def adb_swipe(locations, s):
+    _checkConnected()
     """
     Executes sdb swipe function
 
@@ -62,6 +85,7 @@ def adb_swipe(locations, s):
 
 
 def adb_tap(coord):
+    _checkConnected()
     """
     Executes sdb tap function
 
@@ -162,6 +186,7 @@ keycodes = {
 
 
 def adb_tap_key(keycode: str):
+    _checkConnected()
     # global keycodes
     if keycode in keycodes:
         my_device.input_keyevent(keycodes[keycode])

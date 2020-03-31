@@ -8,6 +8,7 @@ from QMyWidgets.QLevelState import QLevelState, PlayState
 from GameController.GameControllerController import GameControllerController
 from GameController.GameControllerModel import GameControllerModel
 
+
 class QDeskArea(QWidget):
     def __init__(self, parent: QWidget, controller: GameControllerController, model: GameControllerModel):
         super(QWidget, self).__init__()
@@ -21,6 +22,19 @@ class QDeskArea(QWidget):
         self.setStyleSheet("background-color: rgb(43, 43, 43)")
         self.chapersState = []
         self.initUI()
+        self.initconnectors()
+
+    def initconnectors(self):
+        self.model.onLevelChanged.connect(self.levelChanged)
+
+    def levelChanged(self, new_level):
+        for i, levelState in enumerate(self.chapersState):
+            if i < new_level:
+                levelState.SetState(PlayState.Played)
+            elif i == new_level:
+                levelState.SetState(PlayState.Playing)
+            else:
+                levelState.SetState(PlayState.ToBePlayed)
 
     def build_add_btn(self):
         button = QPushButton(self)
@@ -36,7 +50,7 @@ class QDeskArea(QWidget):
     def initUI(self):
         self.setLayout(self.main_layout)
         self.chapersState = []
-        for i, v in enumerate(self.getLevelsNames()):
+        for i, v in self.model.getLevelsNames().items():
             color = self.getColorByLevel(v)
             object = QLevelState(i, v, color, parent=self)
             self.chapersState.append(object)
@@ -51,29 +65,6 @@ class QDeskArea(QWidget):
         self.scroll.setWidget(self.widget)
         self.scroll.setAlignment(Qt.AlignCenter)
         self.main_layout.addWidget(self.scroll)
-        # self.setSizePolicy(
-        #    QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        # self.setCentralWidget(self.scroll)
-
-        # self.setGeometry(600, 100, 1000, 900)
-
-    def insertMockupData(self):
-        current = 3
-        for i, object in enumerate(self.chapersState):
-            if i < current:
-                object.SetState(PlayState.Played)
-                object.addLog("Navigating...")
-                object.addLog("Doing a")
-                object.addLog("Clicking x,y")
-                object.addLog("Leveled up!")
-                object.addLog("Exiting")
-            if i == current:
-                object.SetState(PlayState.Playing)
-                object.addLog("Navigating...")
-                object.addLog("Doing a")
-                object.addLog("Clicking x,y")
-            if i > current:
-                object.SetState(PlayState.ToBePlayed)
 
     def getColorByLevel(self, level_name):
         if level_name == "intro":
@@ -88,30 +79,3 @@ class QDeskArea(QWidget):
             return (127, 0, 0)
         else:
             return (255, 255, 255)
-
-    def getLevelsNames(self):
-        intro, normal, heal, boss, level_boss = "intro", "normal", "heal", "boss", "final_boss"
-        levels_type = [
-            intro,
-            normal,
-            heal,
-            normal,
-            heal,
-            boss,
-            normal,
-            heal,
-            normal,
-            heal,
-            boss,
-            normal,
-            heal,
-            normal,
-            heal,
-            boss,
-            normal,
-            heal,
-            normal,
-            heal,
-            boss,
-        ]
-        return levels_type

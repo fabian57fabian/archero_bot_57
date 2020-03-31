@@ -29,6 +29,10 @@ class QDungeonController(QWidget):
     def initButton(self, button, icon_name):
         button.setIconPath(self.model.getIconPath(icon_name))
         button.changeSize(self.buttonsSize)
+        for k, state_btn in self.controller.controllerStates.items():
+            if k == icon_name:
+                button.changeEnableState(state_btn)
+                break
 
     def initUI(self):
         lay = QHBoxLayout()
@@ -52,9 +56,8 @@ class QDungeonController(QWidget):
 
         self.controller.onChangeEnableStatesButtons.connect(self.changeButtonsState)
 
-    def changeButtonsState(self, buttons: list):
-        for newState in buttons:
-            name, enabled = newState
+    def changeButtonsState(self, buttons: dict):
+        for name, enabled in buttons.items():
             if name == 'play':
                 self.btn_play.changeEnableState(enabled)
             elif name == 'pause':
