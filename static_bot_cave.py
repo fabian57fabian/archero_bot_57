@@ -19,4 +19,5 @@ def get_start_lvl_from_args():
 
 while True:
     engine = CaveEngine()
-    engine.start_infinite_play(get_start_lvl_from_args())
+    engine.currentLevel = get_start_lvl_from_args()
+    engine.start_infinite_play()
