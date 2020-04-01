@@ -437,7 +437,8 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def start_one_game(self):
-        self.setStopRequested(False)
+        self.stopRequested = False
+        self.screen_connector.stopRequested = False
         self.log("New game started")
         print("New game. Starting from level %d" % self.currentLevel)
         if self.currentLevel == 0:
