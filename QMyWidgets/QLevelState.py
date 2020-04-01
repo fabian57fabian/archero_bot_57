@@ -67,8 +67,10 @@ class QLevelState(QWidget):
         self.changeScreenCount(0)
 
     def SetState(self, state: PlayState):
+        if state == self.state:
+            return
         reset = False
-        if self.state == PlayState.Played and state in [PlayState.ToBePlayed, PlayState.Playing]:
+        if self.state in [PlayState.Played, PlayState.Playing] and state in [PlayState.ToBePlayed, PlayState.Playing]:
             reset = True
         self.state = state
         self.updateStateColor()
