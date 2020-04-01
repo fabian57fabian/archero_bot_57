@@ -36,6 +36,9 @@ class QLevelState(QWidget):
         self.color_playing = (213, 216, 220)
         self.color_not_played = (33, 47, 61)
 
+        self.fgplayed = (255, 255, 255)
+        self.fgplaying = (0, 0, 0)
+
         self.state = PlayState.ToBePlayed
 
         self.updateStateColor()
@@ -75,15 +78,20 @@ class QLevelState(QWidget):
         #         self.addLog(l)
 
     def updateStateColor(self):
-        color = (255, 255, 255)
+        bgcolor = (255, 255, 255)
         if self.state == PlayState.Played:
-            color = self.color_played
+            bgcolor = self.color_played
+            fgcolor = self.fgplayed
         elif self.state == PlayState.Playing:
-            color = self.color_playing
+            bgcolor = self.color_playing
+            fgcolor = self.fgplaying
         elif self.state == PlayState.ToBePlayed:
-            color = self.color_not_played
+            bgcolor = self.color_not_played
+            fgcolor = self.fgplayed
+        self.logs.setStyleSheet("color: rgb({}, {}, {})".format(fgcolor[0], fgcolor[1], fgcolor[2]))
+        self.lblScreenChecks.setStyleSheet("color: rgb({}, {}, {})".format(fgcolor[0], fgcolor[1], fgcolor[2]))
         self.setStyleSheet(
-            "background-color: rgb({}, {}, {}); border-radius: 5px;".format(color[0], color[1], color[2]))
+            "background-color: rgb({}, {}, {}); border-radius: 5px;".format(bgcolor[0], bgcolor[1], bgcolor[2]))
 
     def color_from_level(self, level_name: str):
         if level_name not in self.levels_colors:
@@ -129,7 +137,6 @@ class QLevelState(QWidget):
         # self.cBoxDirection.setObjectName("cBoxDirection")
 
         # self.lay.addWidget(self.lblName)
-        self.lblScreenChecks.setStyleSheet("color: white")
         self.lblScreenChecks.setAlignment(Qt.AlignCenter)
         self.lay.addWidget(self.logs)
         self.lay.addWidget(self.lblScreenChecks)
