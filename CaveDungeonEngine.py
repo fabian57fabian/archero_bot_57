@@ -232,6 +232,7 @@ class CaveEngine(QObject):
             if i % 10 == 0 or recheck:
                 recheck = False
                 print("Checking screen...")
+                self.log("screen check")
                 frame = self.screen_connector.getFrame()
                 state = self.screen_connector.getFrameState(frame)
                 if state == "unknown":
@@ -266,7 +267,6 @@ class CaveEngine(QObject):
             self.wait(1)
 
     def reactGamePopups(self, ):
-        self.log("Continous screen check")
         state = ""
         i = 0
         while state != "in_game":
@@ -276,6 +276,7 @@ class CaveEngine(QObject):
                 print("Max loops reached")
                 self.log("Max loops reached")
                 exit(1)
+            self.log("screen check")
             state = self.screen_connector.getFrameState()
             print("state: %s" % state)
             if state == "select_ability":
@@ -436,6 +437,7 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def start_one_game(self):
+        self.log("New game started")
         print("New game. Starting from level %d" % self.currentLevel)
         if self.currentLevel == 0:
             if self.UseManualStart:

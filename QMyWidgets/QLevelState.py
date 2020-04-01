@@ -30,6 +30,7 @@ class QLevelState(QWidget):
         self.frame = QFrame()
         self.logs = QtWidgets.QPlainTextEdit()
         self.lay = QVBoxLayout()
+        self.lblScreenChecks = QtWidgets.QLabel(self)
 
         self.color_played = (86, 101, 115)
         self.color_playing = (213, 216, 220)
@@ -39,16 +40,28 @@ class QLevelState(QWidget):
 
         self.updateStateColor()
         self.currentLogs = []
+        self.screensCount = 0
         # self.last_logs = []
         self.setupUi()
 
+    def changeScreenCount(self, newCount: int):
+        self.screensCount = newCount
+        if self.screensCount == 0:
+            self.lblScreenChecks.setText("")
+        else:
+            self.lblScreenChecks.setText("Total screens: {}".format(self.screensCount))
+
     def addLog(self, log: str):
-        self.currentLogs.append(log)
-        self.logs.appendPlainText(log)
+        if log == "screen check":
+            self.changeScreenCount(self.screensCount + 1)
+        else:
+            self.currentLogs.append(log)
+            self.logs.appendPlainText(log)
 
     def reset(self):
         self.SetState(PlayState.ToBePlayed)
         self.logs.clear()
+        self.changeScreenCount(0)
 
     def SetState(self, state: PlayState):
         self.state = state
@@ -116,7 +129,10 @@ class QLevelState(QWidget):
         # self.cBoxDirection.setObjectName("cBoxDirection")
 
         # self.lay.addWidget(self.lblName)
+        self.lblScreenChecks.setStyleSheet("color: white")
+        self.lblScreenChecks.setAlignment(Qt.AlignCenter)
         self.lay.addWidget(self.logs)
+        self.lay.addWidget(self.lblScreenChecks)
 
         self.setLayout(self.lay)
         QtCore.QMetaObject.connectSlotsByName(self)
