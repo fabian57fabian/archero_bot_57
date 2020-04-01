@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QResizeEvent
 
-from GameController.GameControllerModel import GameControllerModel
+from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
@@ -22,18 +22,26 @@ class GameControllerWindow(QWidget):
         self.model = model
         self.main_layout = QGridLayout()
         self.dungeonSelector = QDungeonSelector(self, model)
-        #self.widRun = QToolboxRun(self)
+        # self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
         self.setupUi()
         self.initConnectors()
+
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
-        pass
+        self.model.engineStatechanged.connect(self.onEngineStateChanged)
 
+    def onEngineStateChanged(self, state: EngineState):
+        if state == EngineState.Playing:
+            self.infoLabel.setText("Engine started playing")
+        elif state == EngineState.StopInvoked:
+            self.infoLabel.setText("Engine stopping. Wait a second....")
+        elif state == EngineState.Stopped:
+            self.infoLabel.setText("Engine stopped")
 
     def get_toolbar_size(self):
         return self.toolbar_w, self.toolbar_h
@@ -58,13 +66,14 @@ class GameControllerWindow(QWidget):
 
         self.main_layout.addWidget(self.dungeonSelector, 0, 0)
 
-        #self.widRun.setFixedHeight(self.toolbar_h)
-        #self.main_layout.addWidget(self.widRun, 0, 1)
+        # self.widRun.setFixedHeight(self.toolbar_h)
+        # self.main_layout.addWidget(self.widRun, 0, 1)
         lay_content = QVBoxLayout()
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
-        self.infoLabel.setStyleSheet("background-color: #6e6e6e")
+        self.infoLabel.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.infoLabel.setAlignment(Qt.AlignCenter)
         self.main_layout.addLayout(lay_content, 0, 1)
 
         self.widActions.setFixedWidth(self.toolbar_w)
@@ -78,6 +87,3 @@ class GameControllerWindow(QWidget):
 
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)
-
-    def initSignals(self):
-        pass

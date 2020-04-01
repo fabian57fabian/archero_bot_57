@@ -37,10 +37,13 @@ class QLevelState(QWidget):
 
         self.state = PlayState.ToBePlayed
 
-        self.updateState()
+        self.updateStateColor()
+        self.currentLogs = []
+        # self.last_logs = []
         self.setupUi()
 
     def addLog(self, log: str):
+        self.currentLogs.append(log)
         self.logs.appendPlainText(log)
 
     def reset(self):
@@ -49,9 +52,16 @@ class QLevelState(QWidget):
 
     def SetState(self, state: PlayState):
         self.state = state
-        self.updateState()
+        self.updateStateColor()
+        if state == PlayState.ToBePlayed and len(self.currentLogs) > 0:
+            # self.last_logs = self.currentLogs.copy()
+            self.currentLogs = []
+            self.logs.setPlainText("")
+        # elif state == PlayState.Played and len(self.last_logs) > 0:
+        #     for l in self.last_logs:
+        #         self.addLog(l)
 
-    def updateState(self):
+    def updateStateColor(self):
         color = (255, 255, 255)
         if self.state == PlayState.Played:
             color = self.color_played

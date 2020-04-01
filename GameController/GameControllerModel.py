@@ -9,31 +9,32 @@ import threading
 # import _thread
 # from threading import Thread
 
+class WorkerThread(threading.Thread):
 
-class GameWorker(QObject):
-    levelChanged = pyqtSignal(int)
-    addLog = pyqtSignal(str)
+    # Thread class with a _stop() method.
+    # The thread itself has to check
+    # regularly for the stopped() condition.
 
-    def __init__(self, engine, function):
-        super().__init__()
-        self.function = function
-        self.engine = engine
-        self.engine.levelChanged.connect(self.onChangeCurrentLevel)
-        self.engine.addLog.connect(self.onAddLogArrived)
+    def __init__(self, *args, **kwargs):
+        super(WorkerThread, self).__init__(*args, **kwargs)
+        self.function = None
 
-    def onAddLogArrived(self, l):
-        self.addLog.emit(l)
-
-    def onChangeCurrentLevel(self, i):
-        self.levelChanged.emit(i)
-
-    @QtCore.pyqtSlot()
     def run(self):
         self.function()
 
 
+import enum
+
+
+class EngineState(enum.Enum):
+    Stopped = 1
+    Playing = 2
+    StopInvoked = 3
+
+
 class GameControllerModel(QObject):
-    # onDictionaryTapsChanged = pyqtSignal(dict)
+    engineStatechanged = pyqtSignal(EngineState)
+
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
 
@@ -60,6 +61,7 @@ class GameControllerModel(QObject):
                          "12. Dungeon of Traps",
                          "13. Lava Land",
                          "14. Eskimo Lands"]
+        self.workerThread: WorkerThread = None  # threading.Thread(target=self.engine.start_infinite_play)
         # self.worker = GameWorker(self.engine, self.engine.start_infinite_play)
 
     def load_data(self):
@@ -97,10 +99,31 @@ class GameControllerModel(QObject):
         return path
 
     def playDungeon(self):
-        thread1 = threading.Thread(target=self.engine.start_infinite_play)  # , args=(100,))
-        thread1.start()
-        print("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+        if self.workerThread is not None:
+            self.stopDungeon()
+        self.workerThread = WorkerThread()  # threading.Thread(target=self.engine.start_infinite_play)  # , args=(100,))
+        self.workerThread.function = self.engine.start_infinite_play
+        self.workerThread.start()
         # try:
         #     _thread.start_new_thread(self.engine.start_infinite_play, (0,))
         # except Exception as e:
         #     print("Error: unable to start thread: %s" % str(e))
+
+    def waitForEngineEnd(self):
+        if self.workerThread is not None:
+            self.workerThread.join()
+
+    def pauseDungeon(self):
+        if self.workerThread is not None:
+            try:
+                self.engineStatechanged.emit(EngineState.StopInvoked)
+                self.engine.setStopRequested()
+                self.waitForEngineEnd()
+                self.engineStatechanged.emit(EngineState.Stopped)
+            except Exception as e:
+                print("Trying to kill process resulted in: %s" % str(e))
+
+    def stopDungeon(self):
+        self.pauseDungeon()
+        self.workerThread = None
+        self.engine.changeCurrentLevel(0)

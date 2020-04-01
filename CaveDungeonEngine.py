@@ -75,9 +75,14 @@ class CaveEngine(QObject):
         self.buttons = self.getGeneratedData()
         self.x, self.y, self.movements = self.getCoordinates()
         self.width, self.heigth = 0, 0
-        self.screen_connector = None
+        self.screen_connector: GameScreenConnector = None
         self.initConnection()
         self.disableLogs = False
+        self.stopRequested = False
+
+    def setStopRequested(self):
+        self.stopRequested = True
+        self.screen_connector.stopRequested = True
 
     def initConnection(self):
         device = get_device_id()
@@ -128,6 +133,8 @@ class CaveEngine(QObject):
         adb_swipe([start[0] * self.width, start[1] * self.heigth, stop[2] * self.width, stop[3] * self.heigth], s)
 
     def swipe(self, name, s):
+        if self.stopRequested:
+            exit()
         coord = self.movements[name]
         print("Swiping %s in %f" % (self.print_names_movements[name], s))
         self.log("Swipe %s in %.2f" % (self.print_names_movements[name], s))
@@ -135,6 +142,8 @@ class CaveEngine(QObject):
         adb_swipe([coord[0] * self.width, coord[1] * self.heigth, coord[2] * self.width, coord[3] * self.heigth], s)
 
     def tap(self, name):
+        if self.stopRequested:
+            exit()
         self.log("Tap %s" % name)
         # convert back from normalized values
         x, y = int(self.buttons[name][0] * self.width), int(self.buttons[name][1] * self.heigth)
@@ -142,7 +151,14 @@ class CaveEngine(QObject):
         adb_tap((x, y))
 
     def wait(self, s):
-        time.sleep(s)
+        if self.stopRequested:
+            exit()
+        decimal = s
+        if int(s) > 0:
+            decimal = s - int(s)
+            for _ in range(int(s)):
+                time.sleep(1)
+        time.sleep(decimal)
 
     def exit_dungeon_uncentered(self):
         # Center
@@ -254,8 +270,11 @@ class CaveEngine(QObject):
         state = ""
         i = 0
         while state != "in_game":
+            if self.stopRequested:
+                exit()
             if i > self.max_loops_game:
                 print("Max loops reached")
+                self.log("Max loops reached")
                 exit(1)
             state = self.screen_connector.getFrameState()
             print("state: %s" % state)
@@ -289,6 +308,7 @@ class CaveEngine(QObject):
             elif state == "endgame":
                 raise Exception('ended')
             i += 1
+            self.wait(.1)
 
     def normal_lvl(self):
         self.goTroughDungeon()
