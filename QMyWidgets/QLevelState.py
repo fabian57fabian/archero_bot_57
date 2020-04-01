@@ -73,12 +73,14 @@ class QLevelState(QWidget):
             # self.last_logs = self.currentLogs.copy()
             self.currentLogs = []
             self.logs.setPlainText("")
+            self.changeScreenCount(0)
         # elif state == PlayState.Played and len(self.last_logs) > 0:
         #     for l in self.last_logs:
         #         self.addLog(l)
 
     def updateStateColor(self):
         bgcolor = (255, 255, 255)
+        fgcolor = (0, 0, 0)
         if self.state == PlayState.Played:
             bgcolor = self.color_played
             fgcolor = self.fgplayed
