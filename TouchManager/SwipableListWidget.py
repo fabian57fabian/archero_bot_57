@@ -12,6 +12,7 @@ from TouchManager.TouchManagerModel import TouchManagerModel
 
 
 class SwipableListWidget(QWidget):
+    onElementClicked = pyqtSignal(str)
 
     def __init__(self, parent: QWidget, controller: TouchManagerController, model: TouchManagerModel):
         super(QWidget, self).__init__()
@@ -24,7 +25,6 @@ class SwipableListWidget(QWidget):
         self.elementsDict = {}
         self.lastElementSelected = ""
         self.setupUI()
-        self.initConnectors()
 
     def setupUI(self):
         self.setLayout(self.main_layout)
@@ -37,18 +37,15 @@ class SwipableListWidget(QWidget):
         self.scroller.setWidget(self.widget)
         self.main_layout.addWidget(self.scroller)
 
-
-    def initConnectors(self):
-        self.controller.onElementSelectionChanged.connect(self.onSelectionChanged)
-        self.model.onPointAdded.connect(self.addElement)
-        self.model.onDictionaryTapsChanged.connect(self.onDictChanged)
-
     def addElement(self, button_name):
         button = QtWidgets.QPushButton(button_name)
-        button.clicked.connect(partial(self.controller.elementSelectRequets, button_name))
+        button.clicked.connect(partial(self._element_clicked, button_name))
 
         self.elementsDict[button_name] = button
         self.verticalLayout.addRow(self.elementsDict[button_name])
+
+    def _element_clicked(self, name):
+        self.onElementClicked.emit(name)
 
     def onSelectionChanged(self, btn_name):
         if self.lastElementSelected != "":
@@ -56,8 +53,13 @@ class SwipableListWidget(QWidget):
         self.elementsDict[btn_name].setStyleSheet("QPushButton { background-color : %s; }" % self.model.ui_color)
         self.lastElementSelected = btn_name
 
-    def onDictChanged(self):
+    def onDictChanged(self, new_source):
         # self.dataLayout.deleteLater()
-        for button_pos in self.model.currentDict.items():
+        _dict = new_source
+        if type(new_source) == list:
+            _dict = {}
+            for d in new_source:
+                _dict[d] = None
+        for button_pos in _dict.items():
             # button = QtWidgets.QPushButton("%s, %dx%d" %(button_pos[0], button_pos[1][0],button_pos[1][1]))
             self.addElement(button_pos[0])

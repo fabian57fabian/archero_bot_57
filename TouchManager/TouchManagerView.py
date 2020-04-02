@@ -17,11 +17,23 @@ class TouchManagerWindow(QWidget):
         self.model = model
         self.controller = controller
         self.model.onSourceChanged.connect(self.source_changed)
-        self.model.onImageAdded.connect(self.add_image)
         self.model.onDictionaryTapsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
-        self.imagesLayout = QFormLayout()
+        # self.imagesLayout = QFormLayout()
+
         self.areaScroller = SwipableListWidget(self, controller, model)
+
+        self.controller.onElementSelectionChanged.connect(self.areaScroller.onSelectionChanged)
+        self.areaScroller.onElementClicked.connect(self.controller.elementSelectRequets)
+        self.model.onPointAdded.connect(self.areaScroller.addElement)
+        self.model.onDictionaryTapsChanged.connect(self.areaScroller.onDictChanged)
+
+        self.screensScroller = SwipableListWidget(self, self.controller, self.model)
+        self.model.onImageAdded.connect(self.screensScroller.addElement)
+        self.screensScroller.onElementClicked.connect(self.controller.imageSelectRequets)
+        self.controller.onImageSelectionChanged.connect(self.screensScroller.onSelectionChanged)
+        self.model.onSourceChanged.connect(self.screensScroller.onDictChanged)
+
         self.folder_label = QLabel()
         self.image_label = QtWidgets.QLabel()
         self.photo = QLabel()
@@ -32,7 +44,6 @@ class TouchManagerWindow(QWidget):
         self.add_point_btn = QPushButton()
         self.size_label = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
-        self.image_selected = ""
         self.files = {}
         self.current_image_pixmap = []
         self.current_image_size = [0, 0]
@@ -43,8 +54,8 @@ class TouchManagerWindow(QWidget):
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
         main_window.resize(800, 600)
-        main_window.setMaximumWidth(800)
-        main_window.setMaximumHeight(600)
+        #main_window.setMaximumWidth(800)
+        #main_window.setMaximumHeight(600)
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
         lay_vertical_0 = QVBoxLayout()
@@ -54,15 +65,7 @@ class TouchManagerWindow(QWidget):
         self.folder_label.setFixedHeight(20)
         lay_vertical_0.addWidget(self.folder_label)
 
-        # Add images layout
-        self.imagesLayout.setSpacing(0)
-        self.imagesLayout.setContentsMargins(0, 0, 0, 0)
-        scroll = QScrollArea()
-        scroll.setLayout(self.imagesLayout)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll.setFixedWidth(200)
-        lay_vertical_0.addWidget(scroll)
+        lay_vertical_0.addWidget(self.screensScroller)
 
         self.screen_btn.setText("Get screen")
         lay_vertical_0.addWidget(self.screen_btn)
@@ -114,6 +117,7 @@ class TouchManagerWindow(QWidget):
         self.screen_btn.clicked.connect(self.acquire_screen)
         self.add_point_btn.clicked.connect(self.add_point)
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
+        self.controller.onImageSelectionChanged.connect(self.update_image_draw)
 
     def acquire_screen(self):
         if self.model.is_device_connected():
@@ -137,29 +141,7 @@ class TouchManagerWindow(QWidget):
         self.folder_label.setText(newfolder)
 
     def source_changed(self, current_files):
-        # self.imagesLayout.deleteLater()
         self.photo.clear()
-        self.image_selected = current_files[0]
-        for path in current_files:
-            self.add_image(path)
-        self.files[self.image_selected].setStyleSheet(
-            "QPushButton { background-color : %s; }" % self.model.ui_color)
-        self.update_image_draw()
-
-    def add_image(self, filename):
-        button = QtWidgets.QPushButton(filename)
-        button.clicked.connect(partial(self.image_clicked, filename))
-        self.files[filename] = button
-        self.imagesLayout.addRow(self.files[filename])
-
-    # This needs to stay in controller
-    def image_clicked(self, path):
-        self.files[self.image_selected].setStyleSheet("QPushButton { background-color : white; }")
-        self.files[path].setStyleSheet("QPushButton { background-color : %s; }" % self.model.ui_color)
-        # Removed because of extra labeling
-        # self.image_label.setText(path)
-        self.image_selected = path
-        self.update_image_draw()
 
     def dict_changed(self):
         self.update_image_draw()
@@ -173,8 +155,8 @@ class TouchManagerWindow(QWidget):
         self.update_image_draw()
 
     def update_image_draw(self):
-        if self.image_selected != "":
-            path_complete = os.path.join(self.model.images_path, self.image_selected)
+        if self.controller.image_selected != "":
+            path_complete = os.path.join(self.model.images_path, self.controller.image_selected)
             self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
             self.current_image_size = [pixmap.width(), pixmap.height()]
             if self.controller.dict_selected != "":

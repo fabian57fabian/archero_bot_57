@@ -17,11 +17,13 @@ class ShowAreaState(enum.Enum):
 class TouchManagerController(QObject):
     onCurrentShowAreaChanged = pyqtSignal(ShowAreaState)
     onElementSelectionChanged = pyqtSignal(str)
+    onImageSelectionChanged = pyqtSignal(str)
 
     def __init__(self, model: TouchManagerModel):
         super(QObject, self).__init__()
         self.model = model
         self.dict_selected = ""
+        self.image_selected = ""
         self.coordShowerState = ShowAreaState.Buttons
         self.initConnectors()
 
@@ -47,3 +49,7 @@ class TouchManagerController(QObject):
     def elementSelectRequets(self, btn_name):
         self.dict_selected = btn_name
         self.onElementSelectionChanged.emit(self.dict_selected)
+
+    def imageSelectRequets(self, image_name):
+        self.image_selected = image_name
+        self.onImageSelectionChanged.emit(self.image_selected)
