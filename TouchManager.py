@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from TouchManager.TouchManagerView import TouchManagerWindow
 from TouchManager.TouchManagerModel import TouchManagerModel
+from TouchManager.TouchManagerController import TouchManagerController
 
 if __name__ == "__main__":
     import sys
@@ -9,7 +10,8 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     # this is a mockup for data. next time save a configuration file
     model = TouchManagerModel()
-    ui = TouchManagerWindow(model)
+    controller = TouchManagerController(model)
+    ui = TouchManagerWindow(controller, model)
     ui.setupUi(MainWindow)
     model.load_data()
     MainWindow.show()

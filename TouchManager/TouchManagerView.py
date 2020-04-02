@@ -1,19 +1,19 @@
 from functools import partial
-
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
-
-from TouchManager.TouchManagerModel import TouchManagerModel
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
     QInputDialog, QLineEdit, QWidget
 import os
-
+from TouchManager.TouchManagerModel import TouchManagerModel
+from TouchManager.TouchManagerController import TouchManagerController
+from TouchManager.CoordinatesSelector import CoordinatesSelector
 
 class TouchManagerWindow(QWidget):
-    def __init__(self, model: TouchManagerModel):
+    def __init__(self,  controller: TouchManagerController, model: TouchManagerModel):
         super(QWidget, self).__init__()
         self.model = model
+        self.controller = controller
         self.model.onSourceChanged.connect(self.source_changed)
         self.model.onImageAdded.connect(self.add_image)
         self.model.onPointAdded.connect(self.add_button)
@@ -30,6 +30,7 @@ class TouchManagerWindow(QWidget):
         self.screen_btn = QPushButton()
         self.add_point_btn = QPushButton()
         self.size_label = QLabel()
+        self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
         self.image_selected = ""
         self.dict_selected = ""
         self.files = {}
@@ -94,7 +95,8 @@ class TouchManagerWindow(QWidget):
         right_label = QtWidgets.QLabel(self.model.dict_out_name)
         right_label.setFixedHeight(20)
         right_label.setAlignment(Qt.AlignCenter)
-        lay_vertical_2.addWidget(right_label)
+        # TODO: insert back right_label later
+        lay_vertical_2.addWidget(self.showAreaController)
         # Add dict Layout
         self.dictLayout.setSpacing(0)
         self.dictLayout.setContentsMargins(0, 0, 0, 0)
@@ -102,7 +104,7 @@ class TouchManagerWindow(QWidget):
         scroll_btns.setLayout(self.dictLayout)
         scroll_btns.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scroll_btns.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll_btns.setFixedWidth(200)
+        #scroll_btns.setFixedWidth(200)
         lay_vertical_2.addWidget(scroll_btns)
 
         self.add_point_btn.setText("Add point")
