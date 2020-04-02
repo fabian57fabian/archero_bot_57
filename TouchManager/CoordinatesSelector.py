@@ -1,3 +1,5 @@
+from functools import partial
+
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout
@@ -7,6 +9,7 @@ from PyQt5 import QtWidgets, uic
 from QMyWidgets.QLevelState import QLevelState, PlayState
 from TouchManager.TouchManagerController import TouchManagerController
 from TouchManager.TouchManagerModel import TouchManagerModel
+from TouchManager.TouchManagerController import ShowAreaState
 
 
 class CoordinatesSelector(QWidget):
@@ -39,6 +42,6 @@ class CoordinatesSelector(QWidget):
         self.setLayout(lay)
 
     def initSignals(self):
-        self.btn_buttons.clicked.connect(self.controller.showButtonsRequested)
-        self.btn_movements.clicked.connect(self.controller.showMovementsRequested)
-        self.btn_checkpoints.clicked.connect(self.controller.showCheckpointsrequested)
+        self.btn_buttons.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Buttons))
+        self.btn_movements.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Movements))
+        self.btn_checkpoints.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.FrameCheck))

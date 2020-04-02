@@ -1,14 +1,15 @@
-from functools import partial
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QLineEdit, QWidget, QComboBox
-import os
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QMainWindow, \
+    QInputDialog, QLineEdit, QComboBox, QWidget
 from TouchManager.TouchManagerModel import TouchManagerModel
 from TouchManager.TouchManagerController import TouchManagerController
+from TouchManager.TouchManagerController import ShowAreaState
 from TouchManager.CoordinatesSelector import CoordinatesSelector
 from TouchManager.SwipableListWidget import SwipableListWidget
+
+from TouchManager.ElementOption import ElementOption
 
 
 class TouchManagerWindow(QWidget):
@@ -16,6 +17,10 @@ class TouchManagerWindow(QWidget):
         super(QWidget, self).__init__()
         self.model = model
         self.controller = controller
+
+        self.optionArea = ElementOption(self, self.controller, self.model)
+        self.controller.onCurrentShowAreaChanged.connect(self.optionArea.areatypeChanged)
+
         self.controller.onImagesChanged.connect(self.source_changed)
         self.controller.onButtonsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
@@ -46,7 +51,7 @@ class TouchManagerWindow(QWidget):
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
         self.files = {}
         self.current_image_pixmap = []
-        self.current_image_size = [0, 0]
+        self.model.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
         self.label_photo_fixed_size = [400, 500]
         self.initConnectors()
@@ -101,9 +106,9 @@ class TouchManagerWindow(QWidget):
         right_label.setAlignment(Qt.AlignCenter)
         # TODO: insert back right_label later
         lay_vertical_2.addWidget(self.showAreaController)
-
         lay_vertical_2.addWidget(self.areaScroller)
-
+        lay_vertical_2.addWidget(self.optionArea)
+        lay_vertical_2.setContentsMargins(0, 0, 0, 0)
         self.add_point_btn.setText("Add point")
         lay_vertical_2.addWidget(self.add_point_btn)
         layout_hor.addLayout(lay_vertical_0)
@@ -115,7 +120,7 @@ class TouchManagerWindow(QWidget):
 
     def sourceChanged(self, new_image_files):
         self.current_image_pixmap = []
-        self.current_image_size = [0, 0]
+        self.model.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
 
     def initConnectors(self):
@@ -124,6 +129,9 @@ class TouchManagerWindow(QWidget):
         self.add_point_btn.clicked.connect(self.add_point)
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
+
+    def clearWidget(self, widget: QWidget):
+        widget.setParent(None)
 
     def acquire_screen(self):
         if self.model.is_device_connected():
@@ -163,12 +171,12 @@ class TouchManagerWindow(QWidget):
     def update_image_draw(self):
         if self.controller.image_selected != "":
             self.current_image_pixmap = pixmap = QtGui.QPixmap(self.controller.getCurrentImageLocation())
-            self.current_image_size = [pixmap.width(), pixmap.height()]
+            self.model.current_image_size = [pixmap.width(), pixmap.height()]
             if self.controller.dict_selected != "":
                 location = self.model.getPositions(self.controller.dict_selected)
                 if location is not None:
-                    location[0] *= self.current_image_size[0]
-                    location[1] *= self.current_image_size[1]
+                    location[0] *= self.model.current_image_size[0]
+                    location[1] *= self.model.current_image_size[1]
                     self.size_label.setText("%d,%d" % (location[0], location[1]))
                     self.DrawLines(pixmap, location)
             # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
@@ -187,7 +195,7 @@ class TouchManagerWindow(QWidget):
     def DrawLines(self, pixmap, location):
         painter = QPainter(pixmap)
         [_x, _y] = location
-        [w, h] = self.current_image_size
+        [w, h] = self.model.current_image_size
         # Qt.red
         r, g, b = self.model.ui_lines_color_rgb
         pen = QPen(QBrush(QColor(r, g, b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
@@ -195,26 +203,3 @@ class TouchManagerWindow(QWidget):
         painter.drawLine(0, _y, w, _y)
         # vertical line
         painter.drawLine(_x, 0, _x, h)
-
-
-"""
-    def get_prev_image(self):
-        prev = ""
-        for i, elem in enumerate(self.files.items()):
-            n, _ = elem
-            if n == self.selected and prev is not "":
-                self.show_image(prev)
-                break
-            else:
-                prev = n
-
-    def get_next_image(self):
-        found = False
-        for i, elem in enumerate(self.files.items()):
-            n, _ = elem
-            if found:
-                self.show_image(n)
-                break
-            if n == self.selected:
-                found = True
-"""

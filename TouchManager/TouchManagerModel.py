@@ -22,6 +22,7 @@ class TouchManagerModel(QObject):
         self.dict_path = "default_dict.py"
         self.ui_color = "cyan"
         self.ui_lines_color_rgb = (255, 0, 255)
+        self.current_image_size = [0,0]
         self.currentFiles = {}
         self.currentDict = {}
         self.screensFolders = {}

@@ -12,7 +12,7 @@ import os
 class ShowAreaState(enum.Enum):
     Buttons = 1
     Movements = 2
-    Checkpoints = 3
+    FrameCheck = 3
 
 
 class TouchManagerController(QObject):
@@ -28,7 +28,7 @@ class TouchManagerController(QObject):
         self.model = model
         self.dict_selected = ""
         self.image_selected = ""
-        self.coordShowerState = ShowAreaState.Buttons
+        self.currentAreaType: ShowAreaState = ShowAreaState.Buttons
         self.initConnectors()
 
     def initConnectors(self):
@@ -49,14 +49,9 @@ class TouchManagerController(QObject):
         else:
             self.image_selected = ""
 
-    def showButtonsRequested(self):
-        self.onCurrentShowAreaChanged.emit(ShowAreaState.Buttons)
-
-    def showMovementsRequested(self):
-        self.onCurrentShowAreaChanged.emit(ShowAreaState.Movements)
-
-    def showCheckpointsrequested(self):
-        self.onCurrentShowAreaChanged.emit(ShowAreaState.Checkpoints)
+    def showDifferentElemStateRequested(self, new_state: ShowAreaState):
+        self.currentAreaType = new_state
+        self.onCurrentShowAreaChanged.emit(new_state)
 
     # def listElementSelected(self, button_name):
     #     self.dict_selected = button_name
