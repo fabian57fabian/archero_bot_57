@@ -6,6 +6,8 @@ from PIL import Image
 import numpy as np
 from game_screen_connector import GameScreenConnector
 
+all_screens_folder = "screens"
+
 
 def getImageFrame(path: str):
     with Image.open(path, 'r') as im:
@@ -13,20 +15,37 @@ def getImageFrame(path: str):
     return pixval
 
 
-# width, heigth = adb_get_size()
-# width, heigth = 1080, 1920
-#width, heigth = 1080, 2220
-width, heigth = 1080, 2280
+def loadScreenshotsFolders(all_screens_folder):
+    screensFolders = {}
+    for folder in os.listdir(all_screens_folder):
+        try:
+            if 'x' in folder:
+                splat = folder.split('x')
+                if len(splat) >= 2:
+                    w, h = int(splat[0]), int(splat[1])
+                    screensFolders[folder] = [w, h]
+        except Exception as e:
+            print("Got error parsing screen folder %s. skipping" % folder)
+    return screensFolders
 
-excluded = ["time_prize_3.png", "time_prize_unavailable.png"]
+
+screens_data = loadScreenshotsFolders(all_screens_folder)
+keys = [k for k in screens_data.keys()]
+
+for i in range(len(keys)):
+    print("%d: %s" % (i, keys[i]))
+choosen = input("Select your number")
+folder = keys[int(choosen)]
+screens_path = os.path.join(all_screens_folder, folder)
+print("Using %s" % screens_path)
+
+width, heigth = screens_data[folder]
+excluded = []
 
 screen_conector = GameScreenConnector(width, heigth)
 screen_conector.debug = len(sys.argv) > 1
 static_coords = screen_conector.static_coords
 
-# screens_path = "../archero_my_screens/Craciun"
-screens_path = "screens/1080x2280"
-print("Images folder:: %s"% screens_path)
 files = os.listdir(screens_path)
 files.sort()
 all_ok = True
@@ -44,12 +63,14 @@ for file in files:
             print("OK - %s: %s" % (file, computed[0]))
             ok = True
         else:
-            ones_name_purged_singular = [k for k in computed if len(screen_conector.static_coords[k]["coordinates"]) > 1]
+            ones_name_purged_singular = [k for k in computed if
+                                         len(screen_conector.static_coords[k]["coordinates"]) > 1]
             removed = [k for k in computed if k not in ones_name_purged_singular]
             if len(ones_name_purged_singular) == 0:
                 print("MUL_DETECTIONS %s: %s" % (file, ", ".join(computed)))
             elif len(ones_name_purged_singular) == 1:
-                print("OK - %s: %s. Extra detected singulars: %s" % (file, ones_name_purged_singular[0], ", ".join(removed)))
+                print("OK - %s: %s. Extra detected singulars: %s" % (
+                    file, ones_name_purged_singular[0], ", ".join(removed)))
                 ok = True
             else:
                 print("MUL_DETECTIONS %s: %s" % (file, ", ".join(ones_name_purged_singular)))
@@ -58,4 +79,5 @@ for file in files:
 if all_ok:
     print("All tests passed!")
 else:
-    print("Got some failed tests. It is advised not to use the bot. Infinite loops and damage can be done by randomply clicking without knowledge.")
+    print(
+        "Got some failed tests. It is advised not to use the bot. Infinite loops and damage can be done by randomply clicking without knowledge.")
