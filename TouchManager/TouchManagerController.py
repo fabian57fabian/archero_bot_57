@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
 from TouchManager.TouchManagerModel import TouchManagerModel
 import enum
+import os
 
 
 class ShowAreaState(enum.Enum):
@@ -19,6 +20,9 @@ class TouchManagerController(QObject):
     onElementSelectionChanged = pyqtSignal(str)
     onImageSelectionChanged = pyqtSignal(str)
 
+    onImagesChanged = pyqtSignal(dict)
+    onButtonsChanged = pyqtSignal(dict)
+
     def __init__(self, model: TouchManagerModel):
         super(QObject, self).__init__()
         self.model = model
@@ -29,9 +33,21 @@ class TouchManagerController(QObject):
 
     def initConnectors(self):
         self.model.onDictionaryTapsChanged.connect(self.onDictionaryTapsChanged)
+        self.model.onSourceChanged.connect(self.onImagesFilesChanged)
 
-    def onDictionaryTapsChanged(self):
-        self.dict_selected = list(self.model.currentDict.keys())[0]
+    def onDictionaryTapsChanged(self, newDict):
+        self.onButtonsChanged.emit(newDict)
+        if len(newDict.keys()) > 0:
+            self.elementSelectRequets(list(newDict.keys())[0])
+        else:
+            self.dict_selected = ""
+
+    def onImagesFilesChanged(self, newDict):
+        self.onImagesChanged.emit(newDict)
+        if len(newDict.keys()) > 0:
+            self.imageSelectRequets(list(newDict.keys())[0])
+        else:
+            self.image_selected = ""
 
     def showButtonsRequested(self):
         self.onCurrentShowAreaChanged.emit(ShowAreaState.Buttons)
@@ -51,5 +67,13 @@ class TouchManagerController(QObject):
         self.onElementSelectionChanged.emit(self.dict_selected)
 
     def imageSelectRequets(self, image_name):
-        self.image_selected = image_name
-        self.onImageSelectionChanged.emit(self.image_selected)
+        if image_name in self.model.currentFiles:
+            self.image_selected = image_name
+            self.onImageSelectionChanged.emit(self.image_selected)
+
+    def requestScreenFolderChange(self, new_folder):
+        if new_folder != self.model.currentScreensFolder:
+            self.model.changeScreensFolder(new_folder)
+
+    def getCurrentImageLocation(self):
+        return os.path.join(self.model.currentScreensPath(), self.image_selected)

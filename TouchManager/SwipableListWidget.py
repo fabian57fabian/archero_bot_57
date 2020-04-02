@@ -54,12 +54,14 @@ class SwipableListWidget(QWidget):
         self.lastElementSelected = btn_name
 
     def onDictChanged(self, new_source):
-        # self.dataLayout.deleteLater()
-        _dict = new_source
-        if type(new_source) == list:
-            _dict = {}
-            for d in new_source:
-                _dict[d] = None
-        for button_pos in _dict.items():
+        self.clearLayout()
+        self.lastElementSelected = ""
+        for button_pos in new_source.items():
             # button = QtWidgets.QPushButton("%s, %dx%d" %(button_pos[0], button_pos[1][0],button_pos[1][1]))
             self.addElement(button_pos[0])
+
+    def clearLayout(self):
+        self.elementsDict.clear()
+        self.elementsDict = {}
+        for i in reversed(range(self.verticalLayout.count())):
+            self.verticalLayout.itemAt(i).widget().setParent(None)

@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QLineEdit, QWidget
+    QInputDialog, QLineEdit, QWidget, QComboBox
 import os
 from TouchManager.TouchManagerModel import TouchManagerModel
 from TouchManager.TouchManagerController import TouchManagerController
@@ -16,8 +16,8 @@ class TouchManagerWindow(QWidget):
         super(QWidget, self).__init__()
         self.model = model
         self.controller = controller
-        self.model.onSourceChanged.connect(self.source_changed)
-        self.model.onDictionaryTapsChanged.connect(self.dict_changed)
+        self.controller.onImagesChanged.connect(self.source_changed)
+        self.controller.onButtonsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
         # self.imagesLayout = QFormLayout()
 
@@ -26,15 +26,15 @@ class TouchManagerWindow(QWidget):
         self.controller.onElementSelectionChanged.connect(self.areaScroller.onSelectionChanged)
         self.areaScroller.onElementClicked.connect(self.controller.elementSelectRequets)
         self.model.onPointAdded.connect(self.areaScroller.addElement)
-        self.model.onDictionaryTapsChanged.connect(self.areaScroller.onDictChanged)
+        self.controller.onButtonsChanged.connect(self.areaScroller.onDictChanged)
 
         self.screensScroller = SwipableListWidget(self, self.controller, self.model)
         self.model.onImageAdded.connect(self.screensScroller.addElement)
         self.screensScroller.onElementClicked.connect(self.controller.imageSelectRequets)
         self.controller.onImageSelectionChanged.connect(self.screensScroller.onSelectionChanged)
-        self.model.onSourceChanged.connect(self.screensScroller.onDictChanged)
+        self.controller.onImagesChanged.connect(self.screensScroller.onDictChanged)
 
-        self.folder_label = QLabel()
+        self.screensPathCbox = QComboBox()
         self.image_label = QtWidgets.QLabel()
         self.photo = QLabel()
         self.next = QPushButton()
@@ -53,17 +53,18 @@ class TouchManagerWindow(QWidget):
 
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
-        main_window.resize(800, 600)
-        #main_window.setMaximumWidth(800)
-        #main_window.setMaximumHeight(600)
+        # main_window.resize(800, 600)
+        # main_window.setMaximumWidth(800)
+        # main_window.setMaximumHeight(600)
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
         lay_vertical_0 = QVBoxLayout()
-        # self.folder_label = QtWidgets.QLabel()
-        self.folder_label.setAlignment(Qt.AlignCenter)
-        self.folder_label.setText(self.model.images_path)
-        self.folder_label.setFixedHeight(20)
-        lay_vertical_0.addWidget(self.folder_label)
+        # self.screensPathCbox = QtWidgets.QLabel()
+        # self.screensPathCbox.setAlignment(Qt.AlignCenter)
+        self.screensPathCbox.addItems(k for k, v in self.model.screensFolders.items())
+        self.screensPathCbox.setFixedHeight(20)
+        self.screensPathCbox.currentTextChanged.connect(self.controller.requestScreenFolderChange)
+        lay_vertical_0.addWidget(self.screensPathCbox)
 
         lay_vertical_0.addWidget(self.screensScroller)
 
@@ -112,6 +113,11 @@ class TouchManagerWindow(QWidget):
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
 
+    def sourceChanged(self, new_image_files):
+        self.current_image_pixmap = []
+        self.current_image_size = [0, 0]
+        self.current_image_resized = [0, 0]
+
     def initConnectors(self):
         self.export_btn.clicked.connect(self.model.save_data)
         self.screen_btn.clicked.connect(self.acquire_screen)
@@ -138,7 +144,7 @@ class TouchManagerWindow(QWidget):
                 pass
 
     def change_folder(self, newfolder):
-        self.folder_label.setText(newfolder)
+        self.screensPathCbox.setText(newfolder)
 
     def source_changed(self, current_files):
         self.photo.clear()
@@ -156,8 +162,7 @@ class TouchManagerWindow(QWidget):
 
     def update_image_draw(self):
         if self.controller.image_selected != "":
-            path_complete = os.path.join(self.model.images_path, self.controller.image_selected)
-            self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
+            self.current_image_pixmap = pixmap = QtGui.QPixmap(self.controller.getCurrentImageLocation())
             self.current_image_size = [pixmap.width(), pixmap.height()]
             if self.controller.dict_selected != "":
                 location = self.model.getPositions(self.controller.dict_selected)
