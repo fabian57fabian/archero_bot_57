@@ -168,6 +168,8 @@ class CaveEngine(QObject):
             self.swipe('ne', 4)
         elif dir == 'right':
             self.swipe('nw', 4)
+        elif dir == "center":
+            self.swipe('n', 2)
         else:
             self.swipe('n', 2)
 

@@ -113,6 +113,7 @@ class GameScreenConnector:
         # """
         self.static_coords = {}
         self._loadStaticCoords()
+        self.door_width = 180.0 / 1080.0
         self.yellow_experience = [255, 170, 16, 255]
         self.green_hp = [77, 171, 56, 255]
         self.black_hp = [25, 25, 25, 255]
@@ -274,7 +275,10 @@ class GameScreenConnector:
                 last = i
         center_px = (last + first) / 2
         center_diff = int((self.width / 2) - center_px)
-        dir = "right" if center_diff < 0 else "left"
+        if abs(center_diff) < self.door_width * self.width / 6.0:
+            dir = "center"
+        else:
+            dir = "right" if center_diff < 0 else "left"
         print("Character on the %s side by %dpx" % (dir, abs(center_diff)))
         return center_diff, dir
 
