@@ -245,8 +245,6 @@ class CaveEngine(QObject):
                     else:
                         recheck = True
                         continue
-                elif state == "in_game":
-                    print("In game. Playing but level not ended")
                 elif state == "endgame" or state == "repeat_endgame_question":
                     if state == "repeat_endgame_question":
                         self.wait(5)
@@ -266,6 +264,8 @@ class CaveEngine(QObject):
                     self.log("Gained experience")
                     self.wait(3)
                     return
+                elif state == "in_game":
+                    print("In game. Playing but level not ended")
             self.wait(1)
 
     def reactGamePopups(self, ):
