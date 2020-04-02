@@ -8,19 +8,20 @@ import os
 from TouchManager.TouchManagerModel import TouchManagerModel
 from TouchManager.TouchManagerController import TouchManagerController
 from TouchManager.CoordinatesSelector import CoordinatesSelector
+from TouchManager.SwipableListWidget import SwipableListWidget
+
 
 class TouchManagerWindow(QWidget):
-    def __init__(self,  controller: TouchManagerController, model: TouchManagerModel):
+    def __init__(self, controller: TouchManagerController, model: TouchManagerModel):
         super(QWidget, self).__init__()
         self.model = model
         self.controller = controller
         self.model.onSourceChanged.connect(self.source_changed)
         self.model.onImageAdded.connect(self.add_image)
-        self.model.onPointAdded.connect(self.add_button)
         self.model.onDictionaryTapsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
         self.imagesLayout = QFormLayout()
-        self.dictLayout = QFormLayout()
+        self.areaScroller = SwipableListWidget(self, controller, model)
         self.folder_label = QLabel()
         self.image_label = QtWidgets.QLabel()
         self.photo = QLabel()
@@ -32,13 +33,12 @@ class TouchManagerWindow(QWidget):
         self.size_label = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
         self.image_selected = ""
-        self.dict_selected = ""
         self.files = {}
-        self.dicts = {}
         self.current_image_pixmap = []
         self.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
         self.label_photo_fixed_size = [400, 500]
+        self.initConnectors()
 
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
@@ -97,15 +97,8 @@ class TouchManagerWindow(QWidget):
         right_label.setAlignment(Qt.AlignCenter)
         # TODO: insert back right_label later
         lay_vertical_2.addWidget(self.showAreaController)
-        # Add dict Layout
-        self.dictLayout.setSpacing(0)
-        self.dictLayout.setContentsMargins(0, 0, 0, 0)
-        scroll_btns = QScrollArea()
-        scroll_btns.setLayout(self.dictLayout)
-        scroll_btns.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        scroll_btns.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        #scroll_btns.setFixedWidth(200)
-        lay_vertical_2.addWidget(scroll_btns)
+
+        lay_vertical_2.addWidget(self.areaScroller)
 
         self.add_point_btn.setText("Add point")
         lay_vertical_2.addWidget(self.add_point_btn)
@@ -115,9 +108,12 @@ class TouchManagerWindow(QWidget):
 
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
+
+    def initConnectors(self):
         self.export_btn.clicked.connect(self.model.save_data)
         self.screen_btn.clicked.connect(self.acquire_screen)
         self.add_point_btn.clicked.connect(self.add_point)
+        self.controller.onElementSelectionChanged.connect(self.update_image_draw)
 
     def acquire_screen(self):
         if self.model.is_device_connected():
@@ -156,12 +152,6 @@ class TouchManagerWindow(QWidget):
         self.files[filename] = button
         self.imagesLayout.addRow(self.files[filename])
 
-    def add_button(self, button_name):
-        button = QtWidgets.QPushButton(button_name)
-        button.clicked.connect(partial(self.button_pos_clicked, button_name))
-        self.dicts[button_name] = button
-        self.dictLayout.addRow(self.dicts[button_name])
-
     # This needs to stay in controller
     def image_clicked(self, path):
         self.files[self.image_selected].setStyleSheet("QPushButton { background-color : white; }")
@@ -172,14 +162,6 @@ class TouchManagerWindow(QWidget):
         self.update_image_draw()
 
     def dict_changed(self):
-        current_dict = self.model.currentDict
-        #self.dictLayout.deleteLater()
-        self.dict_selected = list(current_dict.keys())[0]
-        for button_pos in current_dict.items():
-            # button = QtWidgets.QPushButton("%s, %dx%d" %(button_pos[0], button_pos[1][0],button_pos[1][1]))
-            self.add_button(button_pos[0])
-        self.dicts[self.dict_selected].setStyleSheet(
-            "QPushButton { background-color : %s; }" % self.model.ui_color)
         self.update_image_draw()
 
     def buttonLocationChanged(self, button_name):
@@ -187,15 +169,7 @@ class TouchManagerWindow(QWidget):
         # no update needed because self.dicts contains QLabels and don't hold info about location. So just update the view
         self.update_image_draw()
 
-    # This needs to stay in controller
-    def button_pos_clicked(self, btn_name):
-        self.dicts[self.dict_selected].setStyleSheet("QPushButton { background-color : white; }")
-        self.dicts[btn_name].setStyleSheet("QPushButton { background-color : %s; }" % self.model.ui_color)
-        self.show_btn_location(btn_name)
-        pass
-
     def show_btn_location(self, btn_name):
-        self.dict_selected = btn_name
         self.update_image_draw()
 
     def update_image_draw(self):
@@ -203,8 +177,8 @@ class TouchManagerWindow(QWidget):
             path_complete = os.path.join(self.model.images_path, self.image_selected)
             self.current_image_pixmap = pixmap = QtGui.QPixmap(path_complete)
             self.current_image_size = [pixmap.width(), pixmap.height()]
-            if self.dict_selected != "":
-                location = self.model.getPositions(self.dict_selected)
+            if self.controller.dict_selected != "":
+                location = self.model.getPositions(self.controller.dict_selected)
                 if location is not None:
                     location[0] *= self.current_image_size[0]
                     location[1] *= self.current_image_size[1]
@@ -220,8 +194,8 @@ class TouchManagerWindow(QWidget):
         x = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / \
             self.current_image_resized[0]
         y = (event.pos().y()) / self.current_image_resized[1]
-        if self.dict_selected != "":
-            self.model.InvokeChangePosition(self.dict_selected, [x, y])
+        if self.controller.dict_selected != "":
+            self.model.InvokeChangePosition(self.controller.dict_selected, [x, y])
 
     def DrawLines(self, pixmap, location):
         painter = QPainter(pixmap)

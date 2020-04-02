@@ -16,11 +16,20 @@ class ShowAreaState(enum.Enum):
 
 class TouchManagerController(QObject):
     onCurrentShowAreaChanged = pyqtSignal(ShowAreaState)
+    onElementSelectionChanged = pyqtSignal(str)
 
     def __init__(self, model: TouchManagerModel):
         super(QObject, self).__init__()
         self.model = model
+        self.dict_selected = ""
         self.coordShowerState = ShowAreaState.Buttons
+        self.initConnectors()
+
+    def initConnectors(self):
+        self.model.onDictionaryTapsChanged.connect(self.onDictionaryTapsChanged)
+
+    def onDictionaryTapsChanged(self):
+        self.dict_selected = list(self.model.currentDict.keys())[0]
 
     def showButtonsRequested(self):
         self.onCurrentShowAreaChanged.emit(ShowAreaState.Buttons)
@@ -30,3 +39,11 @@ class TouchManagerController(QObject):
 
     def showCheckpointsrequested(self):
         self.onCurrentShowAreaChanged.emit(ShowAreaState.Checkpoints)
+
+    # def listElementSelected(self, button_name):
+    #     self.dict_selected = button_name
+    #     self.button_pos_clicked(button_name)
+
+    def elementSelectRequets(self, btn_name):
+        self.dict_selected = btn_name
+        self.onElementSelectionChanged.emit(self.dict_selected)
