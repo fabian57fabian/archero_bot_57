@@ -18,7 +18,7 @@ class QDungeonSelector(QWidget):
     def initUI(self):
         # Init currentDungeonWidget
         self.lblCurrentDungeon.setText("")
-        self.lblCurrentDungeon.setStyleSheet("background-color: white")
+        self.lblCurrentDungeon.setStyleSheet("background-color: (225,225,225)")
         self.lblCurrentDungeon.setAlignment(Qt.AlignCenter)
         self.lblCurrentDungeon.setFixedWidth(self.requested_w - 10)
         self.lblCurrentDungeon.setFixedHeight(self.requested_h - 10)

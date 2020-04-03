@@ -25,6 +25,7 @@ class TouchManagerWindow(QWidget):
         self.controller.onImagesChanged.connect(self.source_changed)
         self.controller.onButtonsChanged.connect(self.dict_changed)
         self.model.onButtonLocationChanged.connect(self.buttonLocationChanged)
+        self.controller.onSelectedCoordinateChanged.connect(self.update_image_draw)
         # self.imagesLayout = QFormLayout()
 
         self.areaScroller = SwipableListWidget(self, controller, model)
@@ -33,6 +34,7 @@ class TouchManagerWindow(QWidget):
         self.areaScroller.onElementClicked.connect(self.controller.elementSelectRequets)
         self.model.onPointAdded.connect(self.areaScroller.addElement)
         self.controller.onButtonsChanged.connect(self.areaScroller.onDictChanged)
+        self.controller.onCurrentShowAreaChanged.connect(self.onShowAreaChanged)
 
         self.screensScroller = SwipableListWidget(self, self.controller, self.model)
         self.model.onImageAdded.connect(self.screensScroller.addElement)
@@ -119,6 +121,9 @@ class TouchManagerWindow(QWidget):
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
 
+    def onShowAreaChanged(self, new_state: ShowAreaState):
+        self.areaScroller.onDictChanged(self.controller.dataFromAreaType())
+
     def sourceChanged(self, new_image_files):
         self.current_image_pixmap = []
         self.model.current_image_size = [0, 0]
@@ -174,12 +179,14 @@ class TouchManagerWindow(QWidget):
             self.current_image_pixmap = pixmap = QtGui.QPixmap(self.controller.getCurrentImageLocation())
             self.model.current_image_size = [pixmap.width(), pixmap.height()]
             if self.controller.dict_selected != "":
-                location = self.model.getPositions(self.controller.dict_selected)
-                if location is not None:
-                    location[0] *= self.model.current_image_size[0]
-                    location[1] *= self.model.current_image_size[1]
-                    # self.size_label.setText("%d,%d" % (location[0], location[1]))
-                    self.DrawLines(pixmap, location)
+                # location = self.model.getPositions(self.controller.dict_selected)
+                for i, loc in enumerate(self.controller.currentCoordinates):
+                    if loc is not None:
+                        location = loc.copy()
+                        location[0] *= self.model.current_image_size[0]
+                        location[1] *= self.model.current_image_size[1]
+                        # self.size_label.setText("%d,%d" % (location[0], location[1]))
+                        self.DrawLines(pixmap, location, i == self.controller.selectedCoordinateIndex)
             # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
             self.current_image_resized = [pixmap.width(), pixmap.height()]
@@ -187,18 +194,18 @@ class TouchManagerWindow(QWidget):
             self.photo.mousePressEvent = self.getPixelValue
 
     def getPixelValue(self, event):
-        x = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / \
-            self.current_image_resized[0]
-        y = (event.pos().y()) / self.current_image_resized[1]
+        x1 = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / \
+             self.current_image_resized[0]
+        y1 = (event.pos().y()) / self.current_image_resized[1]
         if self.controller.dict_selected != "":
-            self.model.InvokeChangePosition(self.controller.dict_selected, [x, y])
+            self.model.InvokeChangePosition(self.controller.dict_selected, [x1, y1])
 
-    def DrawLines(self, pixmap, location):
+    def DrawLines(self, pixmap, location, isSelected: bool):
         painter = QPainter(pixmap)
         [_x, _y] = location
         [w, h] = self.model.current_image_size
         # Qt.red
-        r, g, b = self.model.ui_lines_color_rgb
+        r, g, b = self.model.ui_lines_color_rgb if isSelected else self.model.ui_lines_color_rgb_selected
         pen = QPen(QBrush(QColor(r, g, b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         painter.setPen(pen)
         painter.drawLine(0, _y, w, _y)

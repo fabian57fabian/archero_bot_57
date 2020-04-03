@@ -22,7 +22,7 @@ class CoordinatesSelector(QWidget):
         self.btn_movements = QPushButton()
         self.btn_checkpoints = QPushButton()
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: rgb(255, 255, 255)")
+        # self.setStyleSheet("background-color: rgb(225,225,225)")
         self.buttonsHeight = 40
         self.initUI()
         self.initSignals()
@@ -30,6 +30,7 @@ class CoordinatesSelector(QWidget):
     def initUI(self):
         lay = QHBoxLayout()
         lay.setAlignment(Qt.AlignCenter)
+        lay.setContentsMargins(0, 0, 0, 0)
         self.btn_buttons.setText("buttons")
         self.btn_movements.setText("movements")
         self.btn_checkpoints.setText("checkpoints")
@@ -42,6 +43,9 @@ class CoordinatesSelector(QWidget):
         self.setLayout(lay)
 
     def initSignals(self):
-        self.btn_buttons.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Buttons))
-        self.btn_movements.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Movements))
-        self.btn_checkpoints.clicked.connect(partial(self.controller.showDifferentElemStateRequested, ShowAreaState.FrameCheck))
+        self.btn_buttons.clicked.connect(
+            partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Buttons))
+        self.btn_movements.clicked.connect(
+            partial(self.controller.showDifferentElemStateRequested, ShowAreaState.Movements))
+        self.btn_checkpoints.clicked.connect(
+            partial(self.controller.showDifferentElemStateRequested, ShowAreaState.FrameCheck))

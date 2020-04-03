@@ -1,3 +1,4 @@
+import json
 import time
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -27,6 +28,8 @@ class CaveEngine(QObject):
     data_pack = 'datas'
     buttons_corrdinates_filename = "data.py"
     buttons_corrdinates_default_filename = "default_dict.py"
+    movements_path = "movements.json"
+    movements_default_path = "default_movements.json"
     print_names_movements = {
         "n": "up",
         "s": "down",
@@ -73,7 +76,7 @@ class CaveEngine(QObject):
         super(QObject, self).__init__()
         self.currentLevel = 0
         self.buttons = self.getGeneratedData()
-        self.x, self.y, self.movements = self.getCoordinates()
+        self.movements = self.loadJsonData(os.path.join(self.data_pack, self.movements_path))
         self.width, self.heigth = 0, 0
         self.screen_connector: GameScreenConnector = None
         self.initConnection()
@@ -102,29 +105,11 @@ class CaveEngine(QObject):
         if not self.disableLogs:
             self.addLog.emit(log)
 
-    def getCoordinates(self):
-        # Do not change this parameters, they are made for normalization
-        calculus_width = 1080
-        calculus_heigth = 2220
-
-        # pointer base coordinates
-        x = 530 / calculus_width
-        y = 1800 / calculus_heigth
-
-        offsetx = 400 / calculus_width
-        offsety = 400 / calculus_heigth
-
-        movements = {
-            'n': [x, y, x, y - offsety],
-            's': [x, y, x, y + offsety],
-            'e': [x, y, x + offsetx, y],
-            'w': [x, y, x - offsetx, y],
-            'ne': [x, y, x + offsetx, y - offsety],
-            'nw': [x, y, x - offsetx, y - offsety],
-            'se': [x, y, x + offsetx, y + offsety],
-            'sw': [x, y, x + offsety, y + offsety]
-        }
-        return x, y, movements
+    def loadJsonData(self, path: str):
+        data = {}
+        with open(path, 'r') as json_file:
+            data = json.load(json_file)
+        return data
 
     def swipe_points(self, start, stop, s):
         start = self.buttons[start]
@@ -139,7 +124,9 @@ class CaveEngine(QObject):
         print("Swiping %s in %f" % (self.print_names_movements[name], s))
         self.log("Swipe %s in %.2f" % (self.print_names_movements[name], s))
         # convert back from normalized values
-        adb_swipe([coord[0] * self.width, coord[1] * self.heigth, coord[2] * self.width, coord[3] * self.heigth], s)
+        adb_swipe(
+            [coord[0][0] * self.width, coord[0][1] * self.heigth, coord[1][0] * self.width, coord[1][1] * self.heigth],
+            s)
 
     def tap(self, name):
         if self.stopRequested:

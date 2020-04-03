@@ -23,11 +23,15 @@ class TouchManagerController(QObject):
     onImagesChanged = pyqtSignal(dict)
     onButtonsChanged = pyqtSignal(dict)
 
+    onSelectedCoordinateChanged = pyqtSignal(int)
+
     def __init__(self, model: TouchManagerModel):
         super(QObject, self).__init__()
         self.model = model
         self.dict_selected = ""
         self.image_selected = ""
+        self.selectedCoordinateIndex = 0
+        self.currentCoordinates = [[0, 0]]
         self.currentAreaType: ShowAreaState = ShowAreaState.Buttons
         self.initConnectors()
 
@@ -50,15 +54,35 @@ class TouchManagerController(QObject):
             self.image_selected = ""
 
     def showDifferentElemStateRequested(self, new_state: ShowAreaState):
+        if self.currentAreaType != new_state:
+            self.selectedCoordinateIndex = 0
         self.currentAreaType = new_state
         self.onCurrentShowAreaChanged.emit(new_state)
+        first = list(self.dataFromAreaType().keys())[0]
+        self.elementSelectRequets(first)
 
     # def listElementSelected(self, button_name):
     #     self.dict_selected = button_name
     #     self.button_pos_clicked(button_name)
 
+    def dataFromAreaType(self):
+        if self.currentAreaType == ShowAreaState.Buttons:
+            return self.model.currentDict
+        elif self.currentAreaType == ShowAreaState.Movements:
+            return self.model.currentMovements
+        elif self.currentAreaType == ShowAreaState.FrameCheck:
+            return self.model.currentFrameChecks
+        else:
+            return {}
+
     def elementSelectRequets(self, btn_name):
         self.dict_selected = btn_name
+        if self.currentAreaType == ShowAreaState.Buttons:
+            self.currentCoordinates = [self.dataFromAreaType()[btn_name].copy()]
+        if self.currentAreaType == ShowAreaState.Movements:
+            self.currentCoordinates = self.dataFromAreaType()[btn_name].copy()
+        if self.currentAreaType == ShowAreaState.FrameCheck:
+            self.currentCoordinates = self.dataFromAreaType()[btn_name]['coordinates'].copy()
         self.onElementSelectionChanged.emit(self.dict_selected)
 
     def imageSelectRequets(self, image_name):
@@ -72,3 +96,7 @@ class TouchManagerController(QObject):
 
     def getCurrentImageLocation(self):
         return os.path.join(self.model.currentScreensPath(), self.image_selected)
+
+    def onCoordinateSelected(self, index):
+        self.selectedCoordinateIndex = index
+        self.onSelectedCoordinateChanged.emit(self.selectedCoordinateIndex)

@@ -47,7 +47,7 @@ class QDeskArea(QWidget):
         button = QPushButton(self)
         button.setFixedSize(26, 26)
         button.setText("+")
-        button.setStyleSheet("background-color: white; border-radius: 13px;text-align: center")
+        button.setStyleSheet("background-color: (225,225,225); border-radius: 13px;text-align: center")
         return button
 
     def resetCurrentDungeon(self):

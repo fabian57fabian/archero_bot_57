@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
-    QFormLayout, QGridLayout
+    QFormLayout, QGridLayout, QRadioButton
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
@@ -18,10 +18,14 @@ class ButtonOption(QWidget):
         self.lay = QHBoxLayout()
         self.lblX = QLabel()
         self.lblY = QLabel()
-        #TODO: add button or check btn to unlock change
+        self.selectedRadioBtn = QRadioButton()
+        # self.setStyleSheet("background-color: rgb(255,255,255)")
+        # TODO: add button or check btn to unlock change
         self.initUI()
 
     def initUI(self):
+        self.selectedRadioBtn.setText("Change")
+        self.selectedRadioBtn.setChecked(True)
         # self.setMinimumSize(10, 10)
         self.lay.addWidget(self.lblX)
         self.lay.addWidget(self.lblY)

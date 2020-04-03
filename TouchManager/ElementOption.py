@@ -41,6 +41,7 @@ class ElementOption(QWidget):
         self.descriptionTxt.setMaximumHeight(60)
         self.descriptionTxt.setReadOnly(True)
         self.main_lay.setContentsMargins(0, 0, 0, 0)
+        self.setMaximumHeight(200)
         # self.layItems.addWidget(self.wid)
         self.main_lay.addWidget(self.lblName)
         self.main_lay.addWidget(self.wid)
@@ -54,8 +55,10 @@ class ElementOption(QWidget):
 
     def onElementChanged(self, new_item):
         self.lblName.setText(new_item + ":")
+        self.wid.changeData(self.controller.dataFromAreaType()[new_item].copy())
+        # TODO: remove this below because uselessuseless
         if self.controller.currentAreaType == ShowAreaState.Buttons:
-            self.wid.changeData(self.model.currentDict[new_item])
+            pass
         elif self.controller.currentAreaType == ShowAreaState.Movements:
             pass
         elif self.controller.currentAreaType == ShowAreaState.FrameCheck:

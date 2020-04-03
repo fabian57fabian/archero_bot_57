@@ -1,3 +1,4 @@
+import json
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
 from pure_adb_connector import adb_screen, get_device_id
@@ -6,6 +7,8 @@ from pure_adb_connector import adb_screen, get_device_id
 class TouchManagerModel(QObject):
     onSourceChanged = pyqtSignal(dict)
     onDictionaryTapsChanged = pyqtSignal(dict)
+    onDictionaryMovementsChanged = pyqtSignal(dict)
+    onDictionaryFrameChecksChanged = pyqtSignal(dict)
     onButtonLocationChanged = pyqtSignal(str)
     onImageSelected = pyqtSignal()
     onImageAdded = pyqtSignal(str)
@@ -19,12 +22,17 @@ class TouchManagerModel(QObject):
         self.manage_default_currentScreensPath()
         self.data_pack = 'datas'
         self.dict_out_name = 'data.py'
-        self.dict_path = "default_dict.py"
+        self.dict_movements_out_name = 'movements.json'
+        self.dict_framechecks_out_name = 'static_coords.json'
+        self.dict_path = "data.py"
         self.ui_color = "cyan"
-        self.ui_lines_color_rgb = (255, 0, 255)
-        self.current_image_size = [0,0]
+        self.ui_lines_color_rgb = (0, 255, 0)
+        self.ui_lines_color_rgb_selected = (255, 0, 255)
+        self.current_image_size = [0, 0]
         self.currentFiles = {}
         self.currentDict = {}
+        self.currentMovements = {}
+        self.currentFrameChecks = {}
         self.screensFolders = {}
         self.loadScreenshotsFolders()
 
@@ -75,6 +83,8 @@ class TouchManagerModel(QObject):
     def load_data(self):
         self.loadScreens()
         self.load_buttons()
+        self.loadMovements()
+        self.loadScreenCheck()
 
     def loadScreens(self):
         self.currentFiles = {k: None for k in self.loadImagesFromSource(self.currentScreensPath())}
@@ -83,6 +93,20 @@ class TouchManagerModel(QObject):
     def load_buttons(self):
         self.currentDict = self.loadDictionaryFromSource(self.dict_out_name)
         self.onDictionaryTapsChanged.emit(self.currentDict)
+
+    def loadMovements(self):
+        self.currentMovements = self.loadJsonData(self.dict_movements_out_name)
+        self.onDictionaryMovementsChanged.emit(self.currentMovements)
+
+    def loadScreenCheck(self):
+        self.currentFrameChecks = self.loadJsonData(self.dict_framechecks_out_name)
+        self.onDictionaryFrameChecksChanged.emit(self.currentFrameChecks)
+
+    def loadJsonData(self, filePath: str):
+        data = {}
+        with open(os.path.join(self.data_pack, filePath), 'r') as json_file:
+            data = json.load(json_file)
+        return data
 
     def changeScreensFolder(self, new_folder):
         if new_folder in self.screensFolders.keys():
@@ -119,4 +143,28 @@ class TouchManagerModel(QObject):
             outfile.write("    return buttons")
 
     def save_data(self):
-        self.write_dict_file(self.data_pack + "/" + self.dict_out_name, self.currentDict)
+        self.write_dict_file(os.path.join(self.data_pack, self.dict_out_name), self.currentDict)
+        self.saveJsonSimple(os.path.join(self.data_pack, self.dict_movements_out_name), self.currentMovements)
+        self._saveStaticCoords(os.path.join(self.data_pack, self.dict_movements_out_name), self.currentFrameChecks)
+
+    # TODO: Inported from game_screen_connector. Consider to move in a utils folder
+    def _saveStaticCoords(self, path, data: dict):
+        indent = 4
+        spaces = ''.join([" " for _ in range(indent)])
+        with open(path, 'w') as json_file:
+            # json_file.write("{\n")
+            main_attrs = []
+            for coord, value in data.items():
+                attrs = []
+                for attr, val_Attr in value.items():
+                    attrs.append('{}"{}": {}'.format(spaces + spaces, attr, json.dumps(val_Attr)))
+                formatted_attrs = ',\n'.join(attrs)
+                main_attrs.append(
+                    '{}"{}":{}{}'.format(spaces, coord, '{\n', formatted_attrs + '\n' + spaces + '}'))
+            json_file.write('{\n' + ',\n'.join(main_attrs) + '\n}')
+            # json_file.write("}")
+        print("Static coords saved")
+
+    def saveJsonSimple(self, path, data: dict):
+        with open(path, 'w') as fp:
+            json.dump(data, fp)

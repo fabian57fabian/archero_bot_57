@@ -9,7 +9,7 @@ class QDarkButton(QPushButton):
 
     def __init__(self):
         QPushButton.__init__(self)
-        self.setStyleSheet("background-color: white; border-radius: 2px;text-align: center")
+        self.setStyleSheet("background-color: (225,225,225); border-radius: 2px;text-align: center")
         self.pressedColor = 'gray'  # '(52, 52, 52)'
         self.changeSheetFunction = self.setStyleSheet
         self.isEnabledFunction = self.isEnabled
@@ -20,7 +20,7 @@ class QDarkButton(QPushButton):
     def changeEnableState(self, active):
         self.setEnabled(active)
         if active:
-            self.changeSheetFunction("background-color: white; border-radius: 2px;text-align: center")
+            self.changeSheetFunction("background-color: (225,225,225); border-radius: 2px;text-align: center")
         else:
             self.changeSheetFunction(
                 "background-color: {}; border-radius: 2px;text-align: center".format(self.pressedColor))
@@ -39,7 +39,7 @@ class QDarkButton(QPushButton):
 
     def leaveEvent(self, event):
         if self.isEnabledFunction():
-            self.changeSheetFunction("background-color: white; border-radius: 2px;text-align: center")
+            self.changeSheetFunction("background-color: (225,225,225); border-radius: 2px;text-align: center")
 
     @QtCore.pyqtSlot()
     def button_clicked(self):
