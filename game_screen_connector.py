@@ -131,8 +131,21 @@ class GameScreenConnector:
             self.static_coords = json.load(json_file)
 
     def _saveStaticCoords(self):
+        indent = 4
+        spaces = ''.join([" " for _ in range(indent)])
         with open(self.coords_path, 'w') as json_file:
-            json.dump(self.static_coords, json_file)
+            # json_file.write("{\n")
+            main_attrs = []
+            for coord, value in self.static_coords.items():
+                attrs = []
+                for attr, val_Attr in value.items():
+                    attrs.append('{}"{}": {}'.format(spaces + spaces, attr, json.dumps(val_Attr)))
+                formatted_attrs = ',\n'.join(attrs)
+                main_attrs.append(
+                    '{}"{}":{}{}'.format(spaces, coord, '{\n', formatted_attrs + '\n' + spaces + '}'))
+            json_file.write('{\n' + ',\n'.join(main_attrs) + '\n}')
+            # json_file.write("}")
+        print("Static coords saved")
 
     def pixel_equals(self, px_readed, px_expected, around=5):
         # checking only RGB from RGBA
