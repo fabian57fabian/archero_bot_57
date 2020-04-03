@@ -20,6 +20,7 @@ class TouchManagerWindow(QWidget):
 
         self.optionArea = ElementOption(self, self.controller, self.model)
         self.controller.onCurrentShowAreaChanged.connect(self.optionArea.areatypeChanged)
+        self.model.onButtonLocationChanged.connect(self.optionArea.onElementChanged)
 
         self.controller.onImagesChanged.connect(self.source_changed)
         self.controller.onButtonsChanged.connect(self.dict_changed)
@@ -47,7 +48,7 @@ class TouchManagerWindow(QWidget):
         self.export_btn = QPushButton()
         self.screen_btn = QPushButton()
         self.add_point_btn = QPushButton()
-        self.size_label = QLabel()
+        self.lblCurrentUILocation = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
         self.files = {}
         self.current_image_pixmap = []
@@ -97,9 +98,9 @@ class TouchManagerWindow(QWidget):
         nav_layout.addWidget(self.next)
         lay_vertical_1.addLayout(nav_layout)
 
-        self.size_label.setFixedHeight(20)
-        self.size_label.setAlignment(Qt.AlignRight)
-        lay_vertical_1.addWidget(self.size_label)
+        self.lblCurrentUILocation.setFixedHeight(20)
+        self.lblCurrentUILocation.setAlignment(Qt.AlignRight)
+        lay_vertical_1.addWidget(self.lblCurrentUILocation)
         lay_vertical_2 = QVBoxLayout()
         right_label = QtWidgets.QLabel(self.model.dict_out_name)
         right_label.setFixedHeight(20)
@@ -177,7 +178,7 @@ class TouchManagerWindow(QWidget):
                 if location is not None:
                     location[0] *= self.model.current_image_size[0]
                     location[1] *= self.model.current_image_size[1]
-                    self.size_label.setText("%d,%d" % (location[0], location[1]))
+                    # self.size_label.setText("%d,%d" % (location[0], location[1]))
                     self.DrawLines(pixmap, location)
             # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
