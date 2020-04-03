@@ -100,3 +100,12 @@ class TouchManagerController(QObject):
     def onCoordinateSelected(self, index):
         self.selectedCoordinateIndex = index
         self.onSelectedCoordinateChanged.emit(self.selectedCoordinateIndex)
+
+    def requestChangeCoordinate(self, x1, y1):
+        if self.currentAreaType == ShowAreaState.Buttons:
+            self.model.changeButtonPosition(self.dict_selected, [x1, y1])
+        elif self.currentAreaType == ShowAreaState.Movements:
+            self.model.changeMovementPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
+        elif self.currentAreaType == ShowAreaState.FrameCheck:
+            self.model.changeFrameCheckPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
+        self.elementSelectRequets(self.dict_selected)

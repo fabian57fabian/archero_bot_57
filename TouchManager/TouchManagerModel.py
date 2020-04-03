@@ -75,9 +75,19 @@ class TouchManagerModel(QObject):
     def getPositions(self, dict_button):
         return self.currentDict[dict_button].copy() if dict_button in self.currentDict else None
 
-    def InvokeChangePosition(self, dict_button, new_location):
+    def changeButtonPosition(self, dict_button, new_location):
         if dict_button in self.currentDict:
             self.currentDict[dict_button] = new_location
+            self.onButtonLocationChanged.emit(dict_button)
+
+    def changeMovementPosition(self, dict_button, new_location, index):
+        if dict_button in self.currentMovements:
+            self.currentMovements[dict_button][0 if index == 0 else 1] = new_location
+            self.onButtonLocationChanged.emit(dict_button)
+
+    def changeFrameCheckPosition(self, dict_button, new_location, index):
+        if dict_button in self.currentFrameChecks:
+            self.currentFrameChecks[dict_button]['coordinates'][index] = new_location
             self.onButtonLocationChanged.emit(dict_button)
 
     def load_data(self):

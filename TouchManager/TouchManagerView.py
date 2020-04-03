@@ -203,8 +203,7 @@ class TouchManagerWindow(QWidget):
         x1 = (event.pos().x() - (self.label_photo_fixed_size[0] - self.current_image_resized[0]) / 2) / \
              self.current_image_resized[0]
         y1 = (event.pos().y()) / self.current_image_resized[1]
-        if self.controller.dict_selected != "":
-            self.model.InvokeChangePosition(self.controller.dict_selected, [x1, y1])
+        self.controller.requestChangeCoordinate(x1, y1)
 
     def DrawLines(self, pixmap, location, color):
         painter = QPainter(pixmap)
