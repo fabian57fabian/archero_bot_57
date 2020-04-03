@@ -145,7 +145,7 @@ class TouchManagerModel(QObject):
     def save_data(self):
         self.write_dict_file(os.path.join(self.data_pack, self.dict_out_name), self.currentDict)
         self.saveJsonSimple(os.path.join(self.data_pack, self.dict_movements_out_name), self.currentMovements)
-        self._saveStaticCoords(os.path.join(self.data_pack, self.dict_movements_out_name), self.currentFrameChecks)
+        self._saveStaticCoords(os.path.join(self.data_pack, self.dict_framechecks_out_name), self.currentFrameChecks)
 
     # TODO: Inported from game_screen_connector. Consider to move in a utils folder
     def _saveStaticCoords(self, path, data: dict):
