@@ -81,7 +81,7 @@ class TouchManagerModel(QObject):
         self.onSourceChanged.emit(self.currentFiles)
 
     def load_buttons(self):
-        self.currentDict = self.loadDictionaryFromSource(self.dict_path)
+        self.currentDict = self.loadDictionaryFromSource(self.dict_out_name)
         self.onDictionaryTapsChanged.emit(self.currentDict)
 
     def changeScreensFolder(self, new_folder):
