@@ -38,6 +38,10 @@ class TouchManagerController(QObject):
     def initConnectors(self):
         self.model.onDictionaryTapsChanged.connect(self.onDictionaryTapsChanged)
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
+        self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
+
+    def onCurrentCoordChanged(self, dict_name):
+        self.updatecurrentCoordinate()
 
     def onDictionaryTapsChanged(self, newDict):
         self.onButtonsChanged.emit(newDict)
@@ -75,14 +79,19 @@ class TouchManagerController(QObject):
         else:
             return {}
 
+    def updatecurrentCoordinate(self):
+        if self.currentAreaType == ShowAreaState.Buttons:
+            self.currentCoordinates = [self.dataFromAreaType()[self.dict_selected].copy()]
+        if self.currentAreaType == ShowAreaState.Movements:
+            self.currentCoordinates = self.dataFromAreaType()[self.dict_selected].copy()
+        if self.currentAreaType == ShowAreaState.FrameCheck:
+            self.currentCoordinates = self.dataFromAreaType()[self.dict_selected]['coordinates'].copy()
+
     def elementSelectRequets(self, btn_name):
         self.dict_selected = btn_name
-        if self.currentAreaType == ShowAreaState.Buttons:
-            self.currentCoordinates = [self.dataFromAreaType()[btn_name].copy()]
-        if self.currentAreaType == ShowAreaState.Movements:
-            self.currentCoordinates = self.dataFromAreaType()[btn_name].copy()
-        if self.currentAreaType == ShowAreaState.FrameCheck:
-            self.currentCoordinates = self.dataFromAreaType()[btn_name]['coordinates'].copy()
+        self.updatecurrentCoordinate()
+        if self.selectedCoordinateIndex >= len(self.currentCoordinates):
+            self.selectedCoordinateIndex = len(self.currentCoordinates) - 1
         self.onElementSelectionChanged.emit(self.dict_selected)
 
     def imageSelectRequets(self, image_name):
@@ -108,4 +117,3 @@ class TouchManagerController(QObject):
             self.model.changeMovementPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
         elif self.currentAreaType == ShowAreaState.FrameCheck:
             self.model.changeFrameCheckPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
-        self.elementSelectRequets(self.dict_selected)

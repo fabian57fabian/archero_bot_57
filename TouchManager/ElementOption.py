@@ -56,13 +56,6 @@ class ElementOption(QWidget):
     def onElementChanged(self, new_item):
         self.lblName.setText(new_item + ":")
         self.wid.changeData(self.controller.dataFromAreaType()[new_item].copy())
-        # TODO: remove this below because uselessuseless
-        if self.controller.currentAreaType == ShowAreaState.Buttons:
-            pass
-        elif self.controller.currentAreaType == ShowAreaState.Movements:
-            pass
-        elif self.controller.currentAreaType == ShowAreaState.FrameCheck:
-            pass
 
     def areatypeChanged(self, new_type: ShowAreaState):
         self.clearLayout()

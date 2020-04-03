@@ -56,7 +56,7 @@ class FrameCheckOption(QWidget):
             lay_row.addWidget(rbtn)
             self.lay.addLayout(lay_row)
         if len(self.rBtns) > 0:
-            self.rBtns[0].setChecked(True)
+            self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
         self.setLayout(self.lay)
         return
         self.rBtnChangeableSrc.setText("Change")
