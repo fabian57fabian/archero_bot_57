@@ -180,13 +180,19 @@ class TouchManagerWindow(QWidget):
             self.model.current_image_size = [pixmap.width(), pixmap.height()]
             if self.controller.dict_selected != "":
                 # location = self.model.getPositions(self.controller.dict_selected)
+                current_locs = []
                 for i, loc in enumerate(self.controller.currentCoordinates):
                     if loc is not None:
                         location = loc.copy()
                         location[0] *= self.model.current_image_size[0]
                         location[1] *= self.model.current_image_size[1]
                         # self.size_label.setText("%d,%d" % (location[0], location[1]))
-                        self.DrawLines(pixmap, location, i == self.controller.selectedCoordinateIndex)
+                        if i == self.controller.selectedCoordinateIndex:
+                            current_locs = location
+                        else:
+                            self.DrawLines(pixmap, location, self.model.ui_lines_color_rgb)
+                if len(current_locs) > 0:
+                    self.DrawLines(pixmap, current_locs, self.model.ui_lines_color_rgb_selected)
             # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
             self.current_image_resized = [pixmap.width(), pixmap.height()]
@@ -200,12 +206,12 @@ class TouchManagerWindow(QWidget):
         if self.controller.dict_selected != "":
             self.model.InvokeChangePosition(self.controller.dict_selected, [x1, y1])
 
-    def DrawLines(self, pixmap, location, isSelected: bool):
+    def DrawLines(self, pixmap, location, color):
         painter = QPainter(pixmap)
         [_x, _y] = location
         [w, h] = self.model.current_image_size
         # Qt.red
-        r, g, b = self.model.ui_lines_color_rgb if isSelected else self.model.ui_lines_color_rgb_selected
+        r, g, b = color
         pen = QPen(QBrush(QColor(r, g, b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         painter.setPen(pen)
         painter.drawLine(0, _y, w, _y)
