@@ -1,0 +1,20 @@
+Buttons mapping to screens (1080x2220)
+
+pause -> initial_room
+start -> menu_home_fullenergy
+ability_center -> select_ability
+ability_left, ability_right -> select_ability, found_an_angel
+heal_left, heal_right -> found_an_angel
+
+spin_wheel_back -> angel_offer_health, misterious_vendor, special_prize
+
+lucky_wheel_start -> spin_fortune
+ability_daemon_reject -> daemon_offer
+click_neutral_away -> time_prize_3
+lock_swap_unlock -> unused...
+lock_swap_unlock -> unused...
+close_end -> endgame
+
+menu_world, menu_equipment, menu_avatar_weapon, menu_equip_weapon -> menu images
+
+resume -> paused
