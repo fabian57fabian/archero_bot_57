@@ -358,7 +358,7 @@ class CaveEngine(QObject):
 
     def boss_lvl(self):
         self.swipe('n', 2)
-        self.swipe('n', 1.5)
+        self.swipe('n', 2)
         self.letPlay(self.playtime, is_boss=True)
         self.reactGamePopups()
         self.exit_dungeon_uncentered()
