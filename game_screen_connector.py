@@ -288,7 +288,7 @@ class GameScreenConnector:
                 last = i
         center_px = (last + first) / 2
         center_diff = int((self.width / 2) - center_px)
-        if abs(center_diff) < self.door_width * self.width / 3.0:
+        if abs(center_diff) < self.door_width * self.width / 4.0:
             dir = "center"
         else:
             dir = "right" if center_diff < 0 else "left"
