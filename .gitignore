@@ -8,6 +8,9 @@ QMyWidgets/__pycache__/*
 GameController/__pycache__/*
 TouchManager/__pycache__/*
 
+# All personal statiostics data
+datas/statistics.csv
+
 # All PyCharm data
 .idea/*
 

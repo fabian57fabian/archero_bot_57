@@ -1,5 +1,6 @@
 import json
 import time
+from datetime import datetime
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -7,6 +8,7 @@ from pure_adb_connector import *
 # from pure_adb_connector import *
 from game_screen_connector import GameScreenConnector
 import sys
+from StatisticsManager import StatisticsManager
 
 
 class CaveEngine(QObject):
@@ -75,6 +77,7 @@ class CaveEngine(QObject):
     def __init__(self):
         super(QObject, self).__init__()
         self.currentLevel = 0
+        self.statisctics_manager = StatisticsManager()
         self.buttons = self.getGeneratedData()
         self.movements = self.loadJsonData(os.path.join(self.data_pack, self.movements_path))
         self.width, self.heigth = 0, 0
@@ -431,6 +434,9 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def start_one_game(self):
+        start_date = datetime.now()
+        statistics_saved = False
+        stat_lvl_start = self.currentLevel
         self.stopRequested = False
         self.screen_connector.stopRequested = False
         self.log("New game started")
@@ -451,6 +457,8 @@ class CaveEngine(QObject):
         try:
             self.play_cave()
         except Exception as exc:
+            self.statisctics_manager.saveOneGame(start_date, stat_lvl_start, self.currentLevel)
+            statistics_saved = True
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
             elif exc.args[0] == 'unable_exit_dungeon':
@@ -462,6 +470,8 @@ class CaveEngine(QObject):
             else:
                 print("Got an unknown exception: %s" % exc)
                 exit(1)
+        if not statistics_saved:
+            self.statisctics_manager.saveOneGame(start_date, stat_lvl_start, self.currentLevel)
 
     def import_method(self, folder, file, name):
         """
