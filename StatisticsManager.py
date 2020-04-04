@@ -9,7 +9,8 @@ class StatisticsManager(object):
     def __init__(self):
         self.file_path = "datas/statistics.csv"
         self.dateFormat = "%d%m%Y_%H%M%S"
-        self._write(self.getHeader())
+        if not os.path.exists(self.file_path):
+            self._write(self.getHeader())
 
     def getHeader(self):
         return ["Time start", "Time end", "Level start", "Level End", "duration", ]

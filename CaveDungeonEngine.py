@@ -91,6 +91,7 @@ class CaveEngine(QObject):
     def setStopRequested(self):
         self.stopRequested = True
         self.screen_connector.stopRequested = True
+        self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
     def initConnection(self):
         device = get_device_id()
