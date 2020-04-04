@@ -1,3 +1,5 @@
+from functools import partial
+
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout
@@ -36,14 +38,21 @@ class TouchManagerController(QObject):
         self.initConnectors()
 
     def initConnectors(self):
-        self.model.onDictionaryTapsChanged.connect(self.onDictionaryTapsChanged)
+        self.model.onDictionaryTapsChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.Buttons))
+        self.model.onDictionaryMovementsChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.Movements))
+        self.model.onDictionaryFrameChecksChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.FrameCheck))
+
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
         self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
+
+    def onGeneralDictionaryChanged(self, areaType:ShowAreaState):
+        self.showDifferentElemStateRequested(areaType)
+        self.onCurrentDictChanged(self.dataFromAreaType())
 
     def onCurrentCoordChanged(self, dict_name):
         self.updatecurrentCoordinate()
 
-    def onDictionaryTapsChanged(self, newDict):
+    def onCurrentDictChanged(self, newDict):
         self.onButtonsChanged.emit(newDict)
         if len(newDict.keys()) > 0:
             self.elementSelectRequets(list(newDict.keys())[0])

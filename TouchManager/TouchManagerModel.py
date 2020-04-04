@@ -92,9 +92,9 @@ class TouchManagerModel(QObject):
 
     def load_data(self):
         self.loadScreens()
-        self.load_buttons()
-        self.loadMovements()
         self.loadScreenCheck()
+        self.loadMovements()
+        self.load_buttons()
 
     def loadScreens(self):
         self.currentFiles = {k: None for k in self.loadImagesFromSource(self.currentScreensPath())}
@@ -121,7 +121,7 @@ class TouchManagerModel(QObject):
     def changeScreensFolder(self, new_folder):
         if new_folder in self.screensFolders.keys():
             self.currentScreensFolder = new_folder
-            self.loadScreens()
+            self.load_data()
 
     def loadImagesFromSource(self, img_path):
         return [file for file in sorted(os.listdir(img_path))]  # if file.endswith(".jpg")]
