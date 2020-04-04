@@ -78,11 +78,13 @@ class CaveEngine(QObject):
         super(QObject, self).__init__()
         self.currentLevel = 0
         self.statisctics_manager = StatisticsManager()
+        self.start_date = datetime.now()
+        self.stat_lvl_start = 0
+        self.screen_connector: GameScreenConnector = None
+        self.width, self.heigth = 0, 0
+        self.initConnection()
         self.buttons = self.getGeneratedData()
         self.movements = self.loadJsonData(os.path.join(self.data_pack, self.movements_path))
-        self.width, self.heigth = 0, 0
-        self.screen_connector: GameScreenConnector = None
-        self.initConnection()
         self.disableLogs = False
         self.stopRequested = False
 
@@ -258,6 +260,10 @@ class CaveEngine(QObject):
                     print("In game. Playing but level not ended")
             self.wait(1)
 
+    def _exitEngine(self):
+        self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
+        exit(1)
+
     def reactGamePopups(self, ):
         state = ""
         i = 0
@@ -267,7 +273,7 @@ class CaveEngine(QObject):
             if i > self.max_loops_game:
                 print("Max loops reached")
                 self.log("Max loops reached")
-                exit(1)
+                self._exitEngine()
             self.log("screen check")
             state = self.screen_connector.getFrameState()
             print("state: %s" % state)
@@ -389,7 +395,7 @@ class CaveEngine(QObject):
         self.levelChanged.emit(self.currentLevel)
         if self.currentLevel < 0 or self.currentLevel > 20:
             print("level out of range: %d" % self.currentLevel)
-            exit(1)
+            self._exitEngine()
         while self.currentLevel <= self.MAX_LEVEL:
             print("Level %d: %s" % (self.currentLevel, str(self.levels_type[self.currentLevel])))
             if self.levels_type[self.currentLevel] == self.t_intro:
@@ -434,9 +440,8 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def start_one_game(self):
-        start_date = datetime.now()
-        statistics_saved = False
-        stat_lvl_start = self.currentLevel
+        self.start_date = datetime.now()
+        self.stat_lvl_start = self.currentLevel
         self.stopRequested = False
         self.screen_connector.stopRequested = False
         self.log("New game started")
@@ -457,21 +462,18 @@ class CaveEngine(QObject):
         try:
             self.play_cave()
         except Exception as exc:
-            self.statisctics_manager.saveOneGame(start_date, stat_lvl_start, self.currentLevel)
-            statistics_saved = True
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
             elif exc.args[0] == 'unable_exit_dungeon':
                 print("Unable to exit a room in a dungeon. Waiting instead of causing troubles")
-                exit(1)
+                self._exitEngine()
             elif exc.args[0] == "unknown_screen_state":
                 print("Unknows screen state. Exiting instead of doing trouble")
-                exit(1)
+                self._exitEngine()
             else:
                 print("Got an unknown exception: %s" % exc)
-                exit(1)
-        if not statistics_saved:
-            self.statisctics_manager.saveOneGame(start_date, stat_lvl_start, self.currentLevel)
+                self._exitEngine()
+        self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
     def import_method(self, folder, file, name):
         """
