@@ -1,3 +1,6 @@
+import json
+
+
 def getButtons():
     calculus_width = 1080
     calculus_heigth = 2220
@@ -8,8 +11,8 @@ def getButtons():
         'ability_left': [210 / calculus_width, 1500 / calculus_heigth],
         'ability_center': [540 / calculus_width, 1500 / calculus_heigth],
         'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
-        'heal_right':[800 / calculus_width, 1590 / calculus_heigth],
-        'heal_left':[290 / calculus_width, 1590 / calculus_heigth],
+        'heal_right': [800 / calculus_width, 1590 / calculus_heigth],
+        'heal_left': [290 / calculus_width, 1590 / calculus_heigth],
         'spin_wheel_back': [85 / calculus_width, 2140 / calculus_heigth],
         'lucky_wheel_start': [540 / calculus_width, 1675 / calculus_heigth],
         'ability_daemon_reject': [175 / calculus_width, 1790 / calculus_heigth],

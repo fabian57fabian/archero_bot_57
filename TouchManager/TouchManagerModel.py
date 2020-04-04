@@ -2,6 +2,7 @@ import json
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
 from pure_adb_connector import adb_screen, get_device_id
+from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, getCoordFilePath
 
 
 class TouchManagerModel(QObject):
@@ -16,15 +17,16 @@ class TouchManagerModel(QObject):
 
     def __init__(self):
         super(QObject, self).__init__()
-        # Default path for screens
+        self.data_pack = 'datas'
+        self.coords_folder = 'coords'
         self.screens_folder = "screens"
         self.currentScreensFolder = "1080x2220"
         self.manage_default_currentScreensPath()
-        self.data_pack = 'datas'
-        self.dict_out_name = 'data.py'
-        self.dict_movements_out_name = 'movements.json'
-        self.dict_framechecks_out_name = 'static_coords.json'
-        self.dict_path = "data.py"
+
+        self.buttons_folder = 'buttons.json'
+        self.movements_folder = 'movements.json'
+        self.static_coords_folder = 'static_coords.json'
+
         self.ui_color = "cyan"
         self.ui_lines_color_rgb = (0, 255, 0)
         self.ui_lines_color_rgb_selected = (255, 0, 255)
@@ -33,27 +35,13 @@ class TouchManagerModel(QObject):
         self.currentDict = {}
         self.currentMovements = {}
         self.currentFrameChecks = {}
-        self.screensFolders = {}
-        self.loadScreenshotsFolders()
+        self.screensFolders = readAllSizesFolders()
+
+    def buildCoordFilePath(self, dict_name: str) -> str:
+        return getCoordFilePath(dict_name, sizePath=self.currentScreensFolder)
 
     def currentScreensPath(self):
-        return os.path.join(self.screens_folder, self.currentScreensFolder)
-
-    def loadScreenshotsFolders(self):
-        self.screensFolders = {}
-        for folder in os.listdir(self.screens_folder):
-            try:
-                if 'x' in folder:
-                    splat = folder.split('x')
-                    if len(splat) >= 2:
-                        w, h = int(splat[0]), int(splat[1])
-                        self.screensFolders[folder] = [w, h]
-            except Exception as e:
-                print("Got error parsing screen folder %s. skipping" % folder)
-
-    def loadCurrentImage(self):
-        path = ""
-        return path
+        return os.path.join(self.data_pack, self.currentScreensFolder, self.screens_folder)
 
     def is_device_connected(self):
         return get_device_id() is not None
@@ -101,22 +89,16 @@ class TouchManagerModel(QObject):
         self.onSourceChanged.emit(self.currentFiles)
 
     def load_buttons(self):
-        self.currentDict = self.loadDictionaryFromSource(self.dict_out_name)
+        self.currentDict = loadJsonData(self.buildCoordFilePath(self.buttons_folder))
         self.onDictionaryTapsChanged.emit(self.currentDict)
 
     def loadMovements(self):
-        self.currentMovements = self.loadJsonData(self.dict_movements_out_name)
+        self.currentMovements = loadJsonData(self.buildCoordFilePath(self.movements_folder))
         self.onDictionaryMovementsChanged.emit(self.currentMovements)
 
     def loadScreenCheck(self):
-        self.currentFrameChecks = self.loadJsonData(self.dict_framechecks_out_name)
+        self.currentFrameChecks = loadJsonData(self.buildCoordFilePath(self.static_coords_folder))
         self.onDictionaryFrameChecksChanged.emit(self.currentFrameChecks)
-
-    def loadJsonData(self, filePath: str):
-        data = {}
-        with open(os.path.join(self.data_pack, filePath), 'r') as json_file:
-            data = json.load(json_file)
-        return data
 
     def changeScreensFolder(self, new_folder):
         if new_folder in self.screensFolders.keys():
@@ -126,55 +108,7 @@ class TouchManagerModel(QObject):
     def loadImagesFromSource(self, img_path):
         return [file for file in sorted(os.listdir(img_path))]  # if file.endswith(".jpg")]
 
-    def loadDictionaryFromSource(self, dict_path):
-        method = self.import_method(self.data_pack, dict_path, "getButtons")
-        return method()
-
-    def import_method(self, folder, file, name):
-        """
-        loads a method from file (.py) inside a folder
-        :param folder:
-        :param file:
-        :param name:
-        :return:
-        """
-        module = folder + "." + file[:-3]
-        module = __import__(module, fromlist=[name])
-        return getattr(module, name)
-
-    def write_dict_file(self, path, dict_data):
-        with open(path, "w") as outfile:
-            outfile.write("def getButtons():\n")
-            outfile.write("    buttons = {\n")
-            for d in dict_data.items():
-                n, xy = d
-                outfile.write("        '%s': [%f, %f],\n" % (n, xy[0], xy[1]))
-            outfile.write("    }\n")
-            outfile.write("    return buttons")
-
     def save_data(self):
-        self.write_dict_file(os.path.join(self.data_pack, self.dict_out_name), self.currentDict)
-        self.saveJsonSimple(os.path.join(self.data_pack, self.dict_movements_out_name), self.currentMovements)
-        self._saveStaticCoords(os.path.join(self.data_pack, self.dict_framechecks_out_name), self.currentFrameChecks)
-
-    # TODO: Inported from game_screen_connector. Consider to move in a utils folder
-    def _saveStaticCoords(self, path, data: dict):
-        indent = 4
-        spaces = ''.join([" " for _ in range(indent)])
-        with open(path, 'w') as json_file:
-            # json_file.write("{\n")
-            main_attrs = []
-            for coord, value in data.items():
-                attrs = []
-                for attr, val_Attr in value.items():
-                    attrs.append('{}"{}": {}'.format(spaces + spaces, attr, json.dumps(val_Attr)))
-                formatted_attrs = ',\n'.join(attrs)
-                main_attrs.append(
-                    '{}"{}":{}{}'.format(spaces, coord, '{\n', formatted_attrs + '\n' + spaces + '}'))
-            json_file.write('{\n' + ',\n'.join(main_attrs) + '\n}')
-            # json_file.write("}")
-        print("Static coords saved")
-
-    def saveJsonSimple(self, path, data: dict):
-        with open(path, 'w') as fp:
-            json.dump(data, fp)
+        self.saveJsonDict_oneIndent(self.buildCoordFilePath(self.buttons_folder), self.currentDict)
+        self.saveJsonDict_oneIndent(self.buildCoordFilePath(self.movements_folder), self.currentMovements)
+        self._saveStaticCoords(self.buildCoordFilePath(self.static_coords_folder), self.currentFrameChecks)

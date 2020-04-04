@@ -1,14 +1,11 @@
-import json
 import time
 from datetime import datetime
-
 from PyQt5.QtCore import QObject, pyqtSignal
-
 from pure_adb_connector import *
-# from pure_adb_connector import *
-from game_screen_connector import GameScreenConnector
-import sys
+from GameScreenConnector import GameScreenConnector
 from StatisticsManager import StatisticsManager
+from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, \
+    getCoordFilePath
 
 
 class CaveEngine(QObject):
@@ -28,10 +25,9 @@ class CaveEngine(QObject):
     # Set this to true if want to automatically check for energy
     SkipEnergyCheck = False
     data_pack = 'datas'
-    buttons_corrdinates_filename = "data.py"
-    buttons_corrdinates_default_filename = "default_dict.py"
-    movements_path = "movements.json"
-    movements_default_path = "default_movements.json"
+    coords_path = 'coords'
+    buttons_filename = "buttons.json"
+    movements_filename = "movements.json"
     print_names_movements = {
         "n": "up",
         "s": "down",
@@ -83,10 +79,27 @@ class CaveEngine(QObject):
         self.screen_connector: GameScreenConnector = None
         self.width, self.heigth = 0, 0
         self.initConnection()
-        self.buttons = self.getGeneratedData()
-        self.movements = self.loadJsonData(os.path.join(self.data_pack, self.movements_path))
+        self.buttons = {}
+        self.movements = {}
         self.disableLogs = False
         self.stopRequested = False
+        self.dataFolders = readAllSizesFolders()
+        deviceFolder = buildDataFolder(self.width, self.heigth)
+        first_folder = list(self.dataFolders.keys())[0]
+        if deviceFolder not in self.dataFolders:
+            print("Error: not having %s coordinates. Trying with %s" % (deviceFolder, first_folder))
+            deviceFolder = first_folder
+        self.currentDataFolder = ''
+        self.changeCurrentDataFolder(deviceFolder)
+        self.loadCoords()
+
+    def changeCurrentDataFolder(self, new_folder):
+        self.currentDataFolder = new_folder
+        # TODO: emit another signal for current screen folder changed
+
+    def loadCoords(self):
+        self.buttons = loadJsonData(getCoordFilePath(self.buttons_filename, sizePath=self.currentDataFolder))
+        self.movements = loadJsonData(getCoordFilePath(self.movements_filename, sizePath=self.currentDataFolder))
 
     def setStopRequested(self):
         self.stopRequested = True
@@ -110,12 +123,6 @@ class CaveEngine(QObject):
         """
         if not self.disableLogs:
             self.addLog.emit(log)
-
-    def loadJsonData(self, path: str):
-        data = {}
-        with open(path, 'r') as json_file:
-            data = json.load(json_file)
-        return data
 
     def swipe_points(self, start, stop, s):
         start = self.buttons[start]
@@ -475,27 +482,3 @@ class CaveEngine(QObject):
                 print("Got an unknown exception: %s" % exc)
                 self._exitEngine()
         self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
-
-    def import_method(self, folder, file, name):
-        """
-        loads a method from file (.py) inside a folder
-        :param folder:
-        :param file:
-        :param name:
-        :return:
-        """
-        module = folder + "." + file[:-3]
-        module = __import__(module, fromlist=[name])
-        return getattr(module, name)
-
-    def getGeneratedData(self):
-        if os.path.exists(os.path.join(self.data_pack, self.buttons_corrdinates_filename)):
-            method = self.import_method(self.data_pack, self.buttons_corrdinates_filename, "getButtons")
-            return method()
-        elif os.path.exists(os.path.join(self.data_pack, self.buttons_corrdinates_default_filename)):
-            method = self.import_method(self.data_pack, self.buttons_corrdinates_default_filename, "getButtons")
-            return method()
-        else:
-            print("No %s or d%s scripts are available. check your files." % (
-                self.buttons_corrdinates_filename, self.buttons_corrdinates_default_filename))
-            exit(1)

@@ -43,7 +43,7 @@ class GameControllerModel(QObject):
         # Default data
         self.engine = CaveEngine()
         self.dict_buttons = 'data.py'
-        self.ch_images_path = "images/"
+        self.ch_images_path = "ui_chapters/"
         self.ch_image_ext = ".png"
         self.icon_path = "icons"
         self.icons_dataset = self.load_icons()

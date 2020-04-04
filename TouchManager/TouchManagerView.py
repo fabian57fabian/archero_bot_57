@@ -104,7 +104,7 @@ class TouchManagerWindow(QWidget):
         self.lblCurrentUILocation.setAlignment(Qt.AlignRight)
         lay_vertical_1.addWidget(self.lblCurrentUILocation)
         lay_vertical_2 = QVBoxLayout()
-        right_label = QtWidgets.QLabel(self.model.dict_out_name)
+        right_label = QtWidgets.QLabel(self.model.buttons_folder)
         right_label.setFixedHeight(20)
         right_label.setAlignment(Qt.AlignCenter)
         # TODO: insert back right_label later

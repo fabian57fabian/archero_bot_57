@@ -4,9 +4,8 @@ import json
 from PIL import Image
 # from pure_adb_connector import *
 import numpy as np
-from game_screen_connector import GameScreenConnector
-
-all_screens_folder = "screens"
+from GameScreenConnector import GameScreenConnector
+from Utils import readAllSizesFolders
 
 
 def getImageFrame(path: str):
@@ -15,35 +14,27 @@ def getImageFrame(path: str):
     return pixval
 
 
-def loadScreenshotsFolders(all_screens_folder):
-    screensFolders = {}
-    for folder in os.listdir(all_screens_folder):
-        try:
-            if 'x' in folder:
-                splat = folder.split('x')
-                if len(splat) >= 2:
-                    w, h = int(splat[0]), int(splat[1])
-                    screensFolders[folder] = [w, h]
-        except Exception as e:
-            print("Got error parsing screen folder %s. skipping" % folder)
-    return screensFolders
-
-
-screens_data = loadScreenshotsFolders(all_screens_folder)
+screens_data = readAllSizesFolders()
 keys = [k for k in screens_data.keys()]
 
 for i in range(len(keys)):
     print("%d: %s" % (i, keys[i]))
 choosen = input("Select your number")
 folder = keys[int(choosen)]
-screens_path = os.path.join(all_screens_folder, folder)
+screens_path = os.path.join("datas", folder, "screens")
 print("Using %s" % screens_path)
 
+selected_debug = input(
+    "Do you wish to debug? (set yes only if you did it already once and found some rows with NO_DETECTION): (y/n):")
+debug = False
+if selected_debug!= None:
+    if selected_debug == 'y' or selected_debug == 'yes':
+        debug = True
 width, heigth = screens_data[folder]
 excluded = []
 
 screen_conector = GameScreenConnector(width, heigth)
-screen_conector.debug = len(sys.argv) > 1
+screen_conector.debug = debug
 static_coords = screen_conector.static_coords
 
 files = os.listdir(screens_path)
@@ -81,3 +72,5 @@ if all_ok:
 else:
     print(
         "Got some failed tests. It is advised not to use the bot. Infinite loops and damage can be done by randomply clicking without knowledge.")
+
+a = input("Press ENTER to exit")

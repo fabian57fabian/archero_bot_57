@@ -27,4 +27,4 @@ def saveMovements(path: str):
         json.dump(movements, fp)
 
 
-saveMovements('movements.json')
+saveMovements('../datas/1080x2280/movements_sample.json')

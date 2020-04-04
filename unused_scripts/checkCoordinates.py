@@ -43,7 +43,7 @@ def getCoordinates():
 
 # Having cellphones with big screens make image show too big. change this paramenter in [0,1] to resize automatically
 resize_factor_show = 1
-images_path = '../screens/1080x2220/'
+images_path = '../datas/1080x2220/1080x2220/'
 save_images = False
 # All saved images goes to screens_out folder if save_images is true
 
