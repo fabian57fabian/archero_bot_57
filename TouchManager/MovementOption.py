@@ -32,22 +32,24 @@ class MovementOption(QWidget):
         self.initConnectors()
 
     def initUI(self):
-        self.rBtnChangeableSrc.setText("Change")
-        self.rBtnChangeableDst.setText("Change")
+        self.rBtnChangeableSrc.setText("")
+        self.rBtnChangeableDst.setText("")
         if self.controller.selectedCoordinateIndex == 0:
             self.rBtnChangeableSrc.setChecked(True)
         else:
             self.rBtnChangeableDst.setChecked(True)
+        #self.lay_h1.addWidget(QLabel("Start: "))
         self.lay_h1.addWidget(self.lblXsrc)
         self.lay_h1.addWidget(self.lblYsrc)
         self.lay_h1.addWidget(self.rBtnChangeableSrc)
 
+        #self.lay_h2.addWidget(QLabel("End  : "))
         self.lay_h2.addWidget(self.lblXdst)
         self.lay_h2.addWidget(self.lblYdst)
         self.lay_h2.addWidget(self.rBtnChangeableDst)
 
         self.lay.addLayout(self.lay_h1)
-        self.lay.addWidget(QLabel("to"))
+        #self.lay.addWidget(QLabel("to"))
         self.lay.addLayout(self.lay_h2)
         self.setLayout(self.lay)
         self.changeData([[0, 0], [0, 0]])

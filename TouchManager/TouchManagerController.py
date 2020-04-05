@@ -39,13 +39,15 @@ class TouchManagerController(QObject):
 
     def initConnectors(self):
         self.model.onDictionaryTapsChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.Buttons))
-        self.model.onDictionaryMovementsChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.Movements))
-        self.model.onDictionaryFrameChecksChanged.connect(partial(self.onGeneralDictionaryChanged, ShowAreaState.FrameCheck))
+        self.model.onDictionaryMovementsChanged.connect(
+            partial(self.onGeneralDictionaryChanged, ShowAreaState.Movements))
+        self.model.onDictionaryFrameChecksChanged.connect(
+            partial(self.onGeneralDictionaryChanged, ShowAreaState.FrameCheck))
 
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
         self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
 
-    def onGeneralDictionaryChanged(self, areaType:ShowAreaState):
+    def onGeneralDictionaryChanged(self, areaType: ShowAreaState):
         self.showDifferentElemStateRequested(areaType)
         self.onCurrentDictChanged(self.dataFromAreaType())
 
@@ -126,3 +128,7 @@ class TouchManagerController(QObject):
             self.model.changeMovementPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
         elif self.currentAreaType == ShowAreaState.FrameCheck:
             self.model.changeFrameCheckPosition(self.dict_selected, [x1, y1], self.selectedCoordinateIndex)
+
+    def requestChangeAround(self, around: int):
+        if around >= 0:
+            self.model.changeAroundFactor(self.dict_selected, around)

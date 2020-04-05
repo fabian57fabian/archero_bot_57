@@ -24,11 +24,12 @@ class ButtonOption(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.selectedRadioBtn.setText("Change")
+        self.selectedRadioBtn.setText("")
         self.selectedRadioBtn.setChecked(True)
         # self.setMinimumSize(10, 10)
         self.lay.addWidget(self.lblX)
         self.lay.addWidget(self.lblY)
+        self.lay.addWidget(self.selectedRadioBtn)
         self.setLayout(self.lay)
         self.changeData((0, 0))
 

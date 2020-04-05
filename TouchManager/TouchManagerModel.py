@@ -15,6 +15,8 @@ class TouchManagerModel(QObject):
     onImageAdded = pyqtSignal(str)
     onPointAdded = pyqtSignal(str)
 
+    MAX_AROUND = 50
+
     def __init__(self):
         super(QObject, self).__init__()
         self.data_pack = 'datas'
@@ -71,12 +73,17 @@ class TouchManagerModel(QObject):
     def changeMovementPosition(self, dict_button, new_location, index):
         if dict_button in self.currentMovements:
             self.currentMovements[dict_button][0 if index == 0 else 1] = new_location
-            self.onButtonLocationChanged.emit(dict_button)
+            self.onButtonnLocationChanged.emit(dict_button)
 
     def changeFrameCheckPosition(self, dict_button, new_location, index):
         if dict_button in self.currentFrameChecks:
             self.currentFrameChecks[dict_button]['coordinates'][index] = new_location
             self.onButtonLocationChanged.emit(dict_button)
+
+    def changeAroundFactor(self, selected_coord: str, around: int):
+        if selected_coord in self.currentFrameChecks:
+            self.currentFrameChecks[selected_coord]['around'] = around
+            self.onButtonLocationChanged.emit(selected_coord)
 
     def load_data(self):
         self.loadScreens()

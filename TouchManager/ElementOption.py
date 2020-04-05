@@ -22,9 +22,9 @@ class ElementOption(QWidget):
         self.controller = controller
         self.main_lay = QVBoxLayout()
         # self.layItems = QHBoxLayout()
-        self.lblName = QLabel()
+        #self.lblName = QLabel()
         self.wid: QWidget = ButtonOption(self, controller, model)
-        self.descriptionTxt = QtWidgets.QPlainTextEdit()
+        #self.descriptionTxt = QtWidgets.QPlainTextEdit()
         # self.elements = {}
         self.currentType: ShowAreaState = ShowAreaState.Buttons
         self.setupUI()
@@ -33,19 +33,20 @@ class ElementOption(QWidget):
 
     def reset(self):
         self.lblInfoDesc.clear()
-        self.lblName.setText("")
+        #self.lblName.setText("")
 
     def setupUI(self):
-        self.lblName.setMaximumHeight(20)
-        self.lblName.setAlignment(Qt.AlignTop)
-        self.descriptionTxt.setMaximumHeight(60)
-        self.descriptionTxt.setReadOnly(True)
+        self.main_lay.setAlignment(Qt.AlignTop)
+        #self.lblName.setMaximumHeight(20)
+        #self.lblName.setAlignment(Qt.AlignTop)
+        #self.descriptionTxt.setMaximumHeight(60)
+        #self.descriptionTxt.setReadOnly(True)
         self.main_lay.setContentsMargins(0, 0, 0, 0)
-        self.setMaximumHeight(200)
+        self.setFixedHeight(150)
         # self.layItems.addWidget(self.wid)
-        self.main_lay.addWidget(self.lblName)
+        #self.main_lay.addWidget(self.lblName)
         self.main_lay.addWidget(self.wid)
-        self.main_lay.addWidget(self.descriptionTxt)
+        #self.main_lay.addWidget(self.descriptionTxt)
 
         self.setLayout(self.main_lay)
 
@@ -54,24 +55,21 @@ class ElementOption(QWidget):
         self.controller.onElementSelectionChanged.connect(self.onElementChanged)
 
     def onElementChanged(self, new_item):
-        self.lblName.setText(new_item + ":")
+        #self.lblName.setText(new_item + ":")
         self.wid.changeData(self.controller.dataFromAreaType()[new_item].copy())
 
     def areatypeChanged(self, new_type: ShowAreaState):
         self.clearLayout()
         if new_type == ShowAreaState.Buttons:
             self.wid = ButtonOption(self.main_lay, self.controller, self.model)
-            self.main_lay.insertWidget(1, self.wid)  # .addWidget(self.wid)
+            self.main_lay.insertWidget(0, self.wid)
         elif new_type == ShowAreaState.Movements:
             self.wid = MovementOption(self.main_lay, self.controller, self.model)
-            self.main_lay.insertWidget(1, self.wid)
+            self.main_lay.insertWidget(0, self.wid)
         elif new_type == ShowAreaState.FrameCheck:
             self.wid = FrameCheckOption(self.main_lay, self.controller, self.model)
-            self.main_lay.insertWidget(1, self.wid)
+            self.main_lay.insertWidget(0, self.wid)
 
     def clearLayout(self):
-        # self.elements.clear()
-        # self.elements = {}
+
         self.wid.setParent(None)
-        # for i in reversed(range(self.layItems.count())):
-        #    self.layItems.itemAt(i).widget().setParent(None)

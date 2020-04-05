@@ -2,7 +2,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
-    QFormLayout, QGridLayout, QRadioButton
+    QFormLayout, QGridLayout, QRadioButton, QComboBox, QSpacerItem
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
@@ -17,12 +17,29 @@ class FrameCheckOption(QWidget):
         self.parent = parent
         self.model = model
         self.controller = controller
+        self.main_lay = QVBoxLayout()
         self.lay = QVBoxLayout()
         self.lbls = []
         self.lblsColors = []
         self.rBtns = []
+        self.aroundLbl = QLabel()
+        self.cBoxAround = QComboBox()
+        self.initMainUI()
         self.initUI({'coordinates': [[0.5, 0.5]], 'values': [[255, 255, 255]], 'around': 5})
         self.initConnectors()
+
+    def initMainUI(self):
+        self.aroundLbl.setText("Around factor:")
+        self.cBoxAround.addItems(str(i) for i in range(self.model.MAX_AROUND))
+        self.cBoxAround.setFixedHeight(20)
+        self.cBoxAround.setMaximumWidth(100)
+        self.cBoxAround.currentIndexChanged.connect(self.controller.requestChangeAround)
+        self.main_lay.addLayout(self.lay)
+        h_lay = QHBoxLayout()
+        h_lay.addWidget(self.aroundLbl)
+        h_lay.addWidget(self.cBoxAround)
+        self.main_lay.addLayout(h_lay)
+        self.setLayout(self.main_lay)
 
     def _clearLayout(self):
         self.lbls.clear()
@@ -37,7 +54,14 @@ class FrameCheckOption(QWidget):
                 row_lay.itemAt(j).widget().setParent(None)
             row_lay.setParent(None)
 
+    def _setAroundSafe(self, around):
+        self.cBoxAround.blockSignals(True)
+        self.cBoxAround.setCurrentIndex(around)
+        self.cBoxAround.blockSignals(False)
+
     def initUI(self, newData: dict):
+        if 'around' in newData:
+            self._setAroundSafe(newData['around'])
         coords_num = len(newData['coordinates'])
         w, h = self.model.current_image_size
         for i in range(coords_num):
@@ -57,27 +81,6 @@ class FrameCheckOption(QWidget):
             self.lay.addLayout(lay_row)
         if len(self.rBtns) > 0:
             self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
-        self.setLayout(self.lay)
-        return
-        self.rBtnChangeableSrc.setText("Change")
-        self.rBtnChangeableDst.setText("Change")
-        if self.controller.selectedCoordinateIndex == 0:
-            self.rBtnChangeableSrc.setChecked(True)
-        else:
-            self.rBtnChangeableDst.setChecked(True)
-        self.lay_h1.addWidget(self.lblXsrc)
-        self.lay_h1.addWidget(self.lblYsrc)
-        self.lay_h1.addWidget(self.rBtnChangeableSrc)
-
-        self.lay_h2.addWidget(self.lblXdst)
-        self.lay_h2.addWidget(self.lblYdst)
-        self.lay_h2.addWidget(self.rBtnChangeableDst)
-
-        self.lay.addLayout(self.lay_h1)
-        self.lay.addWidget(QLabel("to"))
-        self.lay.addLayout(self.lay_h2)
-        self.setLayout(self.lay)
-        self.changeData([[0, 0], [0, 0]])
 
     def initConnectors(self):
         return
@@ -87,8 +90,6 @@ class FrameCheckOption(QWidget):
     def changeData(self, new_data):
         self._clearLayout()
         self.initUI(new_data)
-        return
-        w, h = self.model.current_image_size
-        for i, [lblX, lblY] in self.lbls:
-            self.lblXsrc.setText("X: %4d" % (new_data[0][0] * w))
-        self.lblYsrc.setText("Y: %4d" % (new_data[0][1] * h))
+        if 'around' in new_data:
+            if self.cBoxAround.currentIndex != new_data['around']:
+                self._setAroundSafe(new_data['around'])
