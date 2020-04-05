@@ -92,11 +92,11 @@ class TouchManagerWindow(QWidget):
 
         nav_layout = QHBoxLayout()
         self.prev.setText("<-")
-        # self.prev.clicked.connect(self.get_prev_image)
+        self.prev.clicked.connect(self.controller.prevImageSelectRequest)
         nav_layout.addWidget(self.prev)
 
         self.next.setText("->")
-        # [self.next.clicked.connect(self.get_next_image)
+        self.next.clicked.connect(self.controller.nextImageSelectRequest)
         nav_layout.addWidget(self.next)
         lay_vertical_1.addLayout(nav_layout)
 

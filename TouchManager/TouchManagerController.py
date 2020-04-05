@@ -110,6 +110,16 @@ class TouchManagerController(QObject):
             self.image_selected = image_name
             self.onImageSelectionChanged.emit(self.image_selected)
 
+    def nextImageSelectRequest(self):
+        index = list(self.model.currentFiles).index(self.image_selected)
+        index = 0 if index+1 == len(self.model.currentFiles) else index+1
+        self.imageSelectRequets(list(self.model.currentFiles)[index])
+
+    def prevImageSelectRequest(self):
+        index = list(self.model.currentFiles).index(self.image_selected)
+        index = len(self.model.currentFiles) if index -1 == 0 else index -1
+        self.imageSelectRequets(list(self.model.currentFiles)[index])
+
     def requestScreenFolderChange(self, new_folder):
         if new_folder != self.model.currentScreensFolder:
             self.model.changeScreensFolder(new_folder)
