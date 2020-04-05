@@ -2,7 +2,7 @@ import os
 import json
 
 
-def loadJsonData(path: str):
+def loadJsonData(path: str)->dict:
     data = {}
     with open(path, 'r') as json_file:
         data = json.load(json_file)
