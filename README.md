@@ -8,6 +8,17 @@ Watch the installation video:
 
 [![Watch the video](https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/video_thumbnail.png)](https://www.youtube.com/watch?v=XZTI_USaY-4)
 
+## Contents
+1. [Introduction](#introduction)
+2. [Installation on Linux](#Installation-on-Linux)
+3. [Installation on Windows](#installation-on-windows)
+4. [Game lock disabling](#disable-blue-auto-lock-screen)
+5. [Usage](#usage)
+6. [Game Description](#game-description)
+5. [Coordinates management](#coordinates-management)
+5. [How it works](#how-it-works)
+5. [Extra](#extra)
+
 ## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
 It was originally build to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart.
@@ -60,56 +71,39 @@ To disable it, follow this:
 Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilepage/user-id/14128964) for this [post](https://us.community.samsung.com/t5/Galaxy-S8/Annoying-quot-Drag-Lock-icon-to-unlock-quot/td-p/539737) on samsung community.
 
 ## Usage
-Once cloned the repo, open your smartphone, open __Archero__ app. Set UseGeneratedData variable to True in next scripts if automatic energy level detection does not work.
-
+Once cloned the repo, execute **GameController.py**. The interface is not complete but provides basic view and play operations.
+\
 Remember to __disable notifications__ or __activate Do Not Disturb mode__.
 
-### New interface!
-A new interface was added. Launch **GameController.py** in order to play the game.
 
-The interface is not complete but provides basic view and play operations.
-
-### Slow and high loot
-Set dungeon to **The Cave** (number 6) and run the executable (for windows double-click on 'static_bot_cave.py' or open a CMD and write following line without '$'):
-```console
-$ python static_bot_cave.py
-```
+### Game description
+Set dungeon to **The Cave** (number 6) and run the executable GameController.py:
+\
 If you launch from terminal, it is possible to specify the starting level of first run (e.g. `python static_bot_cave.py 16`).
-This will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 18 levels.
+\
+If setting start from 0, the program will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 20 levels.
+\
 Once it ends, he goes to main menu and checks another time if it has energy.
+This program is not perfect. If he somehow thinks to be on a different level but the game is ahead, please manually end the game, return to main menu and restart the game.
+\
+Even if it will fail, no harm will be done (it will not exit and click randomly on your phone).
 
-This program is not perfect. Sometimes it will miss 'Taking the door on level end'. If it does that (once every 5-6 games) then close the program, manually end the game, return to main menu and restart the game.
+## Coordinates Management
+### Static coordinates check
 
-Even if it will fail, no harm will be done (it will not exit and click randomply on your phone).
+The bot takes screenshots over time and detecting what is currently on the screen is a requested operation before starting the bot.
+With this said you have to execute **check_static_coors.py** and checking that each row starts with **OK**.
 
-### Fast and low loot
-Open Archero, choose dungeon **Ruined Lands** (number 10) and launch the script (for windows double-click on 'static_bot_cave.py' or open a CMD and write following line without '$'):
-```console
-$ python static_bot_ruined_lands.py
-```
-This will go to your avatar, remove the weapon, go back, check for energy and when available plays by dying at level 1.
-Then goes back to main level and repeats until no energy left.
+If some **NO_DETECTION** are found, don't start the bot.
+Other **MULTIPLE_DETECTIONS** are allowed.
 
-## Buttons location check
+### Coordinates check
 If the program is clicking in wrong places, then use [TouchManager](TouchManager.py) script.
 Create a folder with all your screenshots.
 Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc856576cb986093dd3b352cb54c774df84/checkCoordinates.py#L46) to screenshots path.
 launch TouchManager script and use the interface (for windows double-click on 'checkCoordinates.py.').
 Current version: basic_usage.
 
-## Static coordinates check
-
-The bot takes screenshots over time and detecting what is currently on the screen is a requested operation before starting the bot.
-With this said you have to execute **check_static_coordinates.py** and checking that each row starts with **OK**.
-
-If some **NO_DETECTION** are found, don't start the bot.
-Other **MULTIPLE_DETECTIONS** are allowed.
-
-## Game controller (not currently working)
-
-To execute archero bot by interface, use [GameController](GameController.py) script.
-Just launch it with python and start using it (for windows double-click on 'GameController.py.').
-Current version: not_working.
 
 ## How it works
 The package adb lets us use various android tools like:
@@ -130,6 +124,12 @@ For example when checking if having 5 or more energy to play one game, we check 
 
 ## Issue: Adb not working
 If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
+
+## Statistics saving
+
+Every game statistics is saved in datas folder as a **statisics** csv file. It can be opened by LibreOffice or Excel.
+\
+This is usefull in future games plotting to know how it performed.
 
 ## Extra
 
