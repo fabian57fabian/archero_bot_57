@@ -4,7 +4,7 @@ from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QGridLayout, QWidget
+    QInputDialog, QGridLayout, QWidget, QSpacerItem
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
@@ -21,37 +21,60 @@ class GameControllerWindow(QWidget):
         self.toolbar_h = 70
         self.model = model
         self.main_layout = QGridLayout()
+        self.toolbarOptions = QVBoxLayout()
         self.dungeonSelector = QDungeonSelector(self, model)
         # self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
+        self.lblScreenW = QLabel()
+        self.lblScreenH = QLabel()
+        self.lblDataFolder = QLabel()
+        self.lblConnectionStatus = QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
         self.setupUi()
         self.initConnectors()
+        self.onScreenDataChanged()  # To initialize
+        self.onConnectionStateChange(self.model.connected)  # To initialize
 
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
         self.model.engineStatechanged.connect(self.onEngineStateChanged)
+        self.model.connectionStateChanged.connect(self.onConnectionStateChange)
+        self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
+        self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
 
     def onEngineStateChanged(self, state: EngineState):
         if state == EngineState.Playing:
             self.infoLabel.setText("Engine started playing")
         elif state == EngineState.StopInvoked:
             self.infoLabel.setText("Engine stopping. Wait a second....")
-        elif state == EngineState.Stopped:
-            self.infoLabel.setText("Engine stopped")
+        elif state == EngineState.Ready:
+            self.infoLabel.setText("Engine is ready")
 
     def get_toolbar_size(self):
         return self.toolbar_w, self.toolbar_h
+
+    def onConnectionStateChange(self, connected: bool):
+        if connected:
+            self.lblConnectionStatus.setText("Connected")
+            self.lblConnectionStatus.setStyleSheet("color: white")
+        else:
+            self.lblConnectionStatus.setText("Not connecetd!")
+            self.lblConnectionStatus.setStyleSheet("color: red")
+
+    def onScreenDataChanged(self):
+        self.lblScreenW.setText("W: {}".format(self.model.engine.width))
+        self.lblScreenH.setText("H: {}".format(self.model.engine.heigth))
+        self.lblDataFolder.setText("{}".format(self.model.engine.currentDataFolder))
 
     def setupUi(self):
         self.setObjectName("main_window")
         self.resize(800, 600)
         self.setMinimumWidth(640)
         self.setMinimumHeight(480)
-
+        # self.lblScreenSize.setText("Your screen is:\nwidthxheight")
         # centralwidget = QtWidgets.QWidget(main_window)
         # centralwidget.setStyleSheet("background-color: #6e6e6e")
         self.main_layout.setSpacing(0)
@@ -65,19 +88,33 @@ class GameControllerWindow(QWidget):
         self.setLayout(self.main_layout)
 
         self.main_layout.addWidget(self.dungeonSelector, 0, 0)
-
-        # self.widRun.setFixedHeight(self.toolbar_h)
-        # self.main_layout.addWidget(self.widRun, 0, 1)
         lay_content = QVBoxLayout()
+        # self.toolbarOptions.addWidget(QLabel("Resolution:"))
+        self.toolbarOptions.addWidget(self.lblScreenW)
+        self.toolbarOptions.addWidget(self.lblScreenH)
+        # self.toolbarOptions.addWidget(QLabel("Data folder:"))
+        # self.toolbarOptions.addWidget(self.lblDataFolder)
+        # self.toolbarOptions.addWidget(QLabel("Connection:"))
+        self.toolbarOptions.addWidget(self.lblConnectionStatus)
+
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
+        self.lblScreenW.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblScreenH.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblConnectionStatus.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblDataFolder.setStyleSheet("background-color: #6e6e6e; color: white")
+        # self.lblConnectionStatus.setAlignment(Qt.AlignCenter)
+        # self.lblConnectionStatus.setAlignment(Qt.AlignRight)
         self.infoLabel.setStyleSheet("background-color: #6e6e6e; color: white")
         self.infoLabel.setAlignment(Qt.AlignCenter)
         self.main_layout.addLayout(lay_content, 0, 1)
 
         self.widActions.setFixedWidth(self.toolbar_w)
-        self.main_layout.addWidget(self.widActions, 1, 0)
+        self.main_layout.addLayout(self.toolbarOptions, 1, 0)
+        self.toolbarOptions.setAlignment(Qt.AlignTop)
+        self.toolbarOptions.setContentsMargins(5, 5, 0, 0)
+        self.toolbarOptions.setSpacing(10)
 
         self.content_wid.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))

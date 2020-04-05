@@ -13,6 +13,15 @@ connected = False
 my_device = None
 
 
+def isConnected():
+    try:
+        device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
+        device = None if device == '' else device
+        return device != '' and device != None
+    except:
+        return False
+
+
 def connect():
     print("Initializing ppadb library")
     os.system("adb devices")  # this is done to make it connect (like __init__ )

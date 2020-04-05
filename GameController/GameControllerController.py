@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
 from QMyWidgets.QLevelState import QLevelState, PlayState
-from GameController.GameControllerModel import GameControllerModel
+from GameController.GameControllerModel import GameControllerModel, EngineState
 
 
 class GameControllerController(QObject):
@@ -17,6 +17,15 @@ class GameControllerController(QObject):
         # Set intial states
         self.controllerStates = {'prev': False, 'play': True, 'pause': False, 'next': True, 'stop': True}
         self.model.engine.levelChanged.connect(self.onLevelChanged)
+        self.model.connectionStateChanged.connect(self.onConnectionChanged)
+
+    def onConnectionChanged(self, conn):
+        if conn and not self.controllerStates['play'] and self.model.currentEngineState != EngineState.Playing:
+            self.controllerStates['play'] = True
+            self.onChangeEnableStatesButtons.emit(self.controllerStates)
+        if not conn and self.controllerStates['play']:
+            self.controllerStates['play'] = False
+            self.onChangeEnableStatesButtons.emit(self.controllerStates)
 
     def onLevelChanged(self, new_level):
         if self.controllerStates['play']:
@@ -34,7 +43,8 @@ class GameControllerController(QObject):
         self.model.playDungeon()
 
     def pauseRequested(self):
-        self.controllerStates['play'] = True
+        if self.model.connected:
+            self.controllerStates['play'] = True
         self.controllerStates['pause'] = False
         self.controllerStates['stop'] = True
         self.controllerStates['prev'] = True
@@ -51,7 +61,8 @@ class GameControllerController(QObject):
             self.model.engine.changeCurrentLevel(self.model.engine.currentLevel + 1)
 
     def stopRequested(self):
-        self.controllerStates['play'] = True
+        if self.model.connected:
+            self.controllerStates['play'] = True
         self.controllerStates['pause'] = False
         self.controllerStates['stop'] = True
         self.controllerStates['prev'] = True

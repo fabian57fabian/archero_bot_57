@@ -3,18 +3,16 @@ from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, 
 
 
 class GameScreenConnector:
-    def __init__(self, width, height):
+    def __init__(self):
         self.debug = True
-        self.width = width
-        self.height = height
+        self.width = 0
+        self.height = 0
         # This should be in format rgba
-        self.coords_path = os.path.join("datas", buildDataFolder(self.width, self.height), "coords",
-                                        "static_coords.json")
+        self.coords_path = ''
         self.static_checks_on_frame = {"least_5_energy": {
             "coordinates": [[370 / 1080, 60 / 2220], [55 / 1080, 225 / 2220], [140 / 1080, 225 / 2220]],
             "values": [[53, 199, 41, 255], [32, 82, 117, 255], [32, 82, 117, 255]], "around": 5}}
         self.static_coords = {}
-        self.static_coords = loadJsonData(self.coords_path)
         self.door_width = 180.0 / 1080.0
         self.yellow_experience = [255, 170, 16, 255]
         self.green_hp = [77, 171, 56, 255]
@@ -27,6 +25,12 @@ class GameScreenConnector:
             # [326 / 1080, 952 / 2220, 760 / 1080, 952 / 2220]  # line thru life bar. Edges are external door width}
         }
         self.stopRequested = False
+
+    def changeScreenSize(self, w, h):
+        self.width, self.height = w, h
+        self.coords_path = os.path.join("datas", buildDataFolder(self.width, self.height), "coords",
+                                        "static_coords.json")
+        self.static_coords = loadJsonData(self.coords_path)
 
     def pixel_equals(self, px_readed, px_expected, around=5):
         # checking only RGB from RGBA

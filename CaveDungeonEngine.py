@@ -11,6 +11,8 @@ from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, 
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
     addLog = pyqtSignal(str)
+    resolutionChanged = pyqtSignal(int, int)
+    dataFolderChanged = pyqtSignal(str)
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
@@ -70,15 +72,18 @@ class CaveEngine(QObject):
     }
     max_loops_game = 20
 
-    def __init__(self):
+    def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.currentLevel = 0
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
-        self.screen_connector: GameScreenConnector = None
-        self.width, self.heigth = 0, 0
-        self.initConnection()
+        self.screen_connector = GameScreenConnector()
+        self.screen_connector.debug = False
+        self.width, self.heigth = 1080, 2220
+        # self.initConnection()  # Here changes width and height
+        if connectImmediately:
+            self.updateScreenSizeByPhone()
         self.buttons = {}
         self.movements = {}
         self.disableLogs = False
@@ -91,11 +96,16 @@ class CaveEngine(QObject):
             deviceFolder = first_folder
         self.currentDataFolder = ''
         self.changeCurrentDataFolder(deviceFolder)
-        self.loadCoords()
+
+    def updateScreenSizeByPhone(self):
+        w, h = adb_get_size()
+        self.changeScreenSize(w, h)
+        self.screen_connector.changeScreenSize(w, h)
 
     def changeCurrentDataFolder(self, new_folder):
         self.currentDataFolder = new_folder
-        # TODO: emit another signal for current screen folder changed
+        self.loadCoords()
+        self.dataFolderChanged.emit(new_folder)
 
     def loadCoords(self):
         self.buttons = loadJsonData(getCoordFilePath(self.buttons_filename, sizePath=self.currentDataFolder))
@@ -106,16 +116,17 @@ class CaveEngine(QObject):
         self.screen_connector.stopRequested = True
         self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
-    def initConnection(self):
+    def changeScreenSize(self, w, h):
+        self.width, self.heigth = w, h
+        print("New resolution set: %dx%d" % (self.width, self.heigth))
+        self.resolutionChanged.emit(w, h)
+
+    def __unused__initConnection(self):
         device = get_device_id()
         if device is None:
             print("Error: no device discovered. Start adb server before executing this.")
             exit(1)
         print("Usb debugging device: %s" % device)
-        self.width, self.heigth = adb_get_size()
-        print("Your resolution is %dx%d" % (self.width, self.heigth))
-        self.screen_connector = GameScreenConnector(self.width, self.heigth)
-        self.screen_connector.debug = False
 
     def log(self, log: str):
         """

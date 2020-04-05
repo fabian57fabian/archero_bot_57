@@ -1,8 +1,8 @@
 import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
-from CaveDungeonEngine import CaveEngine
-
+from CaveDungeonEngine import CaveEngine, isConnected
+import time
 import threading
 
 
@@ -27,13 +27,16 @@ import enum
 
 
 class EngineState(enum.Enum):
-    Stopped = 1
+    Ready = 1
     Playing = 2
     StopInvoked = 3
 
 
 class GameControllerModel(QObject):
     engineStatechanged = pyqtSignal(EngineState)
+    connectionStateChanged = pyqtSignal(bool)
+    resolutionChanged = pyqtSignal(str)
+    dataFolderChanged = pyqtSignal(str)
 
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
@@ -47,6 +50,8 @@ class GameControllerModel(QObject):
         self.ch_image_ext = ".png"
         self.icon_path = "icons"
         self.icons_dataset = self.load_icons()
+        self.currentEngineState: EngineState = EngineState.Ready
+        self.connected = False
         self.chapters = ["1. Verdant Prairie",
                          "2. Storm Desert",
                          "3. Abandoned Dungeon",
@@ -61,8 +66,29 @@ class GameControllerModel(QObject):
                          "12. Dungeon of Traps",
                          "13. Lava Land",
                          "14. Eskimo Lands"]
-        self.workerThread: WorkerThread = None  # threading.Thread(target=self.engine.start_infinite_play)
-        # self.worker = GameWorker(self.engine, self.engine.start_infinite_play)
+        self.workerThread: WorkerThread = None
+        self.connectionStateChanged.connect(self.onconnectionStateChanged)
+        self.startConnectionCheck()
+
+    def onconnectionStateChanged(self, conn):
+        if conn:
+            self.engine.updateScreenSizeByPhone()
+
+    def _changeConnectedstate(self, conn: bool):
+        self.connected = conn
+        self.connectionStateChanged.emit(conn)
+
+    def _continousConnectionCheck(self):
+        while True:
+            c = isConnected()
+            if c != self.connected:
+                self._changeConnectedstate(c)
+            time.sleep(10)
+
+    def startConnectionCheck(self):
+        self.connectionCheckThread = WorkerThread()
+        self.connectionCheckThread.function = self._continousConnectionCheck
+        self.connectionCheckThread.start()
 
     def load_data(self):
         pass
@@ -101,29 +127,37 @@ class GameControllerModel(QObject):
     def playDungeon(self):
         if self.workerThread is not None:
             self.stopDungeon()
-        self.workerThread = WorkerThread()  # threading.Thread(target=self.engine.start_infinite_play)  # , args=(100,))
+        self.workerThread = WorkerThread()
         self.workerThread.function = self.engine.start_infinite_play
         self.workerThread.start()
-        # try:
-        #     _thread.start_new_thread(self.engine.start_infinite_play, (0,))
-        # except Exception as e:
-        #     print("Error: unable to start thread: %s" % str(e))
 
     def waitForEngineEnd(self):
         if self.workerThread is not None:
             self.workerThread.join()
 
+    def setEngineState(self, state: EngineState):
+        self.currentEngineState = state
+        self.engineStatechanged.emit(state)
+
+    def _stopEngineUnsafe(self):
+        try:
+            self.engine.setStopRequested()
+            self.waitForEngineEnd()
+            self.workerThread = None
+            self.setEngineState(EngineState.Ready)
+        except Exception as e:
+            print("Trying to kill process resulted in: %s" % str(e))
+
     def pauseDungeon(self):
         if self.workerThread is not None:
             try:
-                self.engineStatechanged.emit(EngineState.StopInvoked)
-                self.engine.setStopRequested()
-                self.waitForEngineEnd()
-                self.engineStatechanged.emit(EngineState.Stopped)
+                self.setEngineState(EngineState.StopInvoked)
+                new_thread = WorkerThread()
+                new_thread.function = self._stopEngineUnsafe
+                new_thread.start()
             except Exception as e:
                 print("Trying to kill process resulted in: %s" % str(e))
 
     def stopDungeon(self):
         self.pauseDungeon()
-        self.workerThread = None
         self.engine.changeCurrentLevel(0)
