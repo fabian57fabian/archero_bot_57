@@ -109,6 +109,6 @@ class TouchManagerModel(QObject):
         return [file for file in sorted(os.listdir(img_path))]  # if file.endswith(".jpg")]
 
     def save_data(self):
-        self.saveJsonDict_oneIndent(self.buildCoordFilePath(self.buttons_folder), self.currentDict)
-        self.saveJsonDict_oneIndent(self.buildCoordFilePath(self.movements_folder), self.currentMovements)
-        self._saveStaticCoords(self.buildCoordFilePath(self.static_coords_folder), self.currentFrameChecks)
+        saveJsonData_oneIndent(self.buildCoordFilePath(self.buttons_folder), self.currentDict)
+        saveJsonData_oneIndent(self.buildCoordFilePath(self.movements_folder), self.currentMovements)
+        saveJsonData_twoIndent(self.buildCoordFilePath(self.static_coords_folder), self.currentFrameChecks)
