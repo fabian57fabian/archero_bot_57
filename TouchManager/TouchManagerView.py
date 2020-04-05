@@ -2,7 +2,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QMainWindow, \
-    QInputDialog, QLineEdit, QComboBox, QWidget
+    QInputDialog, QLineEdit, QComboBox, QWidget, QSpacerItem
 from TouchManager.TouchManagerModel import TouchManagerModel
 from TouchManager.TouchManagerController import TouchManagerController
 from TouchManager.TouchManagerController import ShowAreaState
@@ -61,27 +61,25 @@ class TouchManagerWindow(QWidget):
 
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
-        # main_window.resize(800, 600)
-        # main_window.setMaximumWidth(800)
-        # main_window.setMaximumHeight(600)
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
+        #self._setNoLayMargins(layout_hor)
         lay_vertical_0 = QVBoxLayout()
-        # self.screensPathCbox = QtWidgets.QLabel()
-        # self.screensPathCbox.setAlignment(Qt.AlignCenter)
         self.screensPathCbox.addItems(k for k, v in self.model.screensFolders.items())
         self.screensPathCbox.setFixedHeight(20)
         self.screensPathCbox.currentTextChanged.connect(self.controller.requestScreenFolderChange)
         lay_vertical_0.addWidget(self.screensPathCbox)
-
         lay_vertical_0.addWidget(self.screensScroller)
 
         self.screen_btn.setText("Get screen")
         lay_vertical_0.addWidget(self.screen_btn)
 
         lay_vertical_1 = QVBoxLayout()
-        self.export_btn.setText("export")
-        lay_vertical_1.addWidget(self.export_btn)
+
+        self.export_btn.setText("save")
+        self.export_btn.setFixedWidth(100)
+        # self.export_btn.setA(Qt.AlignRight)
+        lay_vertical_1.addItem(QSpacerItem(20, 40))
 
         # self.photo = QtWidgets.QLabel()
         self.photo.setText("")
@@ -110,16 +108,25 @@ class TouchManagerWindow(QWidget):
         # TODO: insert back right_label later
         lay_vertical_2.addWidget(self.showAreaController)
         lay_vertical_2.addWidget(self.areaScroller)
-        lay_vertical_2.addWidget(self.optionArea)
-        lay_vertical_2.setContentsMargins(0, 0, 0, 0)
-        self.add_point_btn.setText("Add point")
         lay_vertical_2.addWidget(self.add_point_btn)
+        lay_vertical_2.addWidget(self.optionArea)
+        self._setNoLayMargins(lay_vertical_2)
+
+        self.add_point_btn.setText("Add point")
+        hor_lay_export = QHBoxLayout()
+        hor_lay_export.addStretch()
+        hor_lay_export.addWidget(self.export_btn)
+        lay_vertical_2.addLayout(hor_lay_export)
         layout_hor.addLayout(lay_vertical_0)
         layout_hor.addLayout(lay_vertical_1)
         layout_hor.addLayout(lay_vertical_2)
 
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
+
+    def _setNoLayMargins(self, _lauout):
+        _lauout.setContentsMargins(0, 0, 0, 0)
+        _lauout.setSpacing(0)
 
     def onShowAreaChanged(self, new_state: ShowAreaState):
         self.areaScroller.onDictChanged(self.controller.dataFromAreaType())
@@ -132,7 +139,7 @@ class TouchManagerWindow(QWidget):
     def initConnectors(self):
         self.export_btn.clicked.connect(self.model.save_data)
         self.screen_btn.clicked.connect(self.acquire_screen)
-        self.add_point_btn.clicked.connect(self.add_point)
+        self.add_point_btn.clicked.connect(self.controller.requestAddPoint)
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
 
@@ -147,15 +154,6 @@ class TouchManagerWindow(QWidget):
         else:
             # TODO: show an error message
             pass
-
-    def add_point(self):
-        text, ok = QInputDialog.getText(self, "Get name", "Point name:", QLineEdit.Normal, "")
-        if ok and text != '':
-            if text not in self.model.currentDict:
-                self.model.add_point(text)
-            else:
-                # TODO: show an error message
-                pass
 
     def change_folder(self, newfolder):
         self.screensPathCbox.setText(newfolder)

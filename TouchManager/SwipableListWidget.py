@@ -27,6 +27,7 @@ class SwipableListWidget(QWidget):
         self.setupUI()
 
     def setupUI(self):
+        self.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
         self.widget.setLayout(self.verticalLayout)
         self.verticalLayout.setSpacing(0)
@@ -50,7 +51,7 @@ class SwipableListWidget(QWidget):
     def onSelectionChanged(self, btn_name):
         if self.lastElementSelected != "":
             self.elementsDict[self.lastElementSelected].setStyleSheet("QPushButton { background-color : (225,225,225); }")
-        self.elementsDict[btn_name].setStyleSheet("QPushButton { background-color : %s; }" % self.model.ui_color)
+        self.elementsDict[btn_name].setStyleSheet("background-color: rgb({}, {}, {})".format(self.model.ui_color[0], self.model.ui_color[1], self.model.ui_color[2]))
         self.lastElementSelected = btn_name
 
     def onDictChanged(self, new_source:dict):

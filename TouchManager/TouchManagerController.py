@@ -2,7 +2,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
-    QFormLayout, QGridLayout
+    QFormLayout, QGridLayout, QLineEdit, QInputDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
@@ -46,6 +46,17 @@ class TouchManagerController(QObject):
 
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
         self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
+
+    def requestAddPoint(self):
+        name, ok = QInputDialog.getText(QWidget(),"Get name", "Point name:", QLineEdit.Normal, "")
+        if ok and name != '':
+            if name not in self.dataFromAreaType().keys():
+                if self.currentAreaType == ShowAreaState.Buttons:
+                    self.model.addElementButton(name)
+                elif self.currentAreaType == ShowAreaState.Movements:
+                    self.model.addElementMovement(name)
+                elif self.currentAreaType == ShowAreaState.FrameCheck:
+                    self.model.addElementFrameCheck(name)
 
     def onGeneralDictionaryChanged(self, areaType: ShowAreaState):
         self.showDifferentElemStateRequested(areaType)
@@ -112,12 +123,12 @@ class TouchManagerController(QObject):
 
     def nextImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)
-        index = 0 if index+1 == len(self.model.currentFiles) else index+1
+        index = 0 if index + 1 == len(self.model.currentFiles) else index + 1
         self.imageSelectRequets(list(self.model.currentFiles)[index])
 
     def prevImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)
-        index = len(self.model.currentFiles) if index -1 == 0 else index -1
+        index = len(self.model.currentFiles) if index - 1 == 0 else index - 1
         self.imageSelectRequets(list(self.model.currentFiles)[index])
 
     def requestScreenFolderChange(self, new_folder):

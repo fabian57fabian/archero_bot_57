@@ -29,7 +29,8 @@ class TouchManagerModel(QObject):
         self.movements_folder = 'movements.json'
         self.static_coords_folder = 'static_coords.json'
 
-        self.ui_color = "cyan"
+        self.ui_color = (0, 255, 255)
+        self.ui_bgcolor = (43, 43, 43)
         self.ui_lines_color_rgb = (0, 255, 0)
         self.ui_lines_color_rgb_selected = (255, 0, 255)
         self.current_image_size = [0, 0]
@@ -54,9 +55,20 @@ class TouchManagerModel(QObject):
         self.currentFiles = {k: None for k in self.loadImagesFromSource(self.currentScreensPath())}
         self.onImageAdded.emit(filename)
 
-    def add_point(self, point_name):
-        self.currentDict[point_name] = [.5, .5]
-        self.onPointAdded.emit(point_name)
+    def addElementButton(self, point_name):
+        if point_name not in self.currentDict:
+            self.currentDict[point_name] = [.5, .5]
+            self.onPointAdded.emit(point_name)
+
+    def addElementMovement(self, point_name):
+        if point_name not in self.currentMovements:
+            self.currentMovements[point_name] = [[0.49074074074074076, 0.8108108108108109], [0.6, 0.4]]
+            self.onPointAdded.emit(point_name)
+
+    def addElementFrameCheck(self, point_name):
+        if point_name not in self.currentFrameChecks:
+            self.currentFrameChecks[point_name] = {"coordinates": [[0.5, 0.5]], "values": [[255, 0, 0]], "around": 5}
+            self.onPointAdded.emit(point_name)
 
     def manage_default_currentScreensPath(self):
         if not os.path.exists(self.currentScreensPath()):
