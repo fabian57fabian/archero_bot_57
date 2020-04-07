@@ -384,8 +384,9 @@ class CaveEngine(QObject):
 
     def boss_lvl_manual(self):
         self.swipe('n', 2)
-        self.swipe('n', 1.5)
-        self.swipe('n', 1)
+        self.swipe('n', 1.2)
+        if self.currentLevel != 15:
+            self.swipe('n', 1)
         self.letPlay(self.playtime, is_boss=True)
         self.tap('lucky_wheel_start')
         self.wait(6)
