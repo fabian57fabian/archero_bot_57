@@ -67,6 +67,7 @@ class TouchManagerWindow(QWidget):
         lay_vertical_0 = QVBoxLayout()
         self.screensPathCbox.addItems(k for k, v in self.model.screensFolders.items())
         self.screensPathCbox.setFixedHeight(20)
+        self.screensPathCbox.setCurrentText(self.model.currentScreensFolder)
         self.screensPathCbox.currentTextChanged.connect(self.controller.requestScreenFolderChange)
         lay_vertical_0.addWidget(self.screensPathCbox)
         lay_vertical_0.addWidget(self.screensScroller)
