@@ -98,6 +98,11 @@ class TouchManagerModel(QObject):
             self.currentFrameChecks[dict_button]['coordinates'][index] = new_location
             self.onButtonLocationChanged.emit(dict_button)
 
+    def changeFrameCheckColor(self, dict_button, index, color):
+        if dict_button in self.currentFrameChecks:
+            self.currentFrameChecks[dict_button]['values'][index] = list(color)
+            self.onButtonLocationChanged.emit(dict_button)
+
     def changeAroundFactor(self, selected_coord: str, around: int):
         if selected_coord in self.currentFrameChecks:
             self.currentFrameChecks[selected_coord]['around'] = around

@@ -3,7 +3,7 @@ from functools import partial
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
-    QFormLayout, QGridLayout, QLineEdit, QInputDialog
+    QFormLayout, QGridLayout, QLineEdit, QInputDialog, QColorDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QObject
 from PyQt5 import QtWidgets, uic
@@ -25,6 +25,7 @@ class TouchManagerController(QObject):
 
     onImagesChanged = pyqtSignal(dict)
     onButtonsChanged = pyqtSignal(dict)
+    onCurrentScreenColorsChanged = pyqtSignal(list)
 
     onSelectedCoordinateChanged = pyqtSignal(int)
 
@@ -37,6 +38,7 @@ class TouchManagerController(QObject):
         self.current_image_size = [0, 0]
         self.selectedCoordinateIndex = 0
         self.currentCoordinates = [[0, 0]]
+        self.currentScreenColors = []
         self.currentAreaType: ShowAreaState = ShowAreaState.Buttons
         self.initConnectors()
 
@@ -48,6 +50,31 @@ class TouchManagerController(QObject):
             partial(self.onGeneralDictionaryChanged, ShowAreaState.FrameCheck))
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
         self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
+
+    def requestSetCurrentColorToFrameCheckColor(self, index):
+        self.model.changeFrameCheckColor(self.dict_selected, index, self._getPixelFromCoord(
+            self.model.currentFrameChecks[self.dict_selected]['coordinates'][index]))
+
+    def rquestFrameCheckCoordinateColorManualChange(self, index):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.model.changeFrameCheckColor(self.dict_selected, index, color.getRgb())
+        else:
+            pass  # No color selected
+
+    def _getPixelFromCoord(self, coord):
+        # TODO: get argb frmo QPixmap # self.currentImage.pixe
+        argb = self.currentImage.toImage().pixel(coord[0], coord[1])
+        return (255, 0, 0, 255)
+
+    def _getCurrentImageCoordsColors(self):
+        if self.currentAreaType != ShowAreaState.FrameCheck or self.dict_selected == '':
+            return []
+        colors = []
+        for i, coord in enumerate(self.model.currentFrameChecks[self.dict_selected]['coordinates']):
+            c = self._getPixelFromCoord(coord)
+            colors.append(c)
+        return colors
 
     def requestLoadPixamp(self):
         path = self.getCurrentImageLocation()
@@ -120,6 +147,7 @@ class TouchManagerController(QObject):
             self.currentCoordinates = self.dataFromAreaType()[self.dict_selected].copy()
         if self.currentAreaType == ShowAreaState.FrameCheck:
             self.currentCoordinates = self.dataFromAreaType()[self.dict_selected]['coordinates'].copy()
+            self.updatecurrentFrameCheckColors()
 
     def elementSelectRequets(self, btn_name):
         self.dict_selected = btn_name
@@ -127,11 +155,18 @@ class TouchManagerController(QObject):
         if self.selectedCoordinateIndex >= len(self.currentCoordinates):
             self.selectedCoordinateIndex = len(self.currentCoordinates) - 1
         self.onElementSelectionChanged.emit(self.dict_selected)
+        self.updatecurrentFrameCheckColors()
+
+    def updatecurrentFrameCheckColors(self):
+        if self.currentAreaType == ShowAreaState.FrameCheck:
+            self.currentScreenColors = self._getCurrentImageCoordsColors()
+            self.onCurrentScreenColorsChanged.emit(self.currentScreenColors)
 
     def imageSelectRequets(self, image_name):
         if image_name in self.model.currentFiles:
             self.image_selected = image_name
             self.onImageSelectionChanged.emit(self.image_selected)
+            self.updatecurrentFrameCheckColors()
 
     def nextImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)

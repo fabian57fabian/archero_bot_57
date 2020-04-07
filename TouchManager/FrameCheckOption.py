@@ -21,6 +21,7 @@ class FrameCheckOption(QWidget):
         self.lay = QVBoxLayout()
         self.lbls = []
         self.lblsColors = []
+        self.lblImageColors = []
         self.rBtns = []
         self.aroundLbl = QLabel()
         self.cBoxAround = QComboBox()
@@ -48,6 +49,8 @@ class FrameCheckOption(QWidget):
         self.rBtns = []
         self.lblsColors.clear()
         self.lblsColors = []
+        self.lblImageColors.clear()
+        self.lblImageColors = []
         for i in reversed(range(self.lay.count())):
             row_lay = self.lay.takeAt(i)
             for j in reversed(range(row_lay.count())):
@@ -63,6 +66,7 @@ class FrameCheckOption(QWidget):
         if 'around' in newData:
             self._setAroundSafe(newData['around'])
         coords_num = len(newData['coordinates'])
+        l = len(self.controller.currentScreenColors)
         w, h = self.controller.current_image_size
         for i in range(coords_num):
             lay_row = QHBoxLayout()
@@ -70,9 +74,20 @@ class FrameCheckOption(QWidget):
             lay_row.addWidget(QLabel("X: %4d" % (coord[0] * w)))
             lay_row.addWidget(QLabel("Y: %4d" % (coord[1] * h)))
             colors = newData['values'][i]
-            lblColor = QLabel("    ")
+            lblColor = QLabel("   ")
             lblColor.setStyleSheet("background-color: rgb({},{},{});".format(colors[0], colors[1], colors[2]))
+            lblColor.mousePressEvent = (partial(self.onManualChoose, i))
             self.lblsColors.append(lblColor)
+            btnSet = QPushButton("set->")
+            btnSet.setMaximumWidth(45)
+            btnSet.clicked.connect(partial(self.controller.requestSetCurrentColorToFrameCheckColor, i))
+            lblimgColor = QLabel(" ")
+            lblimgColor.setMaximumWidth(20)
+            color_ = (255, 255, 255) if l == 0 or l != coords_num else self.controller.currentScreenColors[i]
+            lblimgColor.setStyleSheet("background-color: rgb({},{},{});".format(color_[0], color_[1], color_[2]))
+            self.lblImageColors.append(lblimgColor)
+            lay_row.addWidget(lblimgColor)
+            lay_row.addWidget(btnSet)
             lay_row.addWidget(lblColor)
             rbtn = QRadioButton()
             self.rBtns.append(rbtn)
@@ -82,7 +97,18 @@ class FrameCheckOption(QWidget):
         if len(self.rBtns) > 0:
             self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
 
+    def onManualChoose(self, i, event):
+        self.controller.rquestFrameCheckCoordinateColorManualChange(i)
+
+    def updateCurrentColors(self, colors_img):
+        num = min(len(colors_img), len(self.lblImageColors))
+        for i in range(num):
+            color = colors_img[i]
+            self.lblImageColors[i].setStyleSheet(
+                "background-color: rgb({},{},{});".format(color[0], color[1], color[2]))
+
     def initConnectors(self):
+        self.controller.onCurrentScreenColorsChanged.connect(self.updateCurrentColors)
         return
         # for i, rbtn in enumerate(self.rBtns):
         #   self.rbtn.toggled.connect(partial(self.controller.onCoordinateSelected, i))
