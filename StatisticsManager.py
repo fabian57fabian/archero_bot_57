@@ -17,7 +17,8 @@ class StatisticsManager(object):
 
     def saveOneGame(self, start_date, lvl_start, lvl_end):
         end_date = datetime.now()
-        self._write([start_date.strftime(self.dateFormat), end_date.strftime(self.dateFormat), lvl_start, lvl_end, (end_date-start_date).total_seconds()])
+        self._write([start_date.strftime(self.dateFormat), end_date.strftime(self.dateFormat), lvl_start, lvl_end,
+                     (end_date - start_date).total_seconds()])
 
     def _write(self, data: list):
         try:
@@ -33,12 +34,19 @@ class StatisticsManager(object):
         try:
             datas = []
             columns = len(self.getHeader())
+            header = self.getHeader()
             with open(self.file_path, mode='r') as csv_file:
                 csv_reader = csv.DictReader(csv_file)
-                header = next(csv_reader)
-                if len(header) != columns: print("Warning: Header different that file header")
+                # if len(header) != columns: print("Warning: Header different that file header")
                 for row in csv_reader:
-                    datas.append([row[i] for i in range(columns)])
+                    line = [
+                        datetime.strptime(row[header[0]], self.dateFormat),
+                        datetime.strptime(row[header[1]], self.dateFormat),
+                        int(row[header[2]]),
+                        int(row[header[3]]),
+                        float(row[header[4]])
+                    ]
+                    datas.append(line)
             return datas
         except Exception as e:
             print("Errors reading statistics: %s" % str(e))
