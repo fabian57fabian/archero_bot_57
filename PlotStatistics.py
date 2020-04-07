@@ -43,9 +43,9 @@ def plot_allGames(datas):
         if d[2] <= 1 and d[3] != 0:
             x.append(d[0])
             y.append(d[3])
-    _avg = duration2msstring(sum(y) / len(y))
-    _min = duration2msstring(min(y))
-    _max = duration2msstring(max(y))
+    _avg = "%d" % (sum(y) / len(y))
+    _min = "%d" % min(y)
+    _max = "%d" % max(y)
     title = "Level reached for all games: %d. Avg: %s, Max: %s, Min: %s" % (len(y), _avg, _max, _min)
     plot_bar_x(x, y, title, 'Date', 'Level arrived (number)')
 
