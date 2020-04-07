@@ -29,7 +29,7 @@ class CoordinatesSelector(QWidget):
 
     def initUI(self):
         lay = QHBoxLayout()
-        #lay.setAlignment(Qt.AlignCenter)
+        # lay.setAlignment(Qt.AlignCenter)
         lay.setContentsMargins(0, 0, 0, 0)
         self.btn_buttons.setText("buttons")
         self.btn_movements.setText("movements")
@@ -51,9 +51,10 @@ class CoordinatesSelector(QWidget):
         self.btn_checkpoints.clicked.connect(
             partial(self.controller.showDifferentElemStateRequested, ShowAreaState.FrameCheck))
 
-    def _setButtonSelection(self, btn, selected:bool):
+    def _setButtonSelection(self, btn, selected: bool):
         if selected:
-            btn.setStyleSheet("background-color: rgb({}, {}, {})".format(self.model.ui_color[0], self.model.ui_color[1], self.model.ui_color[2]))
+            btn.setStyleSheet("background-color: rgb({}, {}, {})".format(self.model.ui_color[0], self.model.ui_color[1],
+                                                                         self.model.ui_color[2]))
         else:
             btn.setStyleSheet("QPushButton { background-color : (225,225,225); }")
 

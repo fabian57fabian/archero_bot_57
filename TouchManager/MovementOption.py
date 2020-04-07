@@ -59,7 +59,7 @@ class MovementOption(QWidget):
         self.rBtnChangeableDst.toggled.connect(partial(self.controller.onCoordinateSelected, 1))
 
     def changeData(self, new_data):
-        w, h = self.model.current_image_size
+        w, h = self.controller.current_image_size
         self.lblXsrc.setText("X: %4d" % (new_data[0][0] * w))
         self.lblYsrc.setText("Y: %4d" % (new_data[0][1] * h))
         self.lblXdst.setText("X: %4d" % (new_data[1][0] * w))

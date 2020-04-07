@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, QMetaObject
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QMainWindow, \
     QInputDialog, QLineEdit, QComboBox, QWidget, QSpacerItem
 from TouchManager.TouchManagerModel import TouchManagerModel
@@ -47,23 +47,23 @@ class TouchManagerWindow(QWidget):
         self.photo = QLabel()
         self.next = QPushButton()
         self.prev = QPushButton()
+        self.cBoxLineWidth = QComboBox()
         self.export_btn = QPushButton()
         self.screen_btn = QPushButton()
         self.add_point_btn = QPushButton()
         self.lblCurrentUILocation = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
         self.files = {}
-        self.current_image_pixmap = []
-        self.model.current_image_size = [0, 0]
+        self.controller.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
-        self.label_photo_fixed_size = [400, 500]
+        self.label_photo_fixed_size = [500, 650]
         self.initConnectors()
 
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("main_window")
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
-        #self._setNoLayMargins(layout_hor)
+        # self._setNoLayMargins(layout_hor)
         lay_vertical_0 = QVBoxLayout()
         self.screensPathCbox.addItems(k for k, v in self.model.screensFolders.items())
         self.screensPathCbox.setFixedHeight(20)
@@ -78,10 +78,15 @@ class TouchManagerWindow(QWidget):
 
         self.export_btn.setText("save")
         self.export_btn.setFixedWidth(100)
-        # self.export_btn.setA(Qt.AlignRight)
-        lay_vertical_1.addItem(QSpacerItem(20, 40))
+        lay_top = QHBoxLayout()
+        lay_top.setAlignment(Qt.AlignCenter)
+        lay_top.addWidget(QLabel("Line size:"))
+        lay_top.addWidget(self.cBoxLineWidth)
+        self.cBoxLineWidth.addItems([str(e) for e in self.model.linePermittedSizes])
+        lay_vertical_1.addLayout(lay_top)
+        self.cBoxLineWidth.setCurrentText(str(self.model.currentLineWidth))
+        self.cBoxLineWidth.currentIndexChanged.connect(self.controller.requestChangeLineWidth)
 
-        # self.photo = QtWidgets.QLabel()
         self.photo.setText("")
         self.photo.setAlignment(Qt.AlignCenter)
         self.photo.setFixedWidth(self.label_photo_fixed_size[0])
@@ -120,7 +125,6 @@ class TouchManagerWindow(QWidget):
         layout_hor.addLayout(lay_vertical_0)
         layout_hor.addLayout(lay_vertical_1)
         layout_hor.addLayout(lay_vertical_2)
-
         centralwidget.setLayout(layout_hor)
         main_window.setCentralWidget(centralwidget)
 
@@ -132,8 +136,7 @@ class TouchManagerWindow(QWidget):
         self.areaScroller.onDictChanged(self.controller.dataFromAreaType())
 
     def sourceChanged(self, new_image_files):
-        self.current_image_pixmap = []
-        self.model.current_image_size = [0, 0]
+        self.controller.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
 
     def initConnectors(self):
@@ -142,9 +145,13 @@ class TouchManagerWindow(QWidget):
         self.add_point_btn.clicked.connect(self.controller.requestAddPoint)
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
+        self.model.onLineWidthChanged.connect(self.onLineWidthChanged)
 
     def clearWidget(self, widget: QWidget):
         widget.setParent(None)
+
+    def onLineWidthChanged(self, new_width):
+        self.update_image_draw()
 
     def acquire_screen(self):
         if self.model.is_device_connected():
@@ -174,24 +181,20 @@ class TouchManagerWindow(QWidget):
 
     def update_image_draw(self):
         if self.controller.image_selected != "":
-            self.current_image_pixmap = pixmap = QtGui.QPixmap(self.controller.getCurrentImageLocation())
-            self.model.current_image_size = [pixmap.width(), pixmap.height()]
+            pixmap = self.controller.requestLoadPixamp()
             if self.controller.dict_selected != "":
-                # location = self.model.getPositions(self.controller.dict_selected)
                 current_locs = []
                 for i, loc in enumerate(self.controller.currentCoordinates):
                     if loc is not None:
                         location = loc.copy()
-                        location[0] *= self.model.current_image_size[0]
-                        location[1] *= self.model.current_image_size[1]
-                        # self.size_label.setText("%d,%d" % (location[0], location[1]))
+                        location[0] *= self.controller.current_image_size[0]
+                        location[1] *= self.controller.current_image_size[1]
                         if i == self.controller.selectedCoordinateIndex:
                             current_locs = location
                         else:
                             self.DrawLines(pixmap, location, self.model.ui_lines_color_rgb)
                 if len(current_locs) > 0:
                     self.DrawLines(pixmap, current_locs, self.model.ui_lines_color_rgb_selected)
-            # self.size_label.setText("%dx%d" % (pixmap.width(), pixmap.height()))
             pixmap = pixmap.scaled(self.photo.width(), self.photo.height(), Qt.KeepAspectRatio)
             self.current_image_resized = [pixmap.width(), pixmap.height()]
             self.photo.setPixmap(pixmap)
@@ -206,10 +209,10 @@ class TouchManagerWindow(QWidget):
     def DrawLines(self, pixmap, location, color):
         painter = QPainter(pixmap)
         [_x, _y] = location
-        [w, h] = self.model.current_image_size
+        [w, h] = self.controller.current_image_size
         # Qt.red
         r, g, b = color
-        pen = QPen(QBrush(QColor(r, g, b)), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+        pen = QPen(QBrush(QColor(r, g, b)), self.model.currentLineWidth, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
         painter.setPen(pen)
         painter.drawLine(0, _y, w, _y)
         # vertical line

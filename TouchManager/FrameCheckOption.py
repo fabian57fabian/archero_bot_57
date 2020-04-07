@@ -63,7 +63,7 @@ class FrameCheckOption(QWidget):
         if 'around' in newData:
             self._setAroundSafe(newData['around'])
         coords_num = len(newData['coordinates'])
-        w, h = self.model.current_image_size
+        w, h = self.controller.current_image_size
         for i in range(coords_num):
             lay_row = QHBoxLayout()
             coord = newData['coordinates'][i]

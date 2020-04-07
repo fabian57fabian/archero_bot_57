@@ -34,6 +34,6 @@ class ButtonOption(QWidget):
         self.changeData((0, 0))
 
     def changeData(self, new_data):
-        x, y = new_data[0] * self.model.current_image_size[0], new_data[1] * self.model.current_image_size[1]
+        x, y = new_data[0] * self.controller.current_image_size[0], new_data[1] * self.controller.current_image_size[1]
         self.lblX.setText("X: %4d" % x)
         self.lblY.setText("Y: %4d" % y)

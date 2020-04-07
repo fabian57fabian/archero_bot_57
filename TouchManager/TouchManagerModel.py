@@ -14,6 +14,7 @@ class TouchManagerModel(QObject):
     onImageSelected = pyqtSignal()
     onImageAdded = pyqtSignal(str)
     onPointAdded = pyqtSignal(str)
+    onLineWidthChanged = pyqtSignal(float)
 
     MAX_AROUND = 50
 
@@ -33,12 +34,17 @@ class TouchManagerModel(QObject):
         self.ui_bgcolor = (43, 43, 43)
         self.ui_lines_color_rgb = (0, 255, 0)
         self.ui_lines_color_rgb_selected = (255, 0, 255)
-        self.current_image_size = [0, 0]
+        self.linePermittedSizes = [i for i in range(1, 20, 1)]
+        self.currentLineWidth = self.linePermittedSizes[int(len(self.linePermittedSizes) / 2.0)]
         self.currentFiles = {}
         self.currentDict = {}
         self.currentMovements = {}
         self.currentFrameChecks = {}
         self.screensFolders = readAllSizesFolders()
+
+    def changeCurrentLineWidth(self, index):
+        self.currentLineWidth = self.linePermittedSizes[index]
+        self.onLineWidthChanged.emit(self.currentLineWidth)
 
     def buildCoordFilePath(self, dict_name: str) -> str:
         return getCoordFilePath(dict_name, sizePath=self.currentScreensFolder)

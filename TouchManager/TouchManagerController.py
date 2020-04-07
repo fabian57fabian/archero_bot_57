@@ -1,6 +1,7 @@
 from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout, QLineEdit, QInputDialog
 from PyQt5 import QtCore
@@ -32,6 +33,8 @@ class TouchManagerController(QObject):
         self.model = model
         self.dict_selected = ""
         self.image_selected = ""
+        self.currentImage: QPixmap = None
+        self.current_image_size = [0, 0]
         self.selectedCoordinateIndex = 0
         self.currentCoordinates = [[0, 0]]
         self.currentAreaType: ShowAreaState = ShowAreaState.Buttons
@@ -43,12 +46,21 @@ class TouchManagerController(QObject):
             partial(self.onGeneralDictionaryChanged, ShowAreaState.Movements))
         self.model.onDictionaryFrameChecksChanged.connect(
             partial(self.onGeneralDictionaryChanged, ShowAreaState.FrameCheck))
-
         self.model.onSourceChanged.connect(self.onImagesFilesChanged)
         self.model.onButtonLocationChanged.connect(self.onCurrentCoordChanged)
 
+    def requestLoadPixamp(self):
+        path = self.getCurrentImageLocation()
+        self.currentImage = QPixmap(path)
+        self.current_image_size = [self.currentImage.width(), self.currentImage.height()]
+        return self.currentImage
+
+    def requestChangeLineWidth(self, index):
+        if 0 <= index < len(self.model.linePermittedSizes):
+            self.model.changeCurrentLineWidth(index)
+
     def requestAddPoint(self):
-        name, ok = QInputDialog.getText(QWidget(),"Get name", "Point name:", QLineEdit.Normal, "")
+        name, ok = QInputDialog.getText(QWidget(), "Get name", "Point name:", QLineEdit.Normal, "")
         if ok and name != '':
             if name not in self.dataFromAreaType().keys():
                 if self.currentAreaType == ShowAreaState.Buttons:
