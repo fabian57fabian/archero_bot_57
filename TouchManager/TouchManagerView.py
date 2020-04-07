@@ -182,10 +182,13 @@ class TouchManagerWindow(QWidget):
 
     def update_image_draw(self):
         if self.controller.image_selected != "":
-            pixmap = self.controller.requestLoadPixamp()
+            pixmap = self.controller.currentImage.copy()
             if self.controller.dict_selected != "":
                 current_locs = []
-                for i, loc in enumerate(self.controller.currentCoordinates):
+                coords = self.controller.currentCoordinates
+                if self.controller.currentAreaType == ShowAreaState.FrameCheck:
+                    coords = self.controller.currentCoordinates['coordinates']
+                for i, loc in enumerate(coords):
                     if loc is not None:
                         location = loc.copy()
                         location[0] *= self.controller.current_image_size[0]

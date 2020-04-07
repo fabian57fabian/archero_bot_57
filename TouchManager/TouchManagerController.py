@@ -38,7 +38,7 @@ class TouchManagerController(QObject):
         self.current_image_size = [0, 0]
         self.selectedCoordinateIndex = 0
         self.currentCoordinates = [[0, 0]]
-        self.currentScreenColors = []
+        # self.currentScreenColors = []
         self.currentAreaType: ShowAreaState = ShowAreaState.Buttons
         self.initConnectors()
 
@@ -82,7 +82,6 @@ class TouchManagerController(QObject):
         path = self.getCurrentImageLocation()
         self.currentImage = QPixmap(path)
         self.current_image_size = [self.currentImage.width(), self.currentImage.height()]
-        return self.currentImage.copy()
 
     def requestChangeLineWidth(self, index):
         if 0 <= index < len(self.model.linePermittedSizes):
@@ -128,10 +127,6 @@ class TouchManagerController(QObject):
         first = list(self.dataFromAreaType().keys())[0]
         self.elementSelectRequets(first)
 
-    # def listElementSelected(self, button_name):
-    #     self.dict_selected = button_name
-    #     self.button_pos_clicked(button_name)
-
     def dataFromAreaType(self):
         if self.currentAreaType == ShowAreaState.Buttons:
             return self.model.currentDict
@@ -143,13 +138,14 @@ class TouchManagerController(QObject):
             return {}
 
     def updatecurrentCoordinate(self):
+        if self.dict_selected =='':return
         if self.currentAreaType == ShowAreaState.Buttons:
             self.currentCoordinates = [self.dataFromAreaType()[self.dict_selected].copy()]
         if self.currentAreaType == ShowAreaState.Movements:
             self.currentCoordinates = self.dataFromAreaType()[self.dict_selected].copy()
         if self.currentAreaType == ShowAreaState.FrameCheck:
-            self.currentCoordinates = self.dataFromAreaType()[self.dict_selected]['coordinates'].copy()
-            self.updatecurrentFrameCheckColors()
+            self.currentCoordinates = self.dataFromAreaType()[self.dict_selected].copy()
+            self.currentCoordinates['currentScreenColors'] = self._getCurrentImageCoordsColors()
 
     def elementSelectRequets(self, btn_name):
         self.dict_selected = btn_name
@@ -158,16 +154,15 @@ class TouchManagerController(QObject):
             self.selectedCoordinateIndex = len(self.currentCoordinates) - 1
         self.onElementSelectionChanged.emit(self.dict_selected)
 
-    def updatecurrentFrameCheckColors(self):
-        if self.currentAreaType == ShowAreaState.FrameCheck:
-            self.currentScreenColors = self._getCurrentImageCoordsColors()
-            self.onCurrentScreenColorsChanged.emit(self.currentScreenColors)
-
     def imageSelectRequets(self, image_name):
         if image_name in self.model.currentFiles:
             self.image_selected = image_name
-            self.updatecurrentFrameCheckColors()
+            self.requestLoadPixamp()
+            self.updatecurrentCoordinate()
+            if self.dict_selected != '' and self.currentAreaType == ShowAreaState.FrameCheck:
+                self.onCurrentScreenColorsChanged.emit(self.currentCoordinates['currentScreenColors'])
             self.onImageSelectionChanged.emit(self.image_selected)
+
 
     def nextImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)
@@ -188,6 +183,7 @@ class TouchManagerController(QObject):
 
     def onCoordinateSelected(self, index):
         self.selectedCoordinateIndex = index
+        self.updatecurrentCoordinate()
         self.onSelectedCoordinateChanged.emit(self.selectedCoordinateIndex)
 
     def requestChangeCoordinate(self, x1, y1):

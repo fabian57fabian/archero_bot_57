@@ -56,7 +56,7 @@ class ElementOption(QWidget):
 
     def onElementChanged(self, new_item):
         #self.lblName.setText(new_item + ":")
-        self.wid.changeData(self.controller.dataFromAreaType()[new_item].copy())
+        self.wid.changeData(self.controller.currentCoordinates)
 
     def areatypeChanged(self, new_type: ShowAreaState):
         self.clearLayout()
@@ -71,5 +71,4 @@ class ElementOption(QWidget):
             self.main_lay.insertWidget(0, self.wid)
 
     def clearLayout(self):
-
         self.wid.setParent(None)

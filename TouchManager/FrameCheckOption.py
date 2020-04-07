@@ -26,7 +26,8 @@ class FrameCheckOption(QWidget):
         self.aroundLbl = QLabel()
         self.cBoxAround = QComboBox()
         self.initMainUI()
-        self.initUI({'coordinates': [[0.5, 0.5]], 'values': [[255, 255, 255]], 'around': 5})
+        self.initUI({'coordinates': [[0.5, 0.5]], 'values': [[255, 255, 255]], 'around': 5,
+                     'currentScreenColors': [[255, 255, 255]]})
         self.initConnectors()
 
     def initMainUI(self):
@@ -66,7 +67,7 @@ class FrameCheckOption(QWidget):
         if 'around' in newData:
             self._setAroundSafe(newData['around'])
         coords_num = len(newData['coordinates'])
-        l = len(self.controller.currentScreenColors)
+        l = len(newData['currentScreenColors'])
         w, h = self.controller.current_image_size
         for i in range(coords_num):
             lay_row = QHBoxLayout()
@@ -83,7 +84,7 @@ class FrameCheckOption(QWidget):
             btnSet.clicked.connect(partial(self.controller.requestSetCurrentColorToFrameCheckColor, i))
             lblimgColor = QLabel(" ")
             lblimgColor.setMaximumWidth(20)
-            color_ = (255, 255, 255) if l == 0 or l != coords_num else self.controller.currentScreenColors[i]
+            color_ = newData['currentScreenColors'][i]
             lblimgColor.setStyleSheet("background-color: rgb({},{},{});".format(color_[0], color_[1], color_[2]))
             self.lblImageColors.append(lblimgColor)
             lay_row.addWidget(lblimgColor)
@@ -95,7 +96,9 @@ class FrameCheckOption(QWidget):
             lay_row.addWidget(rbtn)
             self.lay.addLayout(lay_row)
         if len(self.rBtns) > 0:
+            self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(True)
             self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
+            self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(False)
 
     def onManualChoose(self, i, event):
         self.controller.rquestFrameCheckCoordinateColorManualChange(i)

@@ -31,9 +31,10 @@ class ButtonOption(QWidget):
         self.lay.addWidget(self.lblY)
         self.lay.addWidget(self.selectedRadioBtn)
         self.setLayout(self.lay)
-        self.changeData((0, 0))
+        #self.changeData([[0, 0]])
 
     def changeData(self, new_data):
-        x, y = new_data[0] * self.controller.current_image_size[0], new_data[1] * self.controller.current_image_size[1]
+        d = new_data[0]
+        x, y = d[0] * self.controller.current_image_size[0], d[1] * self.controller.current_image_size[1]
         self.lblX.setText("X: %4d" % x)
         self.lblY.setText("Y: %4d" % y)
