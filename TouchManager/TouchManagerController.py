@@ -1,7 +1,7 @@
 from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout, QLineEdit, QInputDialog, QColorDialog
 from PyQt5 import QtCore
@@ -64,8 +64,10 @@ class TouchManagerController(QObject):
 
     def _getPixelFromCoord(self, coord):
         # TODO: get argb frmo QPixmap # self.currentImage.pixe
-        argb = self.currentImage.toImage().pixel(coord[0], coord[1])
-        return (255, 0, 0, 255)
+        x, y = coord[0] * self.current_image_size[0], coord[1] * self.current_image_size[1]
+        argb = self.currentImage.toImage().pixel(int(x), int(y))
+        rgba = QColor(argb).getRgb()
+        return rgba
 
     def _getCurrentImageCoordsColors(self):
         if self.currentAreaType != ShowAreaState.FrameCheck or self.dict_selected == '':
@@ -80,7 +82,7 @@ class TouchManagerController(QObject):
         path = self.getCurrentImageLocation()
         self.currentImage = QPixmap(path)
         self.current_image_size = [self.currentImage.width(), self.currentImage.height()]
-        return self.currentImage
+        return self.currentImage.copy()
 
     def requestChangeLineWidth(self, index):
         if 0 <= index < len(self.model.linePermittedSizes):
@@ -155,7 +157,6 @@ class TouchManagerController(QObject):
         if self.selectedCoordinateIndex >= len(self.currentCoordinates):
             self.selectedCoordinateIndex = len(self.currentCoordinates) - 1
         self.onElementSelectionChanged.emit(self.dict_selected)
-        self.updatecurrentFrameCheckColors()
 
     def updatecurrentFrameCheckColors(self):
         if self.currentAreaType == ShowAreaState.FrameCheck:
@@ -165,8 +166,8 @@ class TouchManagerController(QObject):
     def imageSelectRequets(self, image_name):
         if image_name in self.model.currentFiles:
             self.image_selected = image_name
-            self.onImageSelectionChanged.emit(self.image_selected)
             self.updatecurrentFrameCheckColors()
+            self.onImageSelectionChanged.emit(self.image_selected)
 
     def nextImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)
