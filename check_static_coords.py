@@ -33,7 +33,8 @@ if selected_debug!= None:
 width, heigth = screens_data[folder]
 excluded = []
 
-screen_conector = GameScreenConnector(width, heigth)
+screen_conector = GameScreenConnector()
+screen_conector.changeScreenSize(width, heigth)
 screen_conector.debug = debug
 static_coords = screen_conector.static_coords
 
