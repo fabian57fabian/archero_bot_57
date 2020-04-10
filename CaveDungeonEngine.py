@@ -325,7 +325,7 @@ class CaveEngine(QObject):
                 self.wait(3)
             elif state == "time_prize":
                 print("Collecting time prize and ending game. Unexpected behaviour but managed")
-                self.tap("resume")
+                self.tap("collect_time_prize")
                 self.wait(3)
                 raise Exception('ended')
             elif state == "endgame":

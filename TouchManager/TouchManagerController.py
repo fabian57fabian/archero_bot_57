@@ -171,7 +171,7 @@ class TouchManagerController(QObject):
 
     def prevImageSelectRequest(self):
         index = list(self.model.currentFiles).index(self.image_selected)
-        index = len(self.model.currentFiles) if index - 1 == 0 else index - 1
+        index = len(self.model.currentFiles)-1 if index - 1 == 0 else index - 1
         self.imageSelectRequets(list(self.model.currentFiles)[index])
 
     def requestScreenFolderChange(self, new_folder):

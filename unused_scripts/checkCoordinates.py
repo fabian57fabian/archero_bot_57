@@ -12,7 +12,7 @@ def getCoordinates():
     buttons = {
         'pause': [20 / calculus_width, 20 / calculus_heigth],
         'start': [540 / calculus_width, 1700 / calculus_heigth],
-        'collect': [330 / calculus_width, 1490 / calculus_heigth],
+        'collect_time_prize': [330 / calculus_width, 1490 / calculus_heigth],
         'ability_left': [210 / calculus_width, 1500 / calculus_heigth],
         'ability_center': [540 / calculus_width, 1500 / calculus_heigth],
         'ability_right': [870 / calculus_width, 1500 / calculus_heigth],
