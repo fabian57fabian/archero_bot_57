@@ -25,32 +25,32 @@ a = input("If the variables are coorect, select if you want to start (y/n):")
 if a != 'y' and a != 'yes':
     exit(1)
 
-old_folder_copy = os.path.join("../datas/", buildDataFolder(old_width, old_height), "coords")
-new_folder_copy = os.path.join("../datas/", new_folder, "coords")
+old_folder_copy = os.path.join("../datas", buildDataFolder(old_width, old_height), "coords")
+new_folder_copy = os.path.join("../datas", new_folder, "coords")
 if os.path.exists(new_folder_copy):
     print("Folder %s already exists. Save a backup and remove it before starting")
     exit(1)
 
-os.mkdir(os.path.join("../datas/", new_folder))
-os.mkdir(os.path.join("../datas/", new_folder, "coords"))
-os.mkdir(os.path.join("../datas/", new_folder, "screens"))
+os.mkdir(os.path.join("../datas", new_folder))
+os.mkdir(os.path.join("../datas", new_folder, "coords"))
+os.mkdir(os.path.join("../datas", new_folder, "screens"))
 for f in os.listdir(old_folder_copy):
     shutil.copy(os.path.join(old_folder_copy, f), os.path.join(new_folder_copy, f))
 
 
-def points_map(x:float, in_min:float, in_max:float, out_min:float, out_max:float):
+def points_map(x: float, in_min: float, in_max: float, out_min: float, out_max: float):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
 def shift_pos(pos: list):
     un_normalized = (pos[1] * old_height) * 1.0
-    pos[1] = points_map(un_normalized, 0,old_height,rows_black, height)/float(height)
+    pos[1] = points_map(un_normalized, 0, old_height, rows_black, height) / float(height)
 
 
 paths = [
-    "../" + getCoordFilePath('buttons.json', sizePath=new_folder),
-    "../" + getCoordFilePath('movements.json', sizePath=new_folder),
-    "../" + getCoordFilePath('static_coords.json', sizePath=new_folder)
+    os.path.join("../", getCoordFilePath('buttons.json', sizePath=new_folder)),
+    os.path.join("../", getCoordFilePath('movements.json', sizePath=new_folder)),
+    os.path.join("../", getCoordFilePath('static_coords.json', sizePath=new_folder))
 ]
 
 buttons, movements, static_coords = loadJsonData(paths[0]), loadJsonData(paths[1]), loadJsonData(paths[2])
@@ -73,6 +73,6 @@ for k, coord_check in static_coords.items():
         shift_pos(coord)
 saveJsonData_oneIndent(paths[2], static_coords)
 
-print("End. You'll find your shifted files in %s." % os.path.join("../datas/", new_folder))
+print("End. You'll find your shifted files in %s." % os.path.join("../datas", new_folder))
 print(
-    "Make also sure to copy some screenshots to screens folder (%s)" % os.path.join("../datas/", new_folder, 'screend'))
+    "Make also sure to copy some screenshots to screens folder (%s)" % os.path.join("../datas", new_folder, 'screend'))
