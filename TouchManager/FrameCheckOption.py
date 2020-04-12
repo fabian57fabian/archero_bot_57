@@ -122,3 +122,7 @@ class FrameCheckOption(QWidget):
         if 'around' in new_data:
             if self.cBoxAround.currentIndex != new_data['around']:
                 self._setAroundSafe(new_data['around'])
+
+    def deleteLater(self):
+        self.controller.onCurrentScreenColorsChanged.disconnect(self.updateCurrentColors)
+        super(FrameCheckOption, self).deleteLater()

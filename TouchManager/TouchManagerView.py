@@ -36,6 +36,8 @@ class TouchManagerWindow(QWidget):
         self.controller.onButtonsChanged.connect(self.areaScroller.onDictChanged)
         self.controller.onCurrentShowAreaChanged.connect(self.onShowAreaChanged)
 
+        self.areaDescriptionLbl = QLabel()
+
         self.screensScroller = SwipableListWidget(self, self.controller, self.model)
         self.model.onImageAdded.connect(self.screensScroller.addElement)
         self.screensScroller.onElementClicked.connect(self.controller.imageSelectRequets)
@@ -63,19 +65,33 @@ class TouchManagerWindow(QWidget):
         main_window.setObjectName("main_window")
         centralwidget = QtWidgets.QWidget(main_window)
         layout_hor = QHBoxLayout()
-        # self._setNoLayMargins(layout_hor)
         lay_vertical_0 = QVBoxLayout()
+        lay_vertical_1 = QVBoxLayout()
+        lay_vertical_2 = QVBoxLayout()
         self.screensPathCbox.addItems(k for k, v in self.model.screensFolders.items())
         self.screensPathCbox.setFixedHeight(20)
         self.screensPathCbox.setCurrentText(self.model.currentScreensFolder)
         self.screensPathCbox.currentTextChanged.connect(self.controller.requestScreenFolderChange)
         lay_vertical_0.addWidget(self.screensPathCbox)
+        self._setNoLayMargins(lay_vertical_0)
+        lay_images_description = QHBoxLayout()
+        imagesDescriprionLbl = QLabel("Available screenshots.")
+        self.screen_btn.setFixedWidth(80)
+        lay_images_description.addWidget(imagesDescriprionLbl)
+        lay_images_description.addWidget(self.screen_btn)
+        lay_images_description.setContentsMargins(0, 5, 0, 5)
+
+        nav_layout = QHBoxLayout()
+        nav_layout.setContentsMargins(0, 5, 0, 5)
+        nav_layout.addWidget(self.prev)
+        nav_layout.addWidget(self.next)
+
+        lay_vertical_0.addLayout(lay_images_description)
         lay_vertical_0.addWidget(self.screensScroller)
+        lay_vertical_0.addLayout(nav_layout)
+        lay_vertical_0.addWidget(QLabel())
 
         self.screen_btn.setText("Get screen")
-        lay_vertical_0.addWidget(self.screen_btn)
-
-        lay_vertical_1 = QVBoxLayout()
 
         self.export_btn.setText("save")
         self.export_btn.setFixedWidth(100)
@@ -94,31 +110,32 @@ class TouchManagerWindow(QWidget):
         self.photo.setFixedHeight(self.label_photo_fixed_size[1])
         lay_vertical_1.addWidget(self.photo)
 
-        nav_layout = QHBoxLayout()
-        self.prev.setText("<-")
+        self.prev.setText("previous")
         self.prev.clicked.connect(self.controller.prevImageSelectRequest)
-        nav_layout.addWidget(self.prev)
-
-        self.next.setText("->")
+        self.next.setText("next")
         self.next.clicked.connect(self.controller.nextImageSelectRequest)
-        nav_layout.addWidget(self.next)
-        lay_vertical_1.addLayout(nav_layout)
 
         self.lblCurrentUILocation.setFixedHeight(20)
         self.lblCurrentUILocation.setAlignment(Qt.AlignRight)
         lay_vertical_1.addWidget(self.lblCurrentUILocation)
-        lay_vertical_2 = QVBoxLayout()
         right_label = QtWidgets.QLabel(self.model.buttons_folder)
         right_label.setFixedHeight(20)
         right_label.setAlignment(Qt.AlignCenter)
+        lay_area_description = QHBoxLayout()
+        # self._setNoLayMargins(lay_area_description)
+        lay_area_description.addWidget(self.areaDescriptionLbl)
+        lay_area_description.addWidget(self.add_point_btn)
+        lay_area_description.setContentsMargins(0, 5, 0, 5)
         # TODO: insert back right_label later
         lay_vertical_2.addWidget(self.showAreaController)
+        lay_vertical_2.addLayout(lay_area_description)
         lay_vertical_2.addWidget(self.areaScroller)
-        lay_vertical_2.addWidget(self.add_point_btn)
+        self.areaScroller.setContentsMargins(0, 0, 0, 0)
         lay_vertical_2.addWidget(self.optionArea)
         self._setNoLayMargins(lay_vertical_2)
 
-        self.add_point_btn.setText("Add point")
+        self.add_point_btn.setText("new")
+        self.add_point_btn.setFixedWidth(80)
         hor_lay_export = QHBoxLayout()
         hor_lay_export.addStretch()
         hor_lay_export.addWidget(self.export_btn)
@@ -134,6 +151,15 @@ class TouchManagerWindow(QWidget):
         _lauout.setSpacing(0)
 
     def onShowAreaChanged(self, new_state: ShowAreaState):
+        if new_state == ShowAreaState.Buttons:
+            self.areaDescriptionLbl.setText("List of clickable buttons coordinates.")
+            self.add_point_btn.setText("add button")
+        elif new_state == ShowAreaState.Movements:
+            self.areaDescriptionLbl.setText("List of start->end swipes coordinates.")
+            self.add_point_btn.setText("add swipe")
+        elif new_state == ShowAreaState.FrameCheck:
+            self.areaDescriptionLbl.setText("List of static frame states with coordinates.")
+            self.add_point_btn.setText("add frame")
         self.areaScroller.onDictChanged(self.controller.dataFromAreaType())
 
     def sourceChanged(self, new_image_files):

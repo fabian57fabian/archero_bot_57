@@ -30,13 +30,16 @@ class SwipableListWidget(QWidget):
     def setupUI(self):
         self.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
+        self.main_layout.setContentsMargins(0,0,0,0)
         self.widget.setLayout(self.verticalLayout)
+        self.widget.setContentsMargins(0,0,0,0)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.scroller.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroller.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroller.setWidgetResizable(True)
         self.scroller.setWidget(self.widget)
+        self.scroller.setContentsMargins(0,0,0,0)
         self.main_layout.addWidget(self.scroller)
 
     def addElement(self, button_name):

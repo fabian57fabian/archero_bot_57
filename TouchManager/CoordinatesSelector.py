@@ -31,6 +31,7 @@ class CoordinatesSelector(QWidget):
         lay = QHBoxLayout()
         # lay.setAlignment(Qt.AlignCenter)
         lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
         self.btn_buttons.setText("buttons")
         self.btn_movements.setText("movements")
         self.btn_checkpoints.setText("checkpoints")
