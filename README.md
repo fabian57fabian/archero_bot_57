@@ -15,9 +15,10 @@ Watch the installation video:
 4. [Game lock disabling](#disable-blue-auto-lock-screen)
 5. [Usage](#usage)
 6. [Game Description](#game-description)
-5. [Coordinates management](#coordinates-management)
-5. [How it works](#how-it-works)
-5. [Extra](#extra)
+7. [Coordinates management](#coordinates-management)
+8. [How it works](#how-it-works)
+9. [Coordinates check explained](#coordinates-check-explained)
+10. [Extra](#extra)
 
 ## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
@@ -121,7 +122,7 @@ When we are in need to check something on the screen, we take a screenshot (save
 For example when checking if having 5 or more energy to play one game, we check that pixel corresponding to 5th bar of energy is blue:
 
 ![Check_bar](wiki_data/check_energy_green_bar_location.png)
-### Coordinates check
+### Coordinates check explained
 In order to detect the game state, a static coordinate check is done.
 For each interesting state (on pause, on devil question, on skill choose) there is a list of (x,y) coordinates that checks if the color is in a specific color range.
 Example:
