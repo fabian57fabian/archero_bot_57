@@ -35,6 +35,8 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - 1080x2220 is fullt working. All tests show good coordinates positioning.
   - failing 1080x1920, but working on...
 
+If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
+
 ## Installation on Linux
 Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__, __pyqt5__:
 - `$ apt install adb`

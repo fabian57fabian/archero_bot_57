@@ -33,6 +33,8 @@ while True:
         ui.show()
         sys.exit(app.exec_())
     else:
-        engine = CaveEngine()
-        engine.currentLevel = get_start_lvl_from_args()
-        engine.start_infinite_play()
+        print(
+            "Please use GameController.py interface. This script is disabled.\nOn Windows: double-click on GameController.py\nOn Linux: open the terminal and execute 'python3 GameController.py'")
+        # engine = CaveEngine()
+        # engine.currentLevel = get_start_lvl_from_args()
+        # engine.start_infinite_play()
