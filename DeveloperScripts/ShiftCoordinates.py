@@ -38,9 +38,13 @@ for f in os.listdir(old_folder_copy):
     shutil.copy(os.path.join(old_folder_copy, f), os.path.join(new_folder_copy, f))
 
 
+def points_map(x:float, in_min:float, in_max:float, out_min:float, out_max:float):
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+
 def shift_pos(pos: list):
     un_normalized = (pos[1] * old_height) * 1.0
-    pos[1] = (un_normalized + rows_black) / (height)
+    pos[1] = points_map(un_normalized, 0,old_height,rows_black, height)/float(height)
 
 
 paths = [
@@ -53,7 +57,7 @@ buttons, movements, static_coords = loadJsonData(paths[0]), loadJsonData(paths[1
 
 print("Processing buttons")
 for k, b in buttons.items():
-    if debug: print("Shifting %s"%k)
+    if debug: print("Shifting %s" % k)
     shift_pos(b)
 saveJsonData_oneIndent(paths[0], buttons)
 print("Processing movements")
@@ -70,4 +74,5 @@ for k, coord_check in static_coords.items():
 saveJsonData_oneIndent(paths[2], static_coords)
 
 print("End. You'll find your shifted files in %s." % os.path.join("../datas/", new_folder))
-print("Make also sure to copy some screenshots to screens folder (%s)" % os.path.join("../datas/", new_folder, 'screend'))
+print(
+    "Make also sure to copy some screenshots to screens folder (%s)" % os.path.join("../datas/", new_folder, 'screend'))

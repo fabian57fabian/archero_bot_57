@@ -121,6 +121,17 @@ When we are in need to check something on the screen, we take a screenshot (save
 For example when checking if having 5 or more energy to play one game, we check that pixel corresponding to 5th bar of energy is blue:
 
 ![Check_bar](wiki_data/check_energy_green_bar_location.png)
+### Coordinates check
+In order to detect the game state, a static coordinate check is done.
+For each interesting state (on pause, on devil question, on skill choose) there is a list of (x,y) coordinates that checks if the color is in a specific color range.
+Example:
+\
+Checking 'endgame' consist in checking that we see the 'blue' color in 3 different points.
+\
+These coordinates have to have red, green, blue colors in an interval being (48, 98, 199) +- 5.
+\
+In the future implementation, this hole static check will be replaced by a neural network model trained to automatically detect those data in the screenshot.
+
 
 ## Issue: Adb not working
 If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
@@ -133,6 +144,8 @@ This is usefull in future games plotting to know how it performed.
 
 ## Extra
 
-Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e.
+Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e (1080x2280).
+\
+Thanks to [MahirZukic](https://github.com/MahirZukic) for screenshorts done with Xiaomi Mi 9 (1080x2340.
 For any bug open an issue.
 If not having a github account, email me at **fabian_57@yahoo.it**.
