@@ -26,7 +26,6 @@ class ElementOption(QWidget):
         self.setupUI()
         self.initControllers()
         self.areatypeChanged(self.controller.currentAreaType)
-        #self.setStyleSheet("border:1px black")
 
     def reset(self):
         self.lblInfoDesc.clear()

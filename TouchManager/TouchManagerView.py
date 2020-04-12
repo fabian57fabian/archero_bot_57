@@ -2,7 +2,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal, QMetaObject
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QMainWindow, \
-    QInputDialog, QLineEdit, QComboBox, QWidget, QSpacerItem
+    QInputDialog, QLineEdit, QComboBox, QWidget, QSpacerItem, QFrame, QGridLayout
 from TouchManager.TouchManagerModel import TouchManagerModel
 from TouchManager.TouchManagerController import TouchManagerController
 from TouchManager.TouchManagerController import ShowAreaState
@@ -55,6 +55,7 @@ class TouchManagerWindow(QWidget):
         self.add_point_btn = QPushButton()
         self.lblCurrentUILocation = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
+        self.areaOptionDescription = QLabel()
         self.files = {}
         self.controller.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
@@ -131,7 +132,17 @@ class TouchManagerWindow(QWidget):
         lay_vertical_2.addLayout(lay_area_description)
         lay_vertical_2.addWidget(self.areaScroller)
         self.areaScroller.setContentsMargins(0, 0, 0, 0)
-        lay_vertical_2.addWidget(self.optionArea)
+        lay_vertical_2.addWidget(self.areaOptionDescription)
+        self.areaOptionDescription.setContentsMargins(0, 5, 0, 5)
+        frame = QFrame()
+        lay_F = QGridLayout()
+        self._setNoLayMargins(lay_F)
+        lay_F.addWidget(self.optionArea)
+        frame.setLayout(lay_F)
+        frame.setObjectName("optionAreaFrames")
+        frame.setStyleSheet("#optionAreaFrames { border: 1px solid black; }")
+        frame.setContentsMargins(0, 5, 0, 5)
+        lay_vertical_2.addWidget(frame)
         self._setNoLayMargins(lay_vertical_2)
 
         self.add_point_btn.setText("new")
@@ -154,12 +165,15 @@ class TouchManagerWindow(QWidget):
         if new_state == ShowAreaState.Buttons:
             self.areaDescriptionLbl.setText("List of clickable buttons coordinates.")
             self.add_point_btn.setText("add button")
+            self.areaOptionDescription.setText("Selected button coords.")
         elif new_state == ShowAreaState.Movements:
             self.areaDescriptionLbl.setText("List of start->end swipes coordinates.")
             self.add_point_btn.setText("add swipe")
+            self.areaOptionDescription.setText("Selected swipe start and end coords.")
         elif new_state == ShowAreaState.FrameCheck:
             self.areaDescriptionLbl.setText("List of static frame states with coordinates.")
             self.add_point_btn.setText("add frame")
+            self.areaOptionDescription.setText("Selected static frame list of check coords.")
         self.areaScroller.onDictChanged(self.controller.dataFromAreaType())
 
     def sourceChanged(self, new_image_files):
