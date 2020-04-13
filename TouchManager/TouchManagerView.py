@@ -59,7 +59,7 @@ class TouchManagerWindow(QWidget):
         self.files = {}
         self.controller.current_image_size = [0, 0]
         self.current_image_resized = [0, 0]
-        self.label_photo_fixed_size = [900, 900]
+        self.label_photo_fixed_size = [650, 650]
         self.initConnectors()
 
     def setupUi(self, main_window: QMainWindow):
