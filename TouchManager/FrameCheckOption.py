@@ -23,6 +23,7 @@ class FrameCheckOption(QWidget):
         self.lblsColors = []
         self.lblImageColors = []
         self.rBtns = []
+        self.btnAddCoord = QPushButton()
         self.aroundLbl = QLabel()
         self.cBoxAround = QComboBox()
         self.initMainUI()
@@ -36,7 +37,10 @@ class FrameCheckOption(QWidget):
         self.cBoxAround.setFixedHeight(20)
         self.cBoxAround.setMaximumWidth(100)
         self.cBoxAround.currentIndexChanged.connect(self.controller.requestChangeAround)
+        self.btnAddCoord.setText("add coordinate")
+        self.btnAddCoord.clicked.connect(self.controller.requestFrameCheckCoordAdd)
         self.main_lay.addLayout(self.lay)
+        self.main_lay.addWidget(self.btnAddCoord)
         h_lay = QHBoxLayout()
         h_lay.addWidget(self.aroundLbl)
         h_lay.addWidget(self.cBoxAround)

@@ -108,6 +108,11 @@ class TouchManagerModel(QObject):
             self.currentFrameChecks[selected_coord]['around'] = around
             self.onButtonLocationChanged.emit(selected_coord)
 
+    def addFrameCheckCoord(self, selected_coord):
+        self.currentFrameChecks[selected_coord]['coordinates'].append([0.5, 0.5])
+        self.currentFrameChecks[selected_coord]['values'].append([255, 0, 0,255])
+        self.onButtonLocationChanged.emit(selected_coord)
+
     def load_data(self):
         self.loadScreens()
         self.loadScreenCheck()
