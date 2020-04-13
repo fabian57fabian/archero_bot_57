@@ -75,4 +75,4 @@ else:
     print(
         "Got some failed tests. It is advised not to use the bot. Infinite loops and damage can be done by randomply clicking without knowledge.")
 
-a = input("Press ENTER to exit")
+# a = input("Press ENTER to exit")
