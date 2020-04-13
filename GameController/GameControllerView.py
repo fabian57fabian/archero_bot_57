@@ -25,8 +25,7 @@ class GameControllerWindow(QWidget):
         self.dungeonSelector = QDungeonSelector(self, model)
         # self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
-        self.lblScreenW = QLabel()
-        self.lblScreenH = QLabel()
+        self.size_info_lbl = QLabel("Screen size:\n1x1")
         self.lblDataFolder = QLabel()
         self.lblConnectionStatus = QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
@@ -40,10 +39,18 @@ class GameControllerWindow(QWidget):
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
+        self.model.engine.gameWon.connect(self.onGameWon)
+        self.model.engine.noEnergyLeft.connect(self.onNoEnergyLeft)
         self.model.engineStatechanged.connect(self.onEngineStateChanged)
         self.model.connectionStateChanged.connect(self.onConnectionStateChange)
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
+
+    def onGameWon(self):
+        self.lblConnectionStatus.setText("Finished 20 chapters. Win!")
+
+    def onNoEnergyLeft(self):
+        self.lblConnectionStatus.setText("No energy left. Waiting until refill to play again.")
 
     def onEngineStateChanged(self, state: EngineState):
         if state == EngineState.Playing:
@@ -65,8 +72,7 @@ class GameControllerWindow(QWidget):
             self.lblConnectionStatus.setStyleSheet("color: red")
 
     def onScreenDataChanged(self):
-        self.lblScreenW.setText("W: {}".format(self.model.engine.width))
-        self.lblScreenH.setText("H: {}".format(self.model.engine.heigth))
+        self.size_info_lbl.setText("Device size:\n{}x{}".format(self.model.engine.width, self.model.engine.heigth))
         self.lblDataFolder.setText("{}".format(self.model.engine.currentDataFolder))
 
     def setupUi(self):
@@ -74,13 +80,8 @@ class GameControllerWindow(QWidget):
         self.resize(800, 600)
         self.setMinimumWidth(640)
         self.setMinimumHeight(480)
-        # self.lblScreenSize.setText("Your screen is:\nwidthxheight")
-        # centralwidget = QtWidgets.QWidget(main_window)
-        # centralwidget.setStyleSheet("background-color: #6e6e6e")
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        # self.setVerticalSpacing(10)
-        # self.setHorizontalSpacing(0)
         self.main_layout.setColumnStretch(0, 0)
         self.main_layout.setRowStretch(0, 0)
         self.main_layout.setColumnStretch(1, 200)
@@ -89,31 +90,26 @@ class GameControllerWindow(QWidget):
 
         self.main_layout.addWidget(self.dungeonSelector, 0, 0)
         lay_content = QVBoxLayout()
-        # self.toolbarOptions.addWidget(QLabel("Resolution:"))
-        self.toolbarOptions.addWidget(self.lblScreenW)
-        self.toolbarOptions.addWidget(self.lblScreenH)
-        # self.toolbarOptions.addWidget(QLabel("Data folder:"))
-        # self.toolbarOptions.addWidget(self.lblDataFolder)
-        # self.toolbarOptions.addWidget(QLabel("Connection:"))
+        self.toolbarOptions.addWidget(self.size_info_lbl)
         self.toolbarOptions.addWidget(self.lblConnectionStatus)
 
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
-        self.lblScreenW.setStyleSheet("background-color: #6e6e6e; color: white")
-        self.lblScreenH.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.size_info_lbl.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblConnectionStatus.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblDataFolder.setStyleSheet("background-color: #6e6e6e; color: white")
-        # self.lblConnectionStatus.setAlignment(Qt.AlignCenter)
-        # self.lblConnectionStatus.setAlignment(Qt.AlignRight)
         self.infoLabel.setStyleSheet("background-color: #6e6e6e; color: white")
-        self.infoLabel.setAlignment(Qt.AlignCenter)
-        self.main_layout.addLayout(lay_content, 0, 1)
 
+        self.size_info_lbl.setAlignment(Qt.AlignCenter)
+        self.infoLabel.setAlignment(Qt.AlignCenter)
+        self.lblConnectionStatus.setAlignment(Qt.AlignCenter)
+
+        self.main_layout.addLayout(lay_content, 0, 1)
         self.widActions.setFixedWidth(self.toolbar_w)
         self.main_layout.addLayout(self.toolbarOptions, 1, 0)
         self.toolbarOptions.setAlignment(Qt.AlignTop)
-        self.toolbarOptions.setContentsMargins(5, 5, 0, 0)
+        self.toolbarOptions.setContentsMargins(5, 5, 5, 0)
         self.toolbarOptions.setSpacing(10)
 
         self.content_wid.setSizePolicy(

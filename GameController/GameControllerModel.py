@@ -83,7 +83,7 @@ class GameControllerModel(QObject):
             c = isConnected()
             if c != self.connected:
                 self._changeConnectedstate(c)
-            time.sleep(10)
+            time.sleep(5)
 
     def startConnectionCheck(self):
         self.connectionCheckThread = WorkerThread()

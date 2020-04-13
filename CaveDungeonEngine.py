@@ -13,6 +13,8 @@ class CaveEngine(QObject):
     addLog = pyqtSignal(str)
     resolutionChanged = pyqtSignal(int, int)
     dataFolderChanged = pyqtSignal(str)
+    noEnergyLeft = pyqtSignal()
+    gameWon = pyqtSignal()
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
@@ -162,13 +164,15 @@ class CaveEngine(QObject):
         adb_tap((x, y))
 
     def wait(self, s):
-        if self.stopRequested:
-            exit()
         decimal = s
         if int(s) > 0:
             decimal = s - int(s)
             for _ in range(int(s)):
+                if self.stopRequested:
+                    exit()
                 time.sleep(1)
+        if self.stopRequested:
+            exit()
         time.sleep(decimal)
 
     def exit_dungeon_uncentered(self):
@@ -429,6 +433,10 @@ class CaveEngine(QObject):
             elif self.levels_type[self.currentLevel] == self.t_boss:
                 self.boss_lvl()
             self.changeCurrentLevel(self.currentLevel + 1)
+        self.wait(5)
+        if self.screen_connector.checkFrame('endgame'):
+            self.tap('close_end')
+            self.gameWon.emit()
 
     def changeCurrentLevel(self, new_lvl):
         self.currentLevel = new_lvl
@@ -477,6 +485,7 @@ class CaveEngine(QObject):
             else:
                 while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
                     print("No energy, waiting for one minute")
+                    self.noEnergyLeft.emit()
                     self.wait(60)
             self.chooseCave()
         try:
