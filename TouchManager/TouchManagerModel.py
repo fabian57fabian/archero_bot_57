@@ -43,6 +43,9 @@ class TouchManagerModel(QObject):
         self.currentFrameChecks = {}
         self.screensFolders = readAllSizesFolders()
 
+    def requestClose(self):
+        pass
+
     def changeCurrentLineWidth(self, index):
         self.currentLineWidth = self.linePermittedSizes[index]
         self.onLineWidthChanged.emit(self.currentLineWidth)

@@ -8,7 +8,6 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    # this is a mockup for data. next time save a configuration file
     model = TouchManagerModel()
     controller = TouchManagerController(model)
     ui = TouchManagerWindow(controller, model)

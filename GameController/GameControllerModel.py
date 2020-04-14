@@ -70,6 +70,13 @@ class GameControllerModel(QObject):
         self.connectionStateChanged.connect(self.onconnectionStateChanged)
         self.startConnectionCheck()
 
+    def requestClose(self):
+        if self.currentEngineState == EngineState.Ready:
+            self._stopEngineUnsafe()
+
+        self.workerThread = None
+        self.engine = None
+
     def onconnectionStateChanged(self, conn):
         if conn:
             self.engine.updateScreenSizeByPhone()

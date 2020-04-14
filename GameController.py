@@ -7,9 +7,13 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
     model = GameControllerModel()
     controller = GameControllerController(model)
     ui = GameControllerWindow(model, controller)
+    ui.setupUi(MainWindow)
     model.load_data()
-    ui.show()
-    sys.exit(app.exec_())
+    MainWindow.show()
+    result = app.exec_()
+    model.requestClose()
+    sys.exit(result)

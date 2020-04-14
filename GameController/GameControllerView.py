@@ -31,11 +31,8 @@ class GameControllerWindow(QWidget):
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
-        self.setupUi()
+        # self.setupUi()
         self.initConnectors()
-        self.onScreenDataChanged()  # To initialize
-        self.onConnectionStateChange(self.model.connected)  # To initialize
-
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
@@ -75,7 +72,8 @@ class GameControllerWindow(QWidget):
         self.size_info_lbl.setText("Device size:\n{}x{}".format(self.model.engine.width, self.model.engine.heigth))
         self.lblDataFolder.setText("{}".format(self.model.engine.currentDataFolder))
 
-    def setupUi(self):
+    def setupUi(self, main_window: QMainWindow):
+        main_window.setObjectName("game_controller_window")
         self.setObjectName("main_window")
         self.resize(800, 600)
         self.setMinimumWidth(640)
@@ -117,6 +115,11 @@ class GameControllerWindow(QWidget):
         # self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
         self.main_layout.addWidget(self.content_wid)
         self.setStyleSheet("background-color: #6e6e6e")
+        main_window.setStyleSheet("background-color: #6e6e6e")
+        self.setLayout(self.main_layout)
+        main_window.setCentralWidget(self)
 
+        self.onScreenDataChanged()  # To initialize
+        self.onConnectionStateChange(self.model.connected)  # To initialize
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)
