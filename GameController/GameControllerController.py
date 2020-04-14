@@ -10,6 +10,7 @@ from GameController.GameControllerModel import GameControllerModel, EngineState
 
 class GameControllerController(QObject):
     onChangeEnableStatesButtons = pyqtSignal(dict)
+    chapterChanged = pyqtSignal(int)
 
     def __init__(self, model: GameControllerModel):
         super(QObject, self).__init__()
@@ -69,3 +70,8 @@ class GameControllerController(QObject):
         self.controllerStates['next'] = True
         self.onChangeEnableStatesButtons.emit(self.controllerStates)
         self.model.stopDungeon()
+
+    def requestchangeCurrentChapter(self, new_chapter):
+        if new_chapter in self.model.allowed_chapters:
+            self.model.changeChapterToPlay(new_chapter)
+            self.chapterChanged.emit(new_chapter)

@@ -22,7 +22,7 @@ class GameControllerWindow(QWidget):
         self.model = model
         self.main_layout = QGridLayout()
         self.toolbarOptions = QVBoxLayout()
-        self.dungeonSelector = QDungeonSelector(self, model)
+        self.dungeonSelector = QDungeonSelector(self, controller, model)
         # self.widRun = QToolboxRun(self)
         self.widActions = QToolboxActions(self)
         self.size_info_lbl = QLabel("Screen size:\n1x1")

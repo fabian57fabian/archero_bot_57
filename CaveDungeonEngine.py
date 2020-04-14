@@ -77,6 +77,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.currentLevel = 0
+        self.currentDungeon = 6
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
@@ -105,6 +106,9 @@ class CaveEngine(QObject):
 
     def initdeviceconnector(self):
         self.device_connector.connect()
+
+    def changeChapter(self, new_chapter):
+        self.currentDungeon = new_chapter
 
     def onConnectionStateChanged(self):
         if self.device_connector.connected:
@@ -238,7 +242,7 @@ class CaveEngine(QObject):
         self.swipe('w', .325)
         self.swipe('n', 1.5)
 
-    def goTroughDungeon(self):
+    def goTroughDungeon2(self):
         print("Going through dungeon")
         self.log("Cross dungeon")
         self.disableLogs = True
@@ -254,6 +258,16 @@ class CaveEngine(QObject):
         self.swipe('e', .28)
         self.swipe('n', 2)
         self.disableLogs = False
+
+    def goTroughDungeon(self):
+        if self.currentDungeon == 3:
+            self.goTroughDungeon_old()
+        elif self.currentDungeon == 6:
+            self.goTroughDungeon2()
+        elif self.currentDungeon == 10:
+            self.goTroughDungeon2()
+        else:
+            self.goTroughDungeon2()
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss

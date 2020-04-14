@@ -49,6 +49,7 @@ class GameControllerModel(QObject):
                          "12. Dungeon of Traps",
                          "13. Lava Land",
                          "14. Eskimo Lands"]
+        self.allowed_chapters = [3, 6, 10]
         self.workerThread: WorkerThread = None
 
     def connected(self):
@@ -140,3 +141,6 @@ class GameControllerModel(QObject):
     def stopDungeon(self):
         self.pauseDungeon()
         self.engine.changeCurrentLevel(0)
+
+    def changeChapterToPlay(self, new_chapter):
+        self.engine.changeChapter(new_chapter)
