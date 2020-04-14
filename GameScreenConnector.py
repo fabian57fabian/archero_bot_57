@@ -1,10 +1,12 @@
-from pure_adb_connector import *
+from UsbConnector import UsbConnector
+import os
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder
 
 
 class GameScreenConnector:
-    def __init__(self):
+    def __init__(self, device_connector=None):
         self.debug = True
+        self.device_connector = device_connector
         self.width = 0
         self.height = 0
         # This should be in format rgba
@@ -20,6 +22,9 @@ class GameScreenConnector:
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
         self.stopRequested = False
+
+    def changeDeviceConnector(self, new_dev):
+        self.device_connector = new_dev
 
     def changeScreenSize(self, w, h):
         self.width, self.height = w, h
@@ -99,7 +104,7 @@ class GameScreenConnector:
     def getFrame(self):
         if self.stopRequested:
             exit()
-        return adb_screen_getpixels()
+        return self.device_connector.adb_screen_getpixels()
 
     def getFrameStateComplete(self, frame=None) -> dict:
         """

@@ -43,7 +43,7 @@ class GameControllerController(QObject):
         self.model.playDungeon()
 
     def pauseRequested(self):
-        if self.model.connected:
+        if self.model.connected():
             self.controllerStates['play'] = True
         self.controllerStates['pause'] = False
         self.controllerStates['stop'] = True
@@ -61,7 +61,7 @@ class GameControllerController(QObject):
             self.model.engine.changeCurrentLevel(self.model.engine.currentLevel + 1)
 
     def stopRequested(self):
-        if self.model.connected:
+        if self.model.connected():
             self.controllerStates['play'] = True
         self.controllerStates['pause'] = False
         self.controllerStates['stop'] = True

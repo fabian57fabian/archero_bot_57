@@ -62,11 +62,13 @@ class GameControllerWindow(QWidget):
 
     def onConnectionStateChange(self, connected: bool):
         if connected:
+            self.infoLabel.setText("Device found! Engine is ready")
             self.lblConnectionStatus.setText("Connected")
             self.lblConnectionStatus.setStyleSheet("color: white")
         else:
-            self.lblConnectionStatus.setText("Not connecetd!")
-            self.lblConnectionStatus.setStyleSheet("color: red")
+            self.infoLabel.setText("Waiting for a device to be connected")
+            self.lblConnectionStatus.setText("NO device!")
+            self.lblConnectionStatus.setStyleSheet("background-color: red;color:white")
 
     def onScreenDataChanged(self):
         self.size_info_lbl.setText("Device size:\n{}x{}".format(self.model.engine.width, self.model.engine.heigth))
@@ -120,6 +122,6 @@ class GameControllerWindow(QWidget):
         main_window.setCentralWidget(self)
 
         self.onScreenDataChanged()  # To initialize
-        self.onConnectionStateChange(self.model.connected)  # To initialize
+        self.onConnectionStateChange(self.model.connected())  # To initialize
         # self.setCentralWidget(centralwidget)
         # centralwidget.setLayout(self.main_layout)

@@ -1,7 +1,7 @@
 import json
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
-from pure_adb_connector import adb_screen, get_device_id
+from UsbConnector import adb_screen, get_device_id
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, getCoordFilePath
 
 

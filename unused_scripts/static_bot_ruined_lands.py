@@ -1,5 +1,5 @@
 import time
-from pure_adb_connector import *
+from UsbConnector import *
 from GameScreenConnector import GameScreenConnector
 
 playtime = 70

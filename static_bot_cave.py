@@ -26,15 +26,16 @@ while True:
         from GameController.GameControllerController import GameControllerController
 
         app = QtWidgets.QApplication(sys.argv)
+        MainWindow = QtWidgets.QMainWindow()
         model = GameControllerModel()
         controller = GameControllerController(model)
         ui = GameControllerWindow(model, controller)
+        ui.setupUi(MainWindow)
         model.load_data()
-        ui.show()
-        sys.exit(app.exec_())
+        MainWindow.show()
+        result = app.exec_()
+        model.requestClose()
+        sys.exit(result)
     else:
         print(
             "Please use GameController.py interface. This script is disabled.\nOn Windows: double-click on GameController.py\nOn Linux: open the terminal and execute 'python3 GameController.py'")
-        # engine = CaveEngine()
-        # engine.currentLevel = get_start_lvl_from_args()
-        # engine.start_infinite_play()

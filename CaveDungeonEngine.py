@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from PyQt5.QtCore import QObject, pyqtSignal
-from pure_adb_connector import *
+from UsbConnector import UsbConnector
 from GameScreenConnector import GameScreenConnector
 from StatisticsManager import StatisticsManager
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, \
@@ -83,26 +83,42 @@ class CaveEngine(QObject):
         self.screen_connector = GameScreenConnector()
         self.screen_connector.debug = False
         self.width, self.heigth = 1080, 2220
-        # self.initConnection()  # Here changes width and height
-        if connectImmediately:
-            self.updateScreenSizeByPhone()
+        self.device_connector = UsbConnector()
+        self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onConnectionStateChanged)
         self.buttons = {}
         self.movements = {}
         self.disableLogs = False
         self.stopRequested = False
+        self.currentDataFolder = ''
+        self.dataFolders = {}
+        if connectImmediately:
+            self.initDeviceConnector()
+
+    def initDataFolders(self):
         self.dataFolders = readAllSizesFolders()
         deviceFolder = buildDataFolder(self.width, self.heigth)
         first_folder = list(self.dataFolders.keys())[0]
         if deviceFolder not in self.dataFolders:
             print("Error: not having %s coordinates. Trying with %s" % (deviceFolder, first_folder))
             deviceFolder = first_folder
-        self.currentDataFolder = ''
         self.changeCurrentDataFolder(deviceFolder)
 
+    def initdeviceconnector(self):
+        self.device_connector.connect()
+
+    def onConnectionStateChanged(self):
+        if self.device_connector.connected:
+            self.initDataFolders()
+            self.screen_connector.changeDeviceConnector(self.device_connector)
+            self.updateScreenSizeByPhone()
+
     def updateScreenSizeByPhone(self):
-        w, h = adb_get_size()
-        self.changeScreenSize(w, h)
-        self.screen_connector.changeScreenSize(w, h)
+        if self.device_connector is not None:
+            w, h = self.device_connector.adb_get_size()
+            self.changeScreenSize(w, h)
+            self.screen_connector.changeScreenSize(w, h)
+        else:
+            print("Device connector is none. initialize it before calling this method!")
 
     def changeCurrentDataFolder(self, new_folder):
         self.currentDataFolder = new_folder
@@ -124,7 +140,7 @@ class CaveEngine(QObject):
         self.resolutionChanged.emit(w, h)
 
     def __unused__initConnection(self):
-        device = get_device_id()
+        device = self.device_connector._get_device_id()
         if device is None:
             print("Error: no device discovered. Start adb server before executing this.")
             exit(1)
@@ -141,7 +157,8 @@ class CaveEngine(QObject):
         start = self.buttons[start]
         stop = self.buttons[stop]
         print("Swiping between %s and %s in %f" % (start, stop, s))
-        adb_swipe([start[0] * self.width, start[1] * self.heigth, stop[2] * self.width, stop[3] * self.heigth], s)
+        self.device_connector.adb_swipe(
+            [start[0] * self.width, start[1] * self.heigth, stop[2] * self.width, stop[3] * self.heigth], s)
 
     def swipe(self, name, s):
         if self.stopRequested:
@@ -150,7 +167,7 @@ class CaveEngine(QObject):
         print("Swiping %s in %f" % (self.print_names_movements[name], s))
         self.log("Swipe %s in %.2f" % (self.print_names_movements[name], s))
         # convert back from normalized values
-        adb_swipe(
+        self.device_connector.adb_swipe(
             [coord[0][0] * self.width, coord[0][1] * self.heigth, coord[1][0] * self.width, coord[1][1] * self.heigth],
             s)
 
@@ -161,7 +178,7 @@ class CaveEngine(QObject):
         # convert back from normalized values
         x, y = int(self.buttons[name][0] * self.width), int(self.buttons[name][1] * self.heigth)
         print("Tapping on %s at [%d, %d]" % (name, x, y))
-        adb_tap((x, y))
+        self.device_connector.adb_tap((x, y))
 
     def wait(self, s):
         decimal = s

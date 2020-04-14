@@ -1,27 +1,10 @@
 import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
-from CaveDungeonEngine import CaveEngine, isConnected
+from CaveDungeonEngine import CaveEngine
 import time
-import threading
-
-
-# import _thread
-# from threading import Thread
-
-class WorkerThread(threading.Thread):
-
-    # Thread class with a _stop() method.
-    # The thread itself has to check
-    # regularly for the stopped() condition.
-
-    def __init__(self, *args, **kwargs):
-        super(WorkerThread, self).__init__(*args, **kwargs)
-        self.function = None
-
-    def run(self):
-        self.function()
-
+from UsbConnector import UsbConnector
+from WorkerThread import WorkerThread
 
 import enum
 
@@ -45,13 +28,13 @@ class GameControllerModel(QObject):
         super(QObject, self).__init__()
         # Default data
         self.engine = CaveEngine()
+        self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.dict_buttons = 'data.py'
         self.ch_images_path = "ui_chapters/"
         self.ch_image_ext = ".png"
         self.icon_path = "icons"
         self.icons_dataset = self.load_icons()
         self.currentEngineState: EngineState = EngineState.Ready
-        self.connected = False
         self.chapters = ["1. Verdant Prairie",
                          "2. Storm Desert",
                          "3. Abandoned Dungeon",
@@ -67,35 +50,23 @@ class GameControllerModel(QObject):
                          "13. Lava Land",
                          "14. Eskimo Lands"]
         self.workerThread: WorkerThread = None
-        self.connectionStateChanged.connect(self.onconnectionStateChanged)
-        self.startConnectionCheck()
+
+    def connected(self):
+        return self.engine.device_connector.connected
+
+    def onDevConnChanged(self):
+        self.connectionStateChanged.emit(self.engine.device_connector.connected)
 
     def requestClose(self):
+        self.engine.device_connector.stopConnectionCheck()
         if self.currentEngineState == EngineState.Ready:
+            print("Stopping engine... ")
             self._stopEngineUnsafe()
-
         self.workerThread = None
         self.engine = None
 
-    def onconnectionStateChanged(self, conn):
-        if conn:
-            self.engine.updateScreenSizeByPhone()
-
     def _changeConnectedstate(self, conn: bool):
-        self.connected = conn
         self.connectionStateChanged.emit(conn)
-
-    def _continousConnectionCheck(self):
-        while True:
-            c = isConnected()
-            if c != self.connected:
-                self._changeConnectedstate(c)
-            time.sleep(5)
-
-    def startConnectionCheck(self):
-        self.connectionCheckThread = WorkerThread()
-        self.connectionCheckThread.function = self._continousConnectionCheck
-        self.connectionCheckThread.start()
 
     def load_data(self):
         pass
@@ -135,6 +106,7 @@ class GameControllerModel(QObject):
         if self.workerThread is not None:
             self.stopDungeon()
         self.workerThread = WorkerThread()
+        self.setEngineState(EngineState.Playing)
         self.workerThread.function = self.engine.start_infinite_play
         self.workerThread.start()
 
