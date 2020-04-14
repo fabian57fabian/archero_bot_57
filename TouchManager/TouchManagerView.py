@@ -187,6 +187,7 @@ class TouchManagerWindow(QWidget):
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
         self.model.onLineWidthChanged.connect(self.onLineWidthChanged)
+        self.model.screensFolderChanged.connect(self.onFolderChanged)
 
     def clearWidget(self, widget: QWidget):
         widget.setParent(None)
@@ -203,8 +204,11 @@ class TouchManagerWindow(QWidget):
             # TODO: show an error message
             pass
 
-    def change_folder(self, newfolder):
-        self.screensPathCbox.setText(newfolder)
+    def onFolderChanged(self, newfolder):
+        self.screensPathCbox.blockSignals(True)
+        self.screensPathCbox.setCurrentText(newfolder)
+        self.screensPathCbox.blockSignals(False)
+        self.export_btn.setToolTip("Saves current buttons, movements, framechecks in %s data folder" % newfolder)
 
     def source_changed(self, current_files):
         self.photo.clear()

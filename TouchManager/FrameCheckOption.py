@@ -18,6 +18,9 @@ class FrameCheckOption(QWidget):
         self.model = model
         self.controller = controller
         self.main_lay = QVBoxLayout()
+        self.bottom_lay = QVBoxLayout()
+        self.scroll_wid = QWidget()
+        self.scrollable = QScrollArea()
         self.lay = QVBoxLayout()
         self.lbls = []
         self.lblsColors = []
@@ -32,6 +35,7 @@ class FrameCheckOption(QWidget):
         self.initConnectors()
 
     def initMainUI(self):
+        self.setLayout(self.main_lay)
         self.aroundLbl.setText("Around factor:")
         self.cBoxAround.addItems(str(i) for i in range(self.model.MAX_AROUND))
         self.cBoxAround.setFixedHeight(20)
@@ -39,13 +43,22 @@ class FrameCheckOption(QWidget):
         self.cBoxAround.currentIndexChanged.connect(self.controller.requestChangeAround)
         self.btnAddCoord.setText("add coordinate")
         self.btnAddCoord.clicked.connect(self.controller.requestFrameCheckCoordAdd)
-        self.main_lay.addLayout(self.lay)
-        self.main_lay.addWidget(self.btnAddCoord)
+
+        self.lay.setAlignment(Qt.AlignTop)
+        self.scroll_wid.setLayout(self.lay)
+        self.scrollable.setWidgetResizable(True)
+        self.scrollable.setWidget(self.scroll_wid)
+        self.scrollable.setContentsMargins(0, 0, 0, 0)
+
+        self.main_lay.addWidget(self.scrollable)
+
+        self.bottom_lay.addWidget(self.btnAddCoord)
         h_lay = QHBoxLayout()
         h_lay.addWidget(self.aroundLbl)
         h_lay.addWidget(self.cBoxAround)
-        self.main_lay.addLayout(h_lay)
-        self.setLayout(self.main_lay)
+        self.bottom_lay.addLayout(h_lay)
+
+        self.main_lay.addLayout(self.bottom_lay)
 
     def _clearLayout(self):
         self.lbls.clear()
@@ -76,26 +89,36 @@ class FrameCheckOption(QWidget):
         for i in range(coords_num):
             lay_row = QHBoxLayout()
             coord = newData['coordinates'][i]
-            lay_row.addWidget(QLabel("X: %4d" % (coord[0] * w)))
-            lay_row.addWidget(QLabel("Y: %4d" % (coord[1] * h)))
+            x, y = int((coord[0] * w)), int((coord[1] * h))
+            lbl_point = QLabel("%15s" % ("C%d: %4d , %4d" % (i, x, y)))
+            lbl_point.setFixedWidth(80)
+            lay_row.addWidget(lbl_point)
+            # lay_row.addWidget(QLabel("X: %4d" % (coord[0] * w)))
+            # lay_row.addWidget(QLabel("Y: %4d" % (coord[1] * h)))
             colors = newData['values'][i]
-            lblColor = QLabel("   ")
+            lblColor = QLabel("")
             lblColor.setStyleSheet("background-color: rgb({},{},{});".format(colors[0], colors[1], colors[2]))
             lblColor.mousePressEvent = (partial(self.onManualChoose, i))
+            lblColor.setToolTip("Target value RGB=(%d, %d, %d)" % (colors[0], colors[1], colors[2]))
+            lblColor.setMaximumWidth(40)
             self.lblsColors.append(lblColor)
             btnSet = QPushButton("set->")
             btnSet.setMaximumWidth(45)
             btnSet.clicked.connect(partial(self.controller.requestSetCurrentColorToFrameCheckColor, i))
-            lblimgColor = QLabel(" ")
+            lblimgColor = QLabel("")
             lblimgColor.setMaximumWidth(20)
             color_ = newData['currentScreenColors'][i]
             lblimgColor.setStyleSheet("background-color: rgb({},{},{});".format(color_[0], color_[1], color_[2]))
+            lblimgColor.setToolTip("Current screenshot RGB=(%d, %d, %d)" % (color_[0], color_[1], color_[2]))
+            lblimgColor.setToolTipDuration(20 * 1000)
             self.lblImageColors.append(lblimgColor)
             lay_row.addWidget(lblimgColor)
             lay_row.addWidget(btnSet)
             lay_row.addWidget(lblColor)
             rbtn = QRadioButton()
             self.rBtns.append(rbtn)
+            rbtn.setText("")
+            rbtn.setFixedWidth(20)
             rbtn.toggled.connect(partial(self.controller.onCoordinateSelected, i))
             lay_row.addWidget(rbtn)
             self.lay.addLayout(lay_row)

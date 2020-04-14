@@ -15,6 +15,7 @@ class TouchManagerModel(QObject):
     onImageAdded = pyqtSignal(str)
     onPointAdded = pyqtSignal(str)
     onLineWidthChanged = pyqtSignal(float)
+    screensFolderChanged = pyqtSignal(str)
 
     MAX_AROUND = 50
 
@@ -91,7 +92,7 @@ class TouchManagerModel(QObject):
     def changeMovementPosition(self, dict_button, new_location, index):
         if dict_button in self.currentMovements:
             self.currentMovements[dict_button][0 if index == 0 else 1] = new_location
-            self.onButtonnLocationChanged.emit(dict_button)
+            self.onButtonLocationChanged.emit(dict_button)
 
     def changeFrameCheckPosition(self, dict_button, new_location, index):
         if dict_button in self.currentFrameChecks:
@@ -139,6 +140,7 @@ class TouchManagerModel(QObject):
         if new_folder in self.screensFolders.keys():
             self.currentScreensFolder = new_folder
             self.load_data()
+            self.screensFolderChanged.emit(self.currentScreensFolder)
 
     def loadImagesFromSource(self, img_path):
         return [file for file in sorted(os.listdir(img_path))]  # if file.endswith(".jpg")]

@@ -47,10 +47,10 @@ class GameControllerWindow(QWidget):
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
 
     def onGameWon(self):
-        self.lblConnectionStatus.setText("Finished 20 chapters. Win!")
+        self.infoLabel.setText("Finished 20 chapters. Win!")
 
     def onNoEnergyLeft(self):
-        self.lblConnectionStatus.setText("No energy left. Waiting until refill to play again.")
+        self.infoLabel.setText("No energy left. Waiting until refill to play again.")
 
     def onEngineStateChanged(self, state: EngineState):
         if state == EngineState.Playing:

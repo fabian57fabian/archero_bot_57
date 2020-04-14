@@ -33,19 +33,21 @@ class MovementOption(QWidget):
 
     def initUI(self):
         self.rBtnChangeableSrc.setText("")
+        self.rBtnChangeableSrc.setFixedWidth(20)
         self.rBtnChangeableDst.setText("")
+        self.rBtnChangeableDst.setFixedWidth(20)
         if self.controller.selectedCoordinateIndex == 0:
             self.rBtnChangeableSrc.setChecked(True)
         else:
             self.rBtnChangeableDst.setChecked(True)
         #self.lay_h1.addWidget(QLabel("Start: "))
         self.lay_h1.addWidget(self.lblXsrc)
-        self.lay_h1.addWidget(self.lblYsrc)
+        #self.lay_h1.addWidget(self.lblYsrc)
         self.lay_h1.addWidget(self.rBtnChangeableSrc)
 
         #self.lay_h2.addWidget(QLabel("End  : "))
         self.lay_h2.addWidget(self.lblXdst)
-        self.lay_h2.addWidget(self.lblYdst)
+        #self.lay_h2.addWidget(self.lblYdst)
         self.lay_h2.addWidget(self.rBtnChangeableDst)
 
         self.lay.addLayout(self.lay_h1)
@@ -60,7 +62,11 @@ class MovementOption(QWidget):
 
     def changeData(self, new_data):
         w, h = self.controller.current_image_size
-        self.lblXsrc.setText("X: %4d" % (new_data[0][0] * w))
-        self.lblYsrc.setText("Y: %4d" % (new_data[0][1] * h))
-        self.lblXdst.setText("X: %4d" % (new_data[1][0] * w))
-        self.lblYdst.setText("Y: %4d" % (new_data[1][1] * h))
+        x1,y1 = (new_data[0][0] * w),(new_data[0][1] * h)
+        x2,y2 = (new_data[1][0] * w),(new_data[1][1] * h)
+        self.lblXsrc.setText("Start: %4d , %4d" % (x1, y1))
+        self.lblXdst.setText("Stop: %4d, %4d" % (x2, y2))
+        # self.lblXsrc.setText("X: %4d" % (new_data[0][0] * w))
+        # self.lblYsrc.setText("Y: %4d" % (new_data[0][1] * h))
+        # self.lblXdst.setText("X: %4d" % (new_data[1][0] * w))
+        # self.lblYdst.setText("Y: %4d" % (new_data[1][1] * h))

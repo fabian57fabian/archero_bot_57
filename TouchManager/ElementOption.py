@@ -33,7 +33,7 @@ class ElementOption(QWidget):
     def setupUI(self):
         self.main_lay.setAlignment(Qt.AlignTop)
         self.main_lay.setContentsMargins(0, 0, 0, 0)
-        self.setFixedHeight(150)
+        # self.setFixedHeight(150)
         self.main_lay.addWidget(self.wid)
         self.setLayout(self.main_lay)
 
