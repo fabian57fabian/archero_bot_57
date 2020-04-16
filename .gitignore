@@ -8,6 +8,8 @@ QMyWidgets/__pycache__/*
 GameController/__pycache__/*
 TouchManager/__pycache__/*
 
+utility_test_data.csv
+
 # All personal statiostics data
 datas/statistics.csv
 
