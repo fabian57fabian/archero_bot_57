@@ -1,13 +1,16 @@
 # Archero Bot 57
 
 <p align="center">
-  <img src="https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/logo_small.png">
+  <img src="repo_images/logo_small.png" width =100>
 </p>
 
 Watch the installation video:
 
-[![Watch the video](https://github.com/fabian57fabian/archero_bot_57/blob/master/repo_images/video_thumbnail.png)](https://www.youtube.com/watch?v=XZTI_USaY-4)
+<a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="200"></a>
 
+Watch the installation and usage of the emulator (Nox Player):
+
+<a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="200"></a>
 ## Contents
 1. [Introduction](#introduction)
 2. [Installation on Linux](#Installation-on-Linux)
