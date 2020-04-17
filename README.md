@@ -12,13 +12,14 @@ Watch the installation video:
 1. [Introduction](#introduction)
 2. [Installation on Linux](#Installation-on-Linux)
 3. [Installation on Windows](#installation-on-windows)
-4. [Game lock disabling](#disable-blue-auto-lock-screen)
-5. [Usage](#usage)
-6. [Game Description](#game-description)
-7. [Coordinates management](#coordinates-management)
-8. [How it works](#how-it-works)
-9. [Coordinates check explained](#coordinates-check-explained)
-10. [Extra](#extra)
+4. [Platform installation (emulator)](#platform-installation)
+5. [Game lock disabling](#disable-blue-auto-lock-screen)
+6. [Usage](#usage)
+7. [Game Description](#game-description)
+8. [Coordinates management](#coordinates-management)
+9. [How it works](#how-it-works)
+10. [Coordinates check explained](#coordinates-check-explained)
+11. [Extra](#extra)
 
 ## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
@@ -66,6 +67,19 @@ Follow these steps:
   `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
   
 - Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
+
+## Platform installation
+This bot can work either connected to smartphone trough usb or with Nox emulator on your pc.
+
+If you want to use your phone, skip these steps.
+
+If you want to use the emulator:
+- Download Nox emulator from [here](https://www.bignox.com/) and install it.
+- Open the emulator
+- Insert your google mail and password (the account that you use on your phone, that archero uses to save data).
+- Enable debug mode (settings->info and tap 7 times on build, then go back, development options, activate debug usb)
+- Download the archero bot on the emulator.
+- Open it
 
 ### Disable Blue auto lock screen
 When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
