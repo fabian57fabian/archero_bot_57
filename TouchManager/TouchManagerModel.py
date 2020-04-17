@@ -1,7 +1,7 @@
 import json
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
-from UsbConnector import adb_screen, get_device_id
+from UsbConnector import UsbConnector
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, getCoordFilePath
 
 
@@ -42,6 +42,11 @@ class TouchManagerModel(QObject):
         self.currentMovements = {}
         self.currentFrameChecks = {}
         self.screensFolders = readAllSizesFolders()
+        self.device_connector = UsbConnector()
+        self.device_connector.connectionChangedFunctions.append(self.onDeviceConnectionChanged)
+
+    def onDeviceConnectionChanged(self, conn):
+        pass
 
     def requestClose(self):
         pass
@@ -57,11 +62,13 @@ class TouchManagerModel(QObject):
         return os.path.join(self.data_pack, self.currentScreensFolder, self.screens_folder)
 
     def is_device_connected(self):
-        return get_device_id() is not None
+        return self.device_connector.connected
 
     def acquire_screen(self, name):
         filename = name + ".png"
-        adb_screen(os.path.join(self.currentScreensPath(), filename))
+        if not self.device_connector.connected:
+            return
+        self.device_connector.adb_screen(os.path.join(self.currentScreensPath(), filename))
         self.currentFiles = {k: None for k in self.loadImagesFromSource(self.currentScreensPath())}
         self.onImageAdded.emit(filename)
 
@@ -114,7 +121,7 @@ class TouchManagerModel(QObject):
 
     def addFrameCheckCoord(self, selected_coord):
         self.currentFrameChecks[selected_coord]['coordinates'].append([0.5, 0.5])
-        self.currentFrameChecks[selected_coord]['values'].append([255, 0, 0,255])
+        self.currentFrameChecks[selected_coord]['values'].append([255, 0, 0, 255])
         self.onButtonLocationChanged.emit(selected_coord)
 
     def load_data(self):
