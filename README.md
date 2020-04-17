@@ -28,12 +28,12 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - Windows
   - Ubuntu/Linux distro
 
-- Tested smartphones:
-  - samsung s8/s8+, s10e
-
 - Tested resolutions
-  - 1080x2220 is fullt working. All tests show good coordinates positioning.
-  - failing 1080x1920, but working on...
+  - 1080x1920 is full working. Remaining tests have to be done
+  - 1080x2220 is full working. All tests show good coordinates positioning.
+  - 1080x2280 is working. Remaining tests have to be done
+  - 1080x2340 is working. Remaining tests have to be done
+  - failing on other resolutions, but working on...
 
 If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
 
@@ -149,6 +149,9 @@ This is usefull in future games plotting to know how it performed.
 
 Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e (1080x2280).
 \
-Thanks to [MahirZukic](https://github.com/MahirZukic) for screenshorts done with Xiaomi Mi 9 (1080x2340.
+Thanks to [MahirZukic](https://github.com/MahirZukic) for screenshorts done with Xiaomi Mi 9 (1080x2340).
+\
+Thanks to [AgamemnonasKyr](https://github.com/AgamemnonasKyr) for screenshots done for upper black strip in game (1080x2280).
+\
 For any bug open an issue.
 If not having a github account, email me at **fabian_57@yahoo.it**.
