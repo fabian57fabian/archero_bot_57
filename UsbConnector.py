@@ -40,29 +40,40 @@ class UsbConnector(object):
         if function not in self.connectionChangedFunctions:
             self.connectionChangedFunctions.append(function)
 
-    def checkDeviceAvailable(self):
+    def getDeviceSerialNo(self):
         try:
             device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
             device = None if device == '' else device
-            return device != '' and device != None
+            return device
         except:
-            return False
+            return None
 
-    def connect(self) -> bool:
-        print("Initializing ppadb library")
-        if not self.checkDeviceAvailable():
+    # def checkDeviceAvailable(self):
+    #     #     try:
+    #     #         device = os.popen("adb devices").read().split('\n', 1)[1].split("device")[0].strip()
+    #     #         device = None if device == '' else device
+    #     #         return device != '' and device != None
+    #     #     except:
+    #     #         return False
+
+    def tryConnect(self) -> bool:
+        # Default is "127.0.0.1" and 5037, but nox is 62001
+        ports = [5037, 62001]
+        ok = False
+        for p in ports:
+            self._client = AdbClient(host=self._host, port=p)
+            # devs = self._client.devices()
+            dev = self.getDeviceSerialNo()
+            if dev is not None:
+                self._port = p
+                ok = True
+                break
+        if ok:
+            self.my_device = self._client.device(dev)
+            self._changeConnectedState(True)
+        else:
             self._changeConnectedState(False)
-            return False
-        # Default is "127.0.0.1" and 5037
-        self._client = AdbClient(host=self._host, port=self._port)
-        devs = self._client.devices()
-        if len(devs) < 1:
-            print("No devices running.")
-            self._changeConnectedState(False)
-            return False
-        self.my_device = self._client.device(devs[0].get_serial_no())
-        self._changeConnectedState(True)
-        return True
+        return self.connected
 
     def disconnect(self) -> bool:
         if not self.connected:
@@ -233,12 +244,13 @@ class UsbConnector(object):
         while True:
             if self._continousCheckStopRequired:
                 break
-            c = self.checkDeviceAvailable()
+            c = self.tryConnect()
             if c != self.connected:
                 if self.connected:
                     self.disconnect()
                 else:
-                    self.connect()
+                    self._changeConnectedState(True)
+                    # self.connect() changed into tryConnect
             time.sleep(5)
 
     def _startConnectionCheck(self):

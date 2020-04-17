@@ -28,6 +28,10 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - Windows
   - Ubuntu/Linux distro
 
+- Supported platform:
+  - Usb connection to phone
+  - Nox emulator (installation video coming soon)
+
 - Tested resolutions
   - 1080x1920 is full working. Remaining tests have to be done
   - 1080x2220 is full working. All tests show good coordinates positioning.
