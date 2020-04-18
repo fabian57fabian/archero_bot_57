@@ -15,6 +15,7 @@ https://pypi.org/project/pure-python-adb/
 
 
 class UsbConnector(object):
+
     def __init__(self):
         self.connected = False
         self._client: AdbClient = None
@@ -22,6 +23,7 @@ class UsbConnector(object):
         self._host = '127.0.0.1'
         self._port = 5037
         self.connectionChangedFunctions = []
+        self.checkingConnectionFunctions = []
         self.connectionCheckThread = WorkerThread()
         self._continousCheckStopRequired = False
         self._startConnectionCheck()
@@ -32,6 +34,10 @@ class UsbConnector(object):
             for f in self.connectionChangedFunctions:
                 f()
 
+    def checkingConnectionChange(self, state: bool):
+        for f in self.checkingConnectionFunctions:
+            f(state)
+
     def stopConnectionCheck(self):
         print("Stopping continous device check")
         self._continousCheckStopRequired = True
@@ -39,6 +45,10 @@ class UsbConnector(object):
     def setFunctionToCallOnConnectionStateChanged(self, function):
         if function not in self.connectionChangedFunctions:
             self.connectionChangedFunctions.append(function)
+
+    def setFunctionToCallOnCheckingConnectionStateChanged(self, function):
+        if function not in self.checkingConnectionFunctions:
+            self.checkingConnectionFunctions.append(function)
 
     def getDeviceSerialNo(self):
         try:
@@ -60,6 +70,8 @@ class UsbConnector(object):
         # Default is "127.0.0.1" and 5037, but nox is 62001
         if self.connected and self.getDeviceSerialNo() is not None:
             return True
+        self._changeConnectedState(False)
+        self.checkingConnectionChange(True)
         ports = [5037, 62001]
         ok = False
         os.system("adb disconnect")
@@ -79,6 +91,7 @@ class UsbConnector(object):
             self._changeConnectedState(True)
         else:
             self._changeConnectedState(False)
+        self.checkingConnectionChange(False)
         return self.connected
 
     def disconnect(self) -> bool:
@@ -247,6 +260,7 @@ class UsbConnector(object):
         return True
 
     def _oneCheck(self):
+        time.sleep(1)
         while True:
             if self._continousCheckStopRequired:
                 break

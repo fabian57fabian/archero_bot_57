@@ -18,6 +18,7 @@ class EngineState(enum.Enum):
 class GameControllerModel(QObject):
     engineStatechanged = pyqtSignal(EngineState)
     connectionStateChanged = pyqtSignal(bool)
+    checkConnectionStateChanged = pyqtSignal(bool)
     resolutionChanged = pyqtSignal(str)
     dataFolderChanged = pyqtSignal(str)
 
@@ -29,6 +30,7 @@ class GameControllerModel(QObject):
         # Default data
         self.engine = CaveEngine()
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
+        self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
         self.dict_buttons = 'data.py'
         self.ch_images_path = "ui_chapters/"
         self.ch_image_ext = ".png"
@@ -57,6 +59,9 @@ class GameControllerModel(QObject):
 
     def onDevConnChanged(self):
         self.connectionStateChanged.emit(self.engine.device_connector.connected)
+
+    def onDevCheckConnectionChanged(self, state):
+        self.checkConnectionStateChanged.emit(state)
 
     def requestClose(self):
         self.engine.device_connector.stopConnectionCheck()

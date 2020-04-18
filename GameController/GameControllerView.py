@@ -17,8 +17,8 @@ from GameController.GameControllerController import GameControllerController
 class GameControllerWindow(QWidget):
     def __init__(self, model: GameControllerModel, controller: GameControllerController):
         super(QWidget, self).__init__()
-        self.toolbar_w = 70
-        self.toolbar_h = 70
+        self.toolbar_w = 80
+        self.toolbar_h = 80
         self.model = model
         self.main_layout = QGridLayout()
         self.toolbarOptions = QVBoxLayout()
@@ -28,6 +28,7 @@ class GameControllerWindow(QWidget):
         self.size_info_lbl = QLabel("Screen size:\n1x1")
         self.lblDataFolder = QLabel()
         self.lblConnectionStatus = QLabel()
+        self.lblCheckConnectionStatus=QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
@@ -40,6 +41,7 @@ class GameControllerWindow(QWidget):
         self.model.engine.noEnergyLeft.connect(self.onNoEnergyLeft)
         self.model.engineStatechanged.connect(self.onEngineStateChanged)
         self.model.connectionStateChanged.connect(self.onConnectionStateChange)
+        self.model.checkConnectionStateChanged.connect(self.onCheckConnectionStateChanged)
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
 
@@ -70,6 +72,9 @@ class GameControllerWindow(QWidget):
             self.lblConnectionStatus.setText("NO device!")
             self.lblConnectionStatus.setStyleSheet("background-color: red;color:white")
 
+    def onCheckConnectionStateChanged(self, checking: bool):
+        self.lblCheckConnectionStatus.setText('connecting..' if checking else '')
+
     def onScreenDataChanged(self):
         self.size_info_lbl.setText("Device size:\n{}x{}".format(self.model.engine.width, self.model.engine.heigth))
         self.lblDataFolder.setText("{}".format(self.model.engine.currentDataFolder))
@@ -92,18 +97,22 @@ class GameControllerWindow(QWidget):
         lay_content = QVBoxLayout()
         self.toolbarOptions.addWidget(self.size_info_lbl)
         self.toolbarOptions.addWidget(self.lblConnectionStatus)
+        self.toolbarOptions.addWidget(self.lblCheckConnectionStatus)
 
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
         self.size_info_lbl.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblConnectionStatus.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblCheckConnectionStatus.setStyleSheet("color: white")
+        self.lblCheckConnectionStatus.setText('Starting...')
         self.lblDataFolder.setStyleSheet("background-color: #6e6e6e; color: white")
         self.infoLabel.setStyleSheet("background-color: #6e6e6e; color: white")
 
         self.size_info_lbl.setAlignment(Qt.AlignCenter)
         self.infoLabel.setAlignment(Qt.AlignCenter)
         self.lblConnectionStatus.setAlignment(Qt.AlignCenter)
+        self.lblCheckConnectionStatus.setAlignment(Qt.AlignCenter)
 
         self.main_layout.addLayout(lay_content, 0, 1)
         self.widActions.setFixedWidth(self.toolbar_w)
