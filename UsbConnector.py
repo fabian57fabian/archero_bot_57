@@ -58,6 +58,8 @@ class UsbConnector(object):
 
     def tryConnect(self) -> bool:
         # Default is "127.0.0.1" and 5037, but nox is 62001
+        if self.connected and self.getDeviceSerialNo() is not None:
+            return True
         ports = [5037, 62001]
         ok = False
         for p in ports:
