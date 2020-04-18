@@ -62,15 +62,19 @@ class UsbConnector(object):
             return True
         ports = [5037, 62001]
         ok = False
+        os.system("adb disconnect")
+        dev = 'device'
         for p in ports:
-            self._client = AdbClient(host=self._host, port=p)
-            # devs = self._client.devices()
+            os.system("adb connect {}:{}".format(self._host, p))
             dev = self.getDeviceSerialNo()
             if dev is not None:
-                self._port = p
-                ok = True
-                break
+                if 'offline' not in dev:
+                    self._port = 5037
+                    ok = True
+                    break
+            os.system("adb disconnect")
         if ok:
+            self._client = AdbClient(host=self._host, port=self._port)
             self.my_device = self._client.device(dev)
             self._changeConnectedState(True)
         else:
