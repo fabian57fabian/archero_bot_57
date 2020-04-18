@@ -477,6 +477,7 @@ class CaveEngine(QObject):
         self.wait(2)
         self.swipe('w', 3)
         self.wait(50)
+        self.reactGamePopups()
         self.tap('start')
         self.wait(2)
         self.swipe('n', 5)
