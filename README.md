@@ -36,6 +36,11 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - Usb connection to phone
   - Nox emulator (installation video coming soon)
 
+- Supported dungeons:
+  - 3 . Abandoned Dungeon: tested, working
+  - 6 . The Cave: tested, working
+  - 10 . The Cave: tests TBD, but seems to work
+
 - Tested resolutions
   - 1080x1920 is full working. Remaining tests have to be done
   - 1080x2220 is full working. All tests show good coordinates positioning.
