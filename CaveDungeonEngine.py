@@ -230,9 +230,22 @@ class CaveEngine(QObject):
                     raise Exception('unable_exit_dungeon')
         self.log("Exit level")
 
+    def goTroughDungeon10(self):
+        print("Going through dungeon (designed for #10)")
+        self.log("Cross dungeon 10")
+        self.disableLogs = True
+        self.swipe('n', 0.5)
+        self.swipe('nw', 4)
+        self.swipe('ne', 4)
+        self.swipe('nw', 2)
+        self.swipe('e', .20)
+        self.disableLogs = False
+
+
     def goTroughDungeon_old(self):
-        print("Going through dungeon")
+        print("Going through dungeon old design 'S')")
         self.log("Cross dungeon (old)")
+        self.disableLogs = True
         self.swipe('n', 1.5)
         self.swipe('w', .32)
         self.swipe('n', .5)
@@ -241,10 +254,11 @@ class CaveEngine(QObject):
         self.swipe('n', .5)
         self.swipe('w', .325)
         self.swipe('n', 1.5)
+        self.disableLogs = False
 
-    def goTroughDungeon2(self):
-        print("Going through dungeon")
-        self.log("Cross dungeon")
+    def goTroughDungeon6(self):
+        print("Going through dungeon (designed for #6)")
+        self.log("Cross dungeon 6")
         self.disableLogs = True
         self.swipe('n', 1.5)
         self.swipe('w', .32)
@@ -259,15 +273,31 @@ class CaveEngine(QObject):
         self.swipe('n', 2)
         self.disableLogs = False
 
+    def goTroughDungeon3(self):
+        print("Going through dungeon (designed for #3)")
+        self.log("Cross dungeon 3")
+        self.disableLogs = True
+        self.swipe('n', 1.5)
+        self.swipe('w', .25)
+        self.swipe('n', .5)
+        self.swipe('e', .25)
+        self.swipe('n', 2)
+        # And now we need to go around possible obstacle
+        self.swipe('w', 1)
+        self.swipe('n', .5)
+        self.swipe('e', 1)
+        self.swipe('n', .3)
+        self.disableLogs = False
+
     def goTroughDungeon(self):
         if self.currentDungeon == 3:
-            self.goTroughDungeon_old()
+            self.goTroughDungeon3()
         elif self.currentDungeon == 6:
-            self.goTroughDungeon2()
+            self.goTroughDungeon6()
         elif self.currentDungeon == 10:
-            self.goTroughDungeon2()
+            self.goTroughDungeon10()
         else:
-            self.goTroughDungeon2()
+            self.goTroughDungeon_old()
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss

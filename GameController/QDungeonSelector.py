@@ -32,7 +32,7 @@ class QDungeonSelector(QWidget):
         self.layoutMainHor.setSpacing(0)
         self.layoutMainHor.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layoutMainHor)
-        self.SelectionEnabled = False
+        self.SelectionEnabled = True # Set this to block dungeon select
 
     def initConnectors(self):
         self.controller.chapterChanged.connect(self.onCurrentChapterChanged)
@@ -57,10 +57,14 @@ class QDungeonSelector(QWidget):
                 if ch_num == self.model.engine.currentDungeon:
                     selected_ch = chapter_index_curr
                 chapter_index_curr += 1
-
-        item, ok = QInputDialog.getItem(self, "Select chapter", "Chapter:", chapters, selected_ch, False)
-        if ok and item:
-            new_ch = self.getChapterNumber(item)
+        dialog = QInputDialog()
+        dialog.setStyleSheet("")
+        dialog.setComboBoxItems(chapters)
+        dialog.setWindowTitle("Select chapter")
+        dialog.setLabelText("Chapter:")
+        ret = dialog.exec()
+        if ret:
+            new_ch = self.getChapterNumber(dialog.textValue())
             self.controller.requestchangeCurrentChapter(new_ch)
 
     def onCurrentChapterChanged(self, ch_number: int):

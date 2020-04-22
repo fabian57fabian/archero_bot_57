@@ -17,7 +17,8 @@ class GameScreenConnector:
         self.static_coords = {}
         self.door_width = 180.0 / 1080.0
         self.yellow_experience = [255, 170, 16, 255]
-        self.green_hp = [77, 171, 56, 255]
+        self.green_hp = [70,158,47, 255]
+        self.green_hp_high = [84,180,58, 255]
         self.black_hp = [25, 25, 25, 255]
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
@@ -40,10 +41,15 @@ class GameScreenConnector:
         self.hor_lines = loadJsonData(self.hor_lines_path)
 
     def pixel_equals(self, px_readed, px_expected, around=5):
+        arr = [5, 5, 5]
+        if isinstance(around, int):
+            arr = [around, around, around]
+        elif isinstance(around, list):
+            arr = [around[0], around[1], around[2]]
         # checking only RGB from RGBA
-        return px_expected[0] - around <= px_readed[0] <= px_expected[0] + around \
-               and px_expected[1] - around <= px_readed[1] <= px_expected[1] + around \
-               and px_expected[2] - around <= px_readed[2] <= px_expected[2] + around
+        return px_expected[0] - arr[0] <= px_readed[0] <= px_expected[0] + arr[0] \
+               and px_expected[1] - arr[1] <= px_readed[1] <= px_expected[1] + arr[1] \
+               and px_expected[2] - arr[2] <= px_readed[2] <= px_expected[2] + arr[2]
 
     def getFrameAttr(self, frame, attributes):
         attr_data = []
@@ -200,11 +206,35 @@ class GameScreenConnector:
             i += 1
             if i == 452:
                 a = 0
-            if self.pixel_equals(px, self.green_hp, 12) or self.pixel_equals(px, self.black_hp, 25):
+            if self.pixel_equals(px, self.green_hp, [8,12,8]) or self.pixel_equals(px, self.green_hp_high, [8,12,8]):
                 masked_green.append(self.green_hp)
             else:
                 masked_green.append([0, 0, 0, 0])
-        return masked_green
+        #Filter outlayers:
+        masked_green_no_outlayers=self.removeOutlayersInLine(masked_green, self.green_hp)
+        return masked_green_no_outlayers
+
+    def removeOutlayersInLine(self, masked_green, high_pixel_color):
+        line = masked_green.copy()
+        n = len(line)
+        i = 0
+        window_width = 10
+        while i < n:
+            if i in range(window_width): # First 4 take black. no problem losing them
+                line[i] = [0, 0, 0, 0]
+            else:
+                if i > 370:
+                    a = 3
+                sum = 0
+                for j in range(window_width):
+                    sum += 1 if masked_green[i-j][0] == high_pixel_color[0] else 0
+                for j in range(window_width):
+                    line[i-j] = [0, 0, 0, 0] if sum <7 else high_pixel_color
+                i += window_width-1 #Skip() and go to next window
+            i += 1
+        for i in range(window_width):  # Last 4 take black. no problem losing them
+            line[n-i-1] = [0, 0, 0, 0]
+        return line
 
     def getHorLine(self, line_name: str, frame=None):
         """
