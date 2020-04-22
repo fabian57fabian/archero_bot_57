@@ -523,6 +523,7 @@ class CaveEngine(QObject):
         try:
             self.play_cave()
         except Exception as exc:
+            self.pressCloseEndIfEndedFrame()
             if exc.args[0] == 'ended':
                 print("Game ended. Farmed a little bit...")
             elif exc.args[0] == 'unable_exit_dungeon':
@@ -534,4 +535,9 @@ class CaveEngine(QObject):
             else:
                 print("Got an unknown exception: %s" % exc)
                 self._exitEngine()
+        self.pressCloseEndIfEndedFrame()
         self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
+
+    def pressCloseEndIfEndedFrame(self):
+        if self.screen_connector.checkFrame('endgame'):
+            self.tap('close_end')
