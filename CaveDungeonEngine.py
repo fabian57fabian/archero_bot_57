@@ -197,6 +197,15 @@ class CaveEngine(QObject):
         time.sleep(decimal)
 
     def exit_dungeon_uncentered(self):
+        if self.currentDungeon == 3:
+            self.exit_dungeon_3()
+        else:
+            self.exit_dungeon_uncentered_new()
+
+    def exit_dungeon_3(self):
+        self.swipe('ne', 3)
+
+    def exit_dungeon_uncentered_new(self):
         # Center
         px, dir = self.screen_connector.getPlayerDecentering()
         self.wait(0.5)
@@ -285,7 +294,7 @@ class CaveEngine(QObject):
         # And now we need to go around possible obstacle
         self.swipe('w', 1)
         self.swipe('n', .5)
-        self.swipe('e', 1)
+        #self.swipe('e', 1) #Without this, he will stay on the left side. better and faster to exit (just go ne)
         self.swipe('n', .3)
         self.disableLogs = False
 
@@ -424,7 +433,8 @@ class CaveEngine(QObject):
         self.reactGamePopups()
         self.swipe('n', .8)
         self.reactGamePopups()
-        self.exit_dungeon_uncentered()
+        self.swipe('n', 1)
+        #self.exit_dungeon_uncentered()
 
     def heal_lvl_manual(self):
         self.swipe('n', 1.7)
@@ -442,6 +452,7 @@ class CaveEngine(QObject):
 
     def boss_lvl(self):
         self.swipe('n', 2)
+        self.swipe('w', .25)
         self.swipe('n', 2)
         self.letPlay(self.playtime, is_boss=True)
         self.reactGamePopups()
