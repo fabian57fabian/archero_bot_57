@@ -16,7 +16,7 @@ class GameControllerController(QObject):
         super(QObject, self).__init__()
         self.model = model
         # Set intial states
-        self.controllerStates = {'prev': False, 'play': True, 'pause': False, 'next': True, 'stop': True}
+        self.controllerStates = {'prev': False, 'play': self.model.connected(), 'pause': False, 'next': True, 'stop': True}
         self.model.engine.levelChanged.connect(self.onLevelChanged)
         self.model.connectionStateChanged.connect(self.onConnectionChanged)
 
