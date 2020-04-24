@@ -198,14 +198,11 @@ class CaveEngine(QObject):
 
     def exit_dungeon_uncentered(self):
         if self.currentDungeon == 3:
-            self.exit_dungeon_3()
+            self.exit_dungeon_uncentered_new()
         else:
             self.exit_dungeon_uncentered_new()
 
-    def exit_dungeon_3(self):
-        self.swipe('ne', 3)
-
-    def exit_dungeon_uncentered_new(self):
+    def exit_dungeon_uncentered_new(self, second_check=True):
         # Center
         px, dir = self.screen_connector.getPlayerDecentering()
         self.wait(0.5)
@@ -217,6 +214,11 @@ class CaveEngine(QObject):
             self.swipe('n', 2)
         else:
             self.swipe('n', 2)
+        if second_check:
+            if self.screen_connector.getFrameState() != "in_game":
+                self.reactGamePopups()
+                self.exit_dungeon_uncentered_new(False)
+
 
     def exit_dungeon_uncentered_old(self):
         self.wait(2)
@@ -249,7 +251,6 @@ class CaveEngine(QObject):
         self.swipe('nw', 2)
         self.swipe('e', .20)
         self.disableLogs = False
-
 
     def goTroughDungeon_old(self):
         print("Going through dungeon old design 'S')")
@@ -294,7 +295,7 @@ class CaveEngine(QObject):
         # And now we need to go around possible obstacle
         self.swipe('w', 1)
         self.swipe('n', .5)
-        #self.swipe('e', 1) #Without this, he will stay on the left side. better and faster to exit (just go ne)
+        self.swipe('e', 1)
         self.swipe('n', .3)
         self.disableLogs = False
 
@@ -357,7 +358,7 @@ class CaveEngine(QObject):
         self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         exit(1)
 
-    def reactGamePopups(self, ):
+    def reactGamePopups(self) -> int:
         state = ""
         i = 0
         while state != "in_game":
@@ -406,6 +407,7 @@ class CaveEngine(QObject):
                 raise Exception('ended')
             i += 1
             self.wait(.1)
+        return i
 
     def normal_lvl(self):
         self.goTroughDungeon()
@@ -434,7 +436,7 @@ class CaveEngine(QObject):
         self.swipe('n', .8)
         self.reactGamePopups()
         self.swipe('n', 1)
-        #self.exit_dungeon_uncentered()
+        # self.exit_dungeon_uncentered()
 
     def heal_lvl_manual(self):
         self.swipe('n', 1.7)
