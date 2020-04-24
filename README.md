@@ -37,7 +37,7 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - Nox emulator (installation video coming soon)
 
 - Supported dungeons:
-  - 3 . Abandoned Dungeon: tested, working
+  - 3 . Abandoned Dungeon: tested, FAILING
   - 6 . The Cave: tested, working
   - 10 . The Cave: tests TBD, but seems to work
 
