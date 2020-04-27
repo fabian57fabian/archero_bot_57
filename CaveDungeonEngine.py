@@ -311,13 +311,14 @@ class CaveEngine(QObject):
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss
+        check_seconds = 10
         self.wait(2)
         print("Auto attacking")
         self.log("Auto attacking")
         experience_bar_line = self.screen_connector.getLineExpBar()
         recheck = False
         for i in range(_time, 0, -1):
-            if i % 10 == 0 or recheck:
+            if i % check_seconds == 0 or recheck:
                 recheck = False
                 print("Checking screen...")
                 self.log("screen check")
@@ -351,7 +352,12 @@ class CaveEngine(QObject):
                     self.wait(3)
                     return
                 elif state == "in_game":
-                    print("In game. Playing but level not ended")
+                    if self.screen_connector.checkDoorsOpen(frame):
+                        print("In game, door opened")
+                        self.wait(1)
+                        return
+                    else:
+                        print("In game. Playing but level not ended")
             self.wait(1)
 
     def _exitEngine(self):

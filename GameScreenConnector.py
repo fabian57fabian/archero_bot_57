@@ -85,6 +85,25 @@ class GameScreenConnector:
         if self.debug: print("-----------------------------------")
         return equal
 
+    def checkDoorsOpen(self, frame=None):
+        if frame is None:
+            frame = self.getFrame()
+        # Add opened doors check
+        px_up = 50
+        h_bar = self.hor_lines['hor_hp_bar'][1]  # HP bar height
+        for i in range(1, 4, 1):
+            line = self._getHorLine(
+                [480 / 1080.0, h_bar - ((px_up * i) / self.height), 600 / 1080.0, h_bar - ((px_up * i) / self.height)],
+                frame)
+            white = True
+            for px in line:
+                if px[0] != 255 or px[1] != 255 or px[2] != 255:
+                    white = False
+                    break
+            if white:
+                return True
+        return False
+
     def checkFrame(self, coords_name: str, frame=None):
         """
         Given a coordinates name it checkes if the Frame has those pixels.
@@ -239,7 +258,7 @@ class GameScreenConnector:
         line = self.getLineHpBar()
         line = self.filterLineByColor(line)
         line_filtered = self.filterRawHpLine_window(line)
-        #center_diff = self.getPlayerDecenteringByStartStop(line_filtered)
+        # center_diff = self.getPlayerDecenteringByStartStop(line_filtered)
         center_diff = self.getPlayerDecenteringByMaxGreenGroup(line_filtered)
         if abs(center_diff) < (self.door_width * self.width) / 4.0:
             dir = "center"
