@@ -280,7 +280,7 @@ class CaveEngine(QObject):
         self.swipe('w', .3)
         self.swipe('n', 1.6)
         self.swipe('e', .28)
-        self.swipe('n', 2)
+        self.swipe('n', 2.5)
         self.disableLogs = False
 
     def goTroughDungeon3(self):

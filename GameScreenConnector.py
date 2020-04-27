@@ -17,8 +17,8 @@ class GameScreenConnector:
         self.static_coords = {}
         self.door_width = 180.0 / 1080.0
         self.yellow_experience = [255, 170, 16, 255]
-        self.green_hp = [70,158,47, 255]
-        self.green_hp_high = [84,180,58, 255]
+        self.green_hp = [70, 158, 47, 255]
+        self.green_hp_high = [84, 180, 58, 255]
         self.black_hp = [25, 25, 25, 255]
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
@@ -175,8 +175,36 @@ class GameScreenConnector:
                 masked_yellow.append([0, 0, 0, 0])
         return masked_yellow
 
-    def getPlayerDecentering(self) -> (int, str):
-        line = self.getLineHpBar()
+    def filterRawHpLine_window(self, line):
+        """
+            Given a horizontal array of pixels RGBA, filter data in order to obtain position of character based on his HP.
+        """
+        # Filter outlayers:
+        first_filter = self.removeOutlayersInLine(line, self.green_hp)
+        return first_filter
+
+    def filterRawHpLine_convolution(self, line):
+        """
+            Given a horizontal array of pixels RGBA, convolve pixel in order to get clean location of player
+        """
+        # TODO: finish this or use filterRawHpLine_window
+        return line
+
+    def filterLineByColor(self, line):
+        masked_green = []
+        i = 0
+        for px in line:
+            i += 1
+            if i == 452:
+                a = 0
+            if self.pixel_equals(px, self.green_hp, [8, 12, 8]) or self.pixel_equals(px, self.green_hp_high,
+                                                                                     [8, 12, 8]):
+                masked_green.append(self.green_hp)
+            else:
+                masked_green.append([0, 0, 0, 0])
+        return masked_green
+
+    def getPlayerDecenteringByStartStop(self, line):
         first = 0
         last = 0
         for i, el in enumerate(line):
@@ -186,7 +214,34 @@ class GameScreenConnector:
                 last = i
         center_px = (last + first) / 2
         center_diff = int((self.width / 2) - center_px)
-        if abs(center_diff) < self.door_width * self.width / 4.0:
+        return center_diff
+
+    def getPlayerDecenteringByMaxGreenGroup(self, line):
+        groups = []
+        high_val = self.green_hp[1]
+        start = 0
+        in_block = False
+        biggest_width = [0, 0, 0]
+        for i, el in enumerate(line):
+            if el[1] == high_val:
+                if in_block:
+                    groups.append([start, i, i - start])
+                    if groups[-1][-1] > biggest_width[-1]:
+                        biggest_width = groups[-1]
+                else:
+                    in_block = True
+                    start = i
+        center_px = (biggest_width[0] + biggest_width[1]) / 2
+        center_diff = int((self.width / 2) - center_px)
+        return center_diff
+
+    def getPlayerDecentering(self) -> (int, str):
+        line = self.getLineHpBar()
+        line = self.filterLineByColor(line)
+        line_filtered = self.filterRawHpLine_window(line)
+        #center_diff = self.getPlayerDecenteringByStartStop(line_filtered)
+        center_diff = self.getPlayerDecenteringByMaxGreenGroup(line_filtered)
+        if abs(center_diff) < (self.door_width * self.width) / 4.0:
             dir = "center"
         else:
             dir = "right" if center_diff < 0 else "left"
@@ -200,40 +255,29 @@ class GameScreenConnector:
         :return:
         """
         line = self._getHorLine(self.hor_lines["hor_hp_bar"], frame)
-        masked_green = []
-        i = 0
-        for px in line:
-            i += 1
-            if i == 452:
-                a = 0
-            if self.pixel_equals(px, self.green_hp, [8,12,8]) or self.pixel_equals(px, self.green_hp_high, [8,12,8]):
-                masked_green.append(self.green_hp)
-            else:
-                masked_green.append([0, 0, 0, 0])
-        #Filter outlayers:
-        masked_green_no_outlayers=self.removeOutlayersInLine(masked_green, self.green_hp)
-        return masked_green_no_outlayers
+        return line
 
     def removeOutlayersInLine(self, masked_green, high_pixel_color):
         line = masked_green.copy()
         n = len(line)
         i = 0
-        window_width = 10
+        window_width = 15
+        min_greens_pixels = 9
         while i < n:
-            if i in range(window_width): # First 4 take black. no problem losing them
+            if i in range(window_width):  # First 4 take black. no problem losing them
                 line[i] = [0, 0, 0, 0]
             else:
                 if i > 370:
                     a = 3
                 sum = 0
                 for j in range(window_width):
-                    sum += 1 if masked_green[i-j][0] == high_pixel_color[0] else 0
+                    sum += 1 if masked_green[i - j][0] == high_pixel_color[0] else 0
                 for j in range(window_width):
-                    line[i-j] = [0, 0, 0, 0] if sum <7 else high_pixel_color
-                i += window_width-1 #Skip() and go to next window
+                    line[i - j] = [0, 0, 0, 0] if sum < min_greens_pixels else high_pixel_color
+                i += window_width - 1  # Skip() and go to next window
             i += 1
         for i in range(window_width):  # Last 4 take black. no problem losing them
-            line[n-i-1] = [0, 0, 0, 0]
+            line[n - i - 1] = [0, 0, 0, 0]
         return line
 
     def getHorLine(self, line_name: str, frame=None):
