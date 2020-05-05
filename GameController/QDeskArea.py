@@ -10,7 +10,6 @@ from QMyWidgets.QLevelState import QLevelState, PlayState
 from GameController.GameControllerController import GameControllerController
 from GameController.GameControllerModel import GameControllerModel
 
-
 class QDeskArea(QWidget):
     def __init__(self, parent: QWidget, controller: GameControllerController, model: GameControllerModel):
         super(QWidget, self).__init__()
@@ -66,8 +65,7 @@ class QDeskArea(QWidget):
             v_layouts.append(lay)
             self.box.addLayout(lay)
         for i, v in level_names.items():
-            color = self.getColorByLevel(v)
-            object = QLevelState(i, v, color, parent=self)
+            object = QLevelState(self.model,i,v)
             object.setFixedSize(150, 300)
             if i == self.model.engine.currentLevel:
                 object.SetState(PlayState.Playing)
@@ -84,17 +82,3 @@ class QDeskArea(QWidget):
         self.scroll.setWidget(self.widget)
         self.scroll.setAlignment(Qt.AlignCenter)
         self.main_layout.addWidget(self.scroll)
-
-    def getColorByLevel(self, level_name):
-        if level_name == "intro":
-            return (247, 181, 41)
-        elif level_name == "normal":
-            return (23, 107, 239)
-        elif level_name == "heal":
-            return (23, 156, 82)
-        elif level_name == "boss":
-            return (255, 62, 48)
-        elif level_name == "final_boss":
-            return (127, 0, 0)
-        else:
-            return (255, 255, 255)

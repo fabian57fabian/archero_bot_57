@@ -11,6 +11,9 @@ from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt
 import enum
 
+from GameController.GameControllerModel import GameControllerModel
+from GameController.QLevelViewer import QLevelViewer
+
 
 class PlayState(enum.Enum):
     Played = 1
@@ -19,15 +22,13 @@ class PlayState(enum.Enum):
 
 
 class QLevelState(QWidget):
-    def __init__(self, level_num: int, level_name: str, color: tuple, parent=QWidget):
+    def __init__(self,model:GameControllerModel, level_num: int, level_name: str, parent=QWidget):
         super(QWidget, self).__init__()
+        self.model=model
         self.level_num = level_num
         self.level_name = level_name
-        self.level_color = color
         self.parent = parent
-        self.lblNumber = QtWidgets.QLabel(self)
-        self.lblName = QtWidgets.QLabel(self)
-        self.frame = QFrame()
+        self.currentLevelViewer = QLevelViewer(self.model, level_num, level_name)
         self.logs = QtWidgets.QPlainTextEdit()
         self.lay = QVBoxLayout()
         self.lblScreenChecks = QtWidgets.QLabel(self)
@@ -46,6 +47,7 @@ class QLevelState(QWidget):
         self.screensCount = 0
         # self.last_logs = []
         self.setupUi()
+        self.reset()
 
     def changeScreenCount(self, newCount: int):
         self.screensCount = newCount
@@ -107,43 +109,12 @@ class QLevelState(QWidget):
             return self.levels_colors[level_name]
 
     def setupUi(self):
-        self.frame.setFixedSize(80, 80)
-        self.frame.setStyleSheet(
-            "background-color: rgb({}, {}, {}); border-radius: 5px;".format(self.level_color[0], self.level_color[1],
-                                                                            self.level_color[2]))
-        self.frame.setGeometry(0, 0, 0, 0)
         fram_lay = QHBoxLayout()
-
         self.lay.setAlignment(Qt.AlignTop)
-        # self.lay.setAlignment(Qt.AlignVCenter)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        frame_lay = QVBoxLayout()
-        font = QtGui.QFont()
-        font.setPointSize(20)
-        self.lblNumber.setFont(font)
-        self.lblNumber.setText(str(self.level_num))
-        self.lblNumber.setAlignment(QtCore.Qt.AlignCenter)
-        font_name = QtGui.QFont()
-        font_name.setPointSize(15)
-        self.lblName.setFont(font_name)
-        self.lblName.setText(self.level_name)
-        self.lblName.setAlignment(QtCore.Qt.AlignCenter)
-        frame_lay.addWidget(self.lblNumber)
-        frame_lay.addWidget(self.lblName)
-        self.frame.setLayout(frame_lay)
-        fram_lay.addWidget(self.frame)
+        fram_lay.addWidget(self.currentLevelViewer)
         self.lay.addLayout(fram_lay)
-        # self.lblName.setGeometry(QtCore.QRect(25, 5, 50, 15))
-        # self.lblName.setFont(font)
-        # self.lblName.setAlignment(QtCore.Qt.AlignCenter)
-        # self.lblName.setObjectName("lblName")
-        # self.lblName.setText("Tap")
         self.logs.setReadOnly(True)
-        # self.cBoxDirection.setGeometry(QtCore.QRect(10, 40, 80, 23))
-        # self.cBoxDirection.setStyleSheet("background-color: rgb(238, 238, 236);")
-        # self.cBoxDirection.setObjectName("cBoxDirection")
-
-        # self.lay.addWidget(self.lblName)
         self.lblScreenChecks.setAlignment(Qt.AlignCenter)
         self.lay.addWidget(self.logs)
         self.lay.addWidget(self.lblScreenChecks)

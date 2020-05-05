@@ -12,6 +12,7 @@ from GameController.QDungeonSelector import QDungeonSelector
 from GameController.QDeskArea import QDeskArea
 from GameController.QDungeonControl import QDungeonController
 from GameController.GameControllerController import GameControllerController
+from GameController.QLevelViewer import QLevelViewer
 
 
 class GameControllerWindow(QWidget):
@@ -24,11 +25,12 @@ class GameControllerWindow(QWidget):
         self.toolbarOptions = QVBoxLayout()
         self.dungeonSelector = QDungeonSelector(self, controller, model)
         # self.widRun = QToolboxRun(self)
+        self.currentLevelWidget = QLevelViewer(self.model, 0)
         self.widActions = QToolboxActions(self)
         self.size_info_lbl = QLabel("Screen size:\n1x1")
         self.lblDataFolder = QLabel()
         self.lblConnectionStatus = QLabel()
-        self.lblCheckConnectionStatus=QLabel()
+        self.lblCheckConnectionStatus = QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
@@ -44,6 +46,10 @@ class GameControllerWindow(QWidget):
         self.model.checkConnectionStateChanged.connect(self.onCheckConnectionStateChanged)
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
+        self.model.engine.levelChanged.connect(self.onLevelChanged)
+
+    def onLevelChanged(self, newLevel):
+        self.currentLevelWidget.changeLevel(newLevel)
 
     def onGameWon(self):
         self.infoLabel.setText("Finished 20 chapters. Win!")
@@ -113,8 +119,10 @@ class GameControllerWindow(QWidget):
         self.infoLabel.setAlignment(Qt.AlignCenter)
         self.lblConnectionStatus.setAlignment(Qt.AlignCenter)
         self.lblCheckConnectionStatus.setAlignment(Qt.AlignCenter)
-
-        self.main_layout.addLayout(lay_content, 0, 1)
+        lay_header = QHBoxLayout()
+        lay_header.addLayout(lay_content, 20)
+        lay_header.addWidget(self.currentLevelWidget, 1)
+        self.main_layout.addLayout(lay_header, 0, 1)
         self.widActions.setFixedWidth(self.toolbar_w)
         self.main_layout.addLayout(self.toolbarOptions, 1, 0)
         self.toolbarOptions.setAlignment(Qt.AlignTop)
@@ -124,7 +132,7 @@ class GameControllerWindow(QWidget):
         self.content_wid.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
         # self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
-        self.main_layout.addWidget(self.content_wid)
+        self.main_layout.addWidget(self.content_wid, 1, 1)
         self.setStyleSheet("background-color: #6e6e6e")
         main_window.setStyleSheet("background-color: #6e6e6e")
         self.setLayout(self.main_layout)
