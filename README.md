@@ -48,6 +48,10 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - 1080x2340 is working. Remaining tests have to be done
   - failing on other resolutions, but working on...
 
+- Equipment:
+  - Try to use all **dodging equip** and life/atk gaining equipment
+  - does **NOT** work with **enlightement** book (yet)
+
 If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
 
 ## Installation on Linux
