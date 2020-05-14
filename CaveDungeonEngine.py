@@ -6,7 +6,11 @@ from GameScreenConnector import GameScreenConnector
 from StatisticsManager import StatisticsManager
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, \
     getCoordFilePath
+import enum
 
+class HealingStrategy(enum.Enum):
+    AlwaysHeal = 0
+    AlwaysPowerUp=1
 
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
@@ -15,6 +19,7 @@ class CaveEngine(QObject):
     dataFolderChanged = pyqtSignal(str)
     noEnergyLeft = pyqtSignal()
     gameWon = pyqtSignal()
+    healingStrategyChanged = pyqtSignal(bool)
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
@@ -92,6 +97,7 @@ class CaveEngine(QObject):
         self.stopRequested = False
         self.currentDataFolder = ''
         self.dataFolders = {}
+        self.healingStrategy = HealingStrategy.AlwaysPowerUp
         if connectImmediately:
             self.initDeviceConnector()
 
@@ -106,6 +112,10 @@ class CaveEngine(QObject):
 
     def initdeviceconnector(self):
         self.device_connector.connect()
+
+    def changeHealStrategy(self, always_heal:bool):
+        self.healingStrategy = HealingStrategy.AlwaysHeal if always_heal else HealingStrategy.AlwaysPowerUp
+        self.healingStrategyChanged.emit(always_heal)
 
     def changeChapter(self, new_chapter):
         self.currentDungeon = new_chapter
@@ -400,7 +410,7 @@ class CaveEngine(QObject):
                 self.tap('spin_wheel_back')
                 self.wait(3)
             elif state == "angel_heal":
-                self.tap('heal_right')
+                self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(3)
             elif state == "on_pause":
                 self.tap('resume')

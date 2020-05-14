@@ -75,3 +75,6 @@ class GameControllerController(QObject):
         if new_chapter in self.model.allowed_chapters:
             self.model.changeChapterToPlay(new_chapter)
             self.chapterChanged.emit(new_chapter)
+
+    def requestChangeHealingStrategy(self, always_heal:bool):
+        self.model.engine.changeHealStrategy(always_heal)

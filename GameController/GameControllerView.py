@@ -4,7 +4,7 @@ from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QGridLayout, QWidget, QSpacerItem
+    QInputDialog, QGridLayout, QWidget, QSpacerItem, QComboBox
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
@@ -21,6 +21,7 @@ class GameControllerWindow(QWidget):
         self.toolbar_w = 80
         self.toolbar_h = 80
         self.model = model
+        self.controller = controller
         self.main_layout = QGridLayout()
         self.toolbarOptions = QVBoxLayout()
         self.dungeonSelector = QDungeonSelector(self, controller, model)
@@ -34,8 +35,11 @@ class GameControllerWindow(QWidget):
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
+        self.cBoxhealStrategy = QComboBox()
+        self.lblInfoHealStrategy = QLabel()
         # self.setupUi()
         self.initConnectors()
+        self.onChangeHealStrategy(self.model.engine.healingStrategy == self.model.engine.healingStrategy.AlwaysHeal)
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
@@ -47,6 +51,18 @@ class GameControllerWindow(QWidget):
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
         self.model.engine.levelChanged.connect(self.onLevelChanged)
+        self.model.engine.healingStrategyChanged.connect(self.onHealingStrategyChange)
+        self.cBoxhealStrategy.currentIndexChanged.connect(self.onChangeHealStrategy)
+
+    def onHealingStrategyChange(self, always_heal: bool):
+        index = 1 if always_heal else 0
+        if self.cBoxhealStrategy.currentIndex != index:
+            self.cBoxhealStrategy.blockSignals(True)
+            self.cBoxhealStrategy.setCurrentIndex(index)
+            self.cBoxhealStrategy.blockSignals(False)
+
+    def onChangeHealStrategy(self, new_index):
+        self.controller.requestChangeHealingStrategy(new_index == 1)
 
     def onLevelChanged(self, newLevel):
         self.currentLevelWidget.changeLevel(newLevel)
@@ -105,8 +121,15 @@ class GameControllerWindow(QWidget):
         self.toolbarOptions.addWidget(self.lblConnectionStatus)
         self.toolbarOptions.addWidget(self.lblCheckConnectionStatus)
 
+        self.cBoxhealStrategy.addItems(['Always power','Always heal'])
+        self.lblInfoHealStrategy.setText('Healing Strategy:')
+        self.toolbarOptions.addWidget(self.lblInfoHealStrategy)
+        self.toolbarOptions.addWidget(self.cBoxhealStrategy)
+
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
+        self.lblInfoHealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.cBoxhealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
         self.size_info_lbl.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblConnectionStatus.setStyleSheet("background-color: #6e6e6e; color: white")
