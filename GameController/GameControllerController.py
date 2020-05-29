@@ -54,8 +54,11 @@ class GameControllerController(QObject):
         self.model.pauseDungeon()
 
     def changeLevelRequested(self, newLevel: int):
-        if 0 <= newLevel <= self.model.engine.MAX_LEVEL:
-            self.model.engine.changeCurrentLevel(newLevel)
+        if not self.model.currentEngineState == EngineState.Playing:
+            if 0 <= newLevel <= self.model.engine.MAX_LEVEL:
+                self.model.engine.changeCurrentLevel(newLevel)
+        else:
+            pass
 
     def prevRequested(self):
         if self.model.engine.currentLevel > 0:

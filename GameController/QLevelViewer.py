@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
-from GameController.GameControllerModel import GameControllerModel
+from GameController.GameControllerModel import GameControllerModel,EngineState
 
 
 class QLevelViewer(QWidget):
@@ -59,10 +59,13 @@ class QLevelViewer(QWidget):
 
     def setClickable(self, isClickable: bool):
         self.isClickable = isClickable
-        self.lblNumber.blockSignals(self.isClickable)
-        self.lblName.blockSignals(self.isClickable)
-        self.frame.blockSignals(self.isClickable)
-        if isClickable:
+        self.updateClickableUi(self.isClickable)
+
+    def updateClickableUi(self, can_click):
+        self.lblNumber.blockSignals(not can_click)
+        self.lblName.blockSignals(not can_click)
+        self.frame.blockSignals(not can_click)
+        if can_click:
             self.lblNumber.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
             self.lblName.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
             self.frame.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
@@ -94,3 +97,8 @@ class QLevelViewer(QWidget):
         fram_lay = QHBoxLayout()
         fram_lay.addWidget(self.frame)
         self.setLayout(fram_lay)
+
+        self.model.engineStatechanged.connect(self.onPlayStateChanged)
+
+    def onPlayStateChanged(self, newState: EngineState):
+        self.updateClickableUi(self.isClickable and (not newState == EngineState.Playing))
