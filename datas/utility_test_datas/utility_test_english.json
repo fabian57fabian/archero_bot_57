@@ -1,10 +1,10 @@
 {
-  "titleText": "Open GameController.py and do the following instructions.\nWhen you're done, press the 'done' near button.",
+  "titleText": "Connect your phone or open the emulator.\nOpen GameController.py and wait to detect the device.\nDo the following instructions (on GameController, not smartphone/emulator.\nWhen you're done, press the 'done' near button.",
   "startBtnText": "start",
   "nextBtnText": "done",
   "endingText": "Thank you for the support. Please send the file {} to the developer",
   "questions": [
-    "Connect your phone to the pc and check on the interface if it is connected",
+    "Check on the interface if a device is connected",
     "Start a game",
     "When your character (on phone) has entered level 1, pause this game",
     "Resume the game",

@@ -1,10 +1,10 @@
 {
-  "titleText": "Apri GameController.py ed esegui le operazioni seguenti.\nQuando hai concluso, premi il pulsante 'fatto' corrispondente",
+  "titleText": "Connetti il telefono oppure apri l'emulatore.\nApri GameController.py ed aspetta che rilevi la presenza del dispositivo.\nEsegui le operazioni seguenti (su GameController, non su dispotitivo/emulatore).\nQuando hai concluso, premi il pulsante 'fatto' corrispondente",
   "startBtnText": "inizia",
   "nextBtnText": "fatto",
   "endingText": "Grazie per il support. La preghiamo di inviare il file {} allo sviluppatore.",
   "questions": [
-    "Connetti il telefono al pc e verifica sull'interfaccia che esso sia connesso",
+    "Verifica sull'interfaccia che vi sia un dispositivo connesso",
     "Inizia una partita",
     "Appena il tuo giocatore (sul telefono) è arrivato al livello 1, metti in pausa una partita",
     "Riprendi la partita",

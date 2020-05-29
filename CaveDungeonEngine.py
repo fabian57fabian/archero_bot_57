@@ -8,9 +8,11 @@ from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, 
     getCoordFilePath
 import enum
 
+
 class HealingStrategy(enum.Enum):
     AlwaysHeal = 0
-    AlwaysPowerUp=1
+    AlwaysPowerUp = 1
+
 
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
@@ -113,7 +115,7 @@ class CaveEngine(QObject):
     def initdeviceconnector(self):
         self.device_connector.connect()
 
-    def changeHealStrategy(self, always_heal:bool):
+    def changeHealStrategy(self, always_heal: bool):
         self.healingStrategy = HealingStrategy.AlwaysHeal if always_heal else HealingStrategy.AlwaysPowerUp
         self.healingStrategyChanged.emit(always_heal)
 
@@ -228,8 +230,7 @@ class CaveEngine(QObject):
             if self.screen_connector.getFrameState() != "in_game":
                 self.reactGamePopups()
                 self.exit_dungeon_uncentered_new(False)
-        self.wait(1) #Safety wait for extra check
-
+        self.wait(1)  # Safety wait for extra check
 
     def exit_dungeon_uncentered_old(self):
         self.wait(2)
@@ -319,6 +320,21 @@ class CaveEngine(QObject):
             self.goTroughDungeon10()
         else:
             self.goTroughDungeon_old()
+        # Add movement if decentering is detected
+        self.centerPlayer()
+
+    def centerPlayer(self):
+        px, dir = self.screen_connector.getPlayerDecentering()
+        # Move in oppositye direction. Speed is made by y = mx + q
+        duration = 0.019 * abs(px) - 4.8
+        if dir == 'left':
+            self.log("Centering player <--")
+            self.swipe('e', duration)
+        elif dir == 'right':
+            self.log("Centering player -->")
+            self.swipe('w', duration)
+        elif dir == "center":
+            pass
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss
@@ -555,6 +571,8 @@ class CaveEngine(QObject):
         pass
 
     def start_infinite_play(self):
+        # Only for test purposes on pressing play
+        # self.quick_test_functions()
         while True:
             self.start_one_game()
             self.currentLevel = 0
