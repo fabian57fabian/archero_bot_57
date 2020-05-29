@@ -65,7 +65,7 @@ class QDeskArea(QWidget):
             v_layouts.append(lay)
             self.box.addLayout(lay)
         for i, v in level_names.items():
-            object = QLevelState(self.model,i,v)
+            object = QLevelState(self.model,self.controller,i,v)
             object.setFixedSize(150, 300)
             if i == self.model.engine.currentLevel:
                 object.SetState(PlayState.Playing)

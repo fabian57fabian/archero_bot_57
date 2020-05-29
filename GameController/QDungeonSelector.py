@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QInputDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
@@ -26,6 +27,7 @@ class QDungeonSelector(QWidget):
         self.lblCurrentDungeon.setAlignment(Qt.AlignCenter)
         self.lblCurrentDungeon.setFixedWidth(self.requested_w - 10)
         self.lblCurrentDungeon.setFixedHeight(self.requested_h - 10)
+        self.lblCurrentDungeon.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
         self.onCurrentChapterChanged(self.model.engine.currentDungeon)
         self.lblCurrentDungeon.mousePressEvent = self.onChapterClick
         self.layoutMainHor.addWidget(self.lblCurrentDungeon)

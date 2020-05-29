@@ -8,11 +8,11 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, 
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
-from GameController.QDungeonSelector import QDungeonSelector
 from GameController.QDeskArea import QDeskArea
 from GameController.QDungeonControl import QDungeonController
 from GameController.GameControllerController import GameControllerController
 from GameController.QLevelViewer import QLevelViewer
+from GameController.QDungeonSelector import QDungeonSelector
 
 
 class GameControllerWindow(QWidget):

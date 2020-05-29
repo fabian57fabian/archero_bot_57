@@ -1,11 +1,14 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
 from GameController.GameControllerModel import GameControllerModel
 
 
 class QLevelViewer(QWidget):
-    def __init__(self, model: GameControllerModel, level_num=0,level_name = None, parent=QWidget):
+    onLevelClicked = pyqtSignal()
+
+    def __init__(self, model: GameControllerModel, level_num=0, level_name=None, parent=QWidget):
         super(QWidget, self).__init__()
         self.model = model
         self.lblNumber = QLabel()
@@ -15,6 +18,8 @@ class QLevelViewer(QWidget):
         self.level_num = level_num
         self._setupUI()
         self.changeLevel(level_num, level_name)
+        self.isClickable = False
+        self.setClickable(self.isClickable)
 
     def _getColorByLevel(self, level_name: str):
         if level_name == "intro":
@@ -49,20 +54,38 @@ class QLevelViewer(QWidget):
         self.lblNumber.setText(str(newlevel))
         self._changeLevelColor()
 
+    def onSelfClicked(self, event):
+        self.onLevelClicked.emit()
+
+    def setClickable(self, isClickable: bool):
+        self.isClickable = isClickable
+        self.lblNumber.blockSignals(self.isClickable)
+        self.lblName.blockSignals(self.isClickable)
+        self.frame.blockSignals(self.isClickable)
+        if isClickable:
+            self.lblNumber.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+            self.lblName.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+            self.frame.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        else:
+            self.lblNumber.setCursor(QCursor(QtCore.Qt.ArrowCursor))
+            self.lblName.setCursor(QCursor(QtCore.Qt.ArrowCursor))
+            self.frame.setCursor(QCursor(QtCore.Qt.ArrowCursor))
+
     def _setupUI(self):
         self.frame.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.frame.setFixedSize(80, 80)
         self.frame.setGeometry(0, 0, 0, 0)
-
+        self.frame.mousePressEvent = self.onSelfClicked
         font = QtGui.QFont()
         font.setPointSize(15)
         self.lblNumber.setFont(font)
         self.lblNumber.setAlignment(Qt.AlignCenter)
-
+        self.lblNumber.mousePressEvent = self.onSelfClicked
         font_name = QtGui.QFont()
         font_name.setPointSize(15)
         self.lblName.setFont(font_name)
         self.lblName.setAlignment(QtCore.Qt.AlignCenter)
+        self.lblName.mousePressEvent = self.onSelfClicked
 
         frame_lay = QVBoxLayout()
         frame_lay.addWidget(self.lblNumber)

@@ -5,6 +5,7 @@
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
+from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QHBoxLayout
@@ -14,6 +15,8 @@ import enum
 from GameController.GameControllerModel import GameControllerModel
 from GameController.QLevelViewer import QLevelViewer
 
+from GameController.GameControllerController import GameControllerController
+
 
 class PlayState(enum.Enum):
     Played = 1
@@ -22,9 +25,11 @@ class PlayState(enum.Enum):
 
 
 class QLevelState(QWidget):
-    def __init__(self,model:GameControllerModel, level_num: int, level_name: str, parent=QWidget):
+    def __init__(self, model: GameControllerModel, controller: GameControllerController, level_num: int,
+                 level_name: str, parent=QWidget):
         super(QWidget, self).__init__()
-        self.model=model
+        self.model = model
+        self.controler = controller
         self.level_num = level_num
         self.level_name = level_name
         self.parent = parent
@@ -121,3 +126,9 @@ class QLevelState(QWidget):
 
         self.setLayout(self.lay)
         QtCore.QMetaObject.connectSlotsByName(self)
+
+        self.currentLevelViewer.setClickable(True)
+        self.currentLevelViewer.onLevelClicked.connect(self.requestedLevelChange)
+
+    def requestedLevelChange(self):
+        self.controler.changeLevelRequested(self.level_num)
