@@ -102,6 +102,7 @@ class CaveEngine(QObject):
         self.healingStrategy = HealingStrategy.AlwaysPowerUp
         if connectImmediately:
             self.initDeviceConnector()
+        self.check_seconds = 4
 
     def initDataFolders(self):
         self.dataFolders = readAllSizesFolders()
@@ -338,14 +339,13 @@ class CaveEngine(QObject):
 
     def letPlay(self, _time: int, is_boss=False):
         check_exp_bar = not is_boss
-        check_seconds = 10
         self.wait(2)
         print("Auto attacking")
         self.log("Auto attacking")
         experience_bar_line = self.screen_connector.getLineExpBar()
         recheck = False
         for i in range(_time, 0, -1):
-            if i % check_seconds == 0 or recheck:
+            if i % self.check_seconds == 0 or recheck:
                 recheck = False
                 print("Checking screen...")
                 self.log("screen check")
