@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
+    MainWindow.setWindowTitle("Touch Manager")
     model = TouchManagerModel()
     controller = TouchManagerController(model)
     ui = TouchManagerWindow(controller, model)

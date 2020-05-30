@@ -134,7 +134,7 @@ class UtilityTestUi(QWidget):
         self.main_lay.setAlignment(Qt.AlignTop)
         main_window.setMinimumSize(640, 480)
         title_lay = QHBoxLayout()
-        title_lay.addWidget(QLabel("Utility test"))
+        title_lay.addWidget(QLabel("Usability test"))
         title_lay.addWidget(self.cBoxLanguage)
         self.main_lay.addLayout(title_lay)
         self.main_lay.addWidget(self.lblTitle)
@@ -202,6 +202,7 @@ class UtilityTestUi(QWidget):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
+    MainWindow.setWindowTitle("Usability test")
     model = UtilityTestModel()
     controller = UtilityTestController(model)
     ui = UtilityTestUi(model, controller)

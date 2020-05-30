@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
+    MainWindow.setWindowTitle("Game Controller")
     model = GameControllerModel()
     controller = GameControllerController(model)
     ui = GameControllerWindow(model, controller)
