@@ -220,8 +220,10 @@ class CaveEngine(QObject):
         px, dir = self.screen_connector.getPlayerDecentering()
         self.wait(0.5)
         if dir == 'left':
+            self.swipe('w', .7)
             self.swipe('ne', 4)
         elif dir == 'right':
+            self.swipe('e', .7)
             self.swipe('nw', 4)
         elif dir == "center":
             self.swipe('n', 2)
