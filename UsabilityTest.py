@@ -7,7 +7,8 @@ from PyQt5 import QtWidgets
 import sys
 import datetime
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFormLayout, QPushButton
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFormLayout, QPushButton, QLineEdit
 import enum
 
 
@@ -31,6 +32,8 @@ class UtilityTestModel(QObject):
         self.nextBtnText = ''
         self.startBtnText = ''
         self.endingText = ''
+        self.doneButtonText=''
+        self.moduleLink = ''
         self.questions = []
         self.load_data()
 
@@ -44,13 +47,16 @@ class UtilityTestModel(QObject):
             self.load_data()
 
     def load_data(self):
-        with open(os.path.join('datas', 'utility_test_datas', 'utility_test_{}.json'.format(self.languages[self.selected_language])), 'r') as f:
+        with open(os.path.join('datas', 'utility_test_datas',
+                               'utility_test_{}.json'.format(self.languages[self.selected_language])), 'r') as f:
             data_dict = json.load(f)
         self.titleText = data_dict['titleText']
         self.questions = data_dict['questions']
         self.startBtnText = data_dict['startBtnText']
         self.nextBtnText = data_dict['nextBtnText']
         self.endingText = data_dict['endingText']
+        self.doneButtonText=data_dict['doneButtonText']
+        self.moduleLink =  data_dict['moduleLink']
         self.languageChanged.emit(self.languages[self.selected_language])
 
     def save_tap(self, id):
@@ -68,6 +74,9 @@ class UtilityTestModel(QObject):
         self.save_tap(-1)
         self.State = State.Started
         self.testStarted.emit()
+
+    def getCurrentLanguage(self):
+        return self.languages[self.selected_language]
 
 
 class UtilityTestController(QObject):
@@ -114,7 +123,8 @@ class UtilityTestUi(QWidget):
         self.layQuestions = QVBoxLayout()
         self.lblTitle = QLabel()
         self.btnStart = QPushButton()
-        self.lblEnd = None
+        self.lblEnd = QLabel()
+        self.boxLink = QLabel()
         self.lblQuestions = []
         self.btnQuestions = []
         self.initConnectors()
@@ -133,6 +143,8 @@ class UtilityTestUi(QWidget):
         self.main_lay.addLayout(self.layQuestions)
         self.cBoxLanguage.setMaximumWidth(80)
         self.cBoxLanguage.addItems(self.model.languages)
+        self.boxLink.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.boxLink.setCursor(QCursor(Qt.IBeamCursor))
         # centralwidget.setLayout(self.main_lay)
         wid = QWidget()
         wid.setLayout(self.main_lay)
@@ -168,7 +180,7 @@ class UtilityTestUi(QWidget):
 
     def onNewQuestionArrived(self, question, index):
         lbl = QLabel(question)
-        btn = QPushButton('Done' if self.model.selected_language == 'english' else 'Finito')
+        btn = QPushButton(self.model.doneButtonText)
         btn.clicked.connect(partial(self.controller.endedCurrentQuestion, index))
         btn.setMaximumWidth(80)
         self.disableAllPreviousQuestions()
@@ -181,8 +193,10 @@ class UtilityTestUi(QWidget):
 
     def onTestEnded(self):
         self.disableAllPreviousQuestions()
-        self.lblEnd = QLabel(self.model.endingText.format(self.model.statistics_file))
+        self.lblEnd.setText(self.model.endingText.format(self.model.statistics_file))
         self.layQuestions.addWidget(self.lblEnd)
+        self.boxLink.setText(self.model.moduleLink)
+        self.layQuestions.addWidget(self.boxLink)
 
 
 if __name__ == '__main__':

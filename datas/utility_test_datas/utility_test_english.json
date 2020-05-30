@@ -2,7 +2,9 @@
   "titleText": "Connect your phone or open the emulator.\nOpen GameController.py and wait to detect the device.\nDo the following instructions (on GameController, not smartphone/emulator.\nWhen you're done, press the 'done' near button.",
   "startBtnText": "start",
   "nextBtnText": "done",
-  "endingText": "Thank you for the support. Please send the file {} to the developer",
+  "endingText": "Thank you for the support. Please send the file {} to the developer and complete following module:",
+  "doneButtonText": "Done",
+  "moduleLink": "https://drive.google.com/folderview?id=18OGCJI9Isr9XMgvQzJ0EDFwwuiGlH7bX",
   "questions": [
     "Check on the interface if a device is connected",
     "Start a game",

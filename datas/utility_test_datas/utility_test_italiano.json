@@ -2,7 +2,9 @@
   "titleText": "Connetti il telefono oppure apri l'emulatore.\nApri GameController.py ed aspetta che rilevi la presenza del dispositivo.\nEsegui le operazioni seguenti (su GameController, non su dispotitivo/emulatore).\nQuando hai concluso, premi il pulsante 'fatto' corrispondente",
   "startBtnText": "inizia",
   "nextBtnText": "fatto",
-  "endingText": "Grazie per il support. La preghiamo di inviare il file {} allo sviluppatore.",
+  "endingText": "Grazie per il support. La preghiamo di inviare il file {} allo sviluppatore e completa il seguente modulo:",
+  "doneButtonText": "Finito",
+  "moduleLink": "https://drive.google.com/folderview?id=18OGCJI9Isr9XMgvQzJ0EDFwwuiGlH7bX",
   "questions": [
     "Verifica sull'interfaccia che vi sia un dispositivo connesso",
     "Inizia una partita",
