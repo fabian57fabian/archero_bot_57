@@ -100,6 +100,7 @@ class CaveEngine(QObject):
         self.currentDataFolder = ''
         self.dataFolders = {}
         self.healingStrategy = HealingStrategy.AlwaysPowerUp
+        self.centerAfterCrossingDungeon = False
         if connectImmediately:
             self.initDeviceConnector()
         self.check_seconds = 4
@@ -324,12 +325,14 @@ class CaveEngine(QObject):
         else:
             self.goTroughDungeon_old()
         # Add movement if decentering is detected
-        self.centerPlayer()
+        if self.centerAfterCrossingDungeon: self.centerPlayer()
 
     def centerPlayer(self):
         px, dir = self.screen_connector.getPlayerDecentering()
         # Move in oppositye direction. Speed is made by y = mx + q
         duration = 0.019 * abs(px) - 4.8
+        if px < self.screen_connector.door_width / 2.0:
+            pass
         if dir == 'left':
             self.log("Centering player <--")
             self.swipe('e', duration)
