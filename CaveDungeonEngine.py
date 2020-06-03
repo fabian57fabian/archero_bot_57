@@ -325,7 +325,7 @@ class CaveEngine(QObject):
         else:
             self.goTroughDungeon_old()
         # Add movement if decentering is detected
-        if self.centerAfterCrossingDungeon: self.centerPlayer()
+        if self.centerAfterCrossingDungeon or self.currentLevel == 18: self.centerPlayer()
 
     def centerPlayer(self):
         px, dir = self.screen_connector.getPlayerDecentering()
