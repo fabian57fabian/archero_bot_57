@@ -4,6 +4,8 @@
   <img src="repo_images/logo_small.png" width =100>
 </p>
 
+Link to project description [here](https://docs.google.com/presentation/d/1nsljsOx4Gm5zqlYnrV9i76_Bf3rhMB8ho33xZHl8He8/edit?usp=sharing)
+
 Watch the installation video:
 
 <a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="200"></a>
