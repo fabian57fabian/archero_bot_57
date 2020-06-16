@@ -104,9 +104,9 @@ class GameControllerWindow(QWidget):
     def setupUi(self, main_window: QMainWindow):
         main_window.setObjectName("game_controller_window")
         self.setObjectName("main_window")
-        self.resize(800, 600)
-        self.setMinimumWidth(640)
-        self.setMinimumHeight(480)
+        self.resize(450, 620)
+        self.setMinimumWidth(620)
+        self.setMinimumHeight(450)
         self.main_layout.setSpacing(0)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setColumnStretch(0, 0)
