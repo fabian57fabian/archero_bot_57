@@ -124,8 +124,8 @@ class CaveEngine(QObject):
     def changeChapter(self, new_chapter):
         self.currentDungeon = new_chapter
 
-    def onConnectionStateChanged(self):
-        if self.device_connector.connected:
+    def onConnectionStateChanged(self, connected):
+        if connected:
             self.initDataFolders()
             self.screen_connector.changeDeviceConnector(self.device_connector)
             self.updateScreenSizeByPhone()
