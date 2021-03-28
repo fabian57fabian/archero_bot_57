@@ -26,7 +26,7 @@ class TouchManagerModel(QObject):
         self.data_pack = 'datas'
         self.coords_folder = 'coords'
         self.screens_folder = "screens"
-        self.currentScreensFolder = "1080x2220"
+        self.currentScreensFolder = "1080x1920"
         self.manage_default_currentScreensPath()
 
         self.buttons_folder = 'buttons.json'
