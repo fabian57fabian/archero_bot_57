@@ -57,8 +57,8 @@ class GameControllerModel(QObject):
     def connected(self):
         return self.engine.device_connector.connected
 
-    def onDevConnChanged(self):
-        self.connectionStateChanged.emit(self.engine.device_connector.connected)
+    def onDevConnChanged(self, connected):
+        self.connectionStateChanged.emit(connected)
 
     def onDevCheckConnectionChanged(self, state):
         self.checkConnectionStateChanged.emit(state)
