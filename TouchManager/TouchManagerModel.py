@@ -16,6 +16,8 @@ class TouchManagerModel(QObject):
     onPointAdded = pyqtSignal(str)
     onLineWidthChanged = pyqtSignal(float)
     screensFolderChanged = pyqtSignal(str)
+    onDeviceConnectionChanged = pyqtSignal(bool)
+    onDeviceCheckingConnectionChanged = pyqtSignal(bool)
 
     MAX_AROUND = 50
 
@@ -43,10 +45,14 @@ class TouchManagerModel(QObject):
         self.currentFrameChecks = {}
         self.screensFolders = readAllSizesFolders()
         self.device_connector = UsbConnector()
-        self.device_connector.connectionChangedFunctions.append(self.onDeviceConnectionChanged)
+        self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDeviceConnectionChangedEventCalled)
+        self.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDeviceCheckingConnectionChangedEventCalled)
 
-    def onDeviceConnectionChanged(self, conn):
-        pass
+    def onDeviceConnectionChangedEventCalled(self, connected:bool):
+        self.onDeviceConnectionChanged.emit(connected)
+
+    def onDeviceCheckingConnectionChangedEventCalled(self, checking:bool):
+        self.onDeviceCheckingConnectionChanged.emit(checking)
 
     def requestClose(self):
         pass
@@ -64,8 +70,8 @@ class TouchManagerModel(QObject):
     def is_device_connected(self):
         return self.device_connector.connected
 
-    def acquire_screen(self, name):
-        filename = name + ".png"
+    def acquire_screen(self, name:str):
+        filename = name + ".png" if not name.endswith('.png') else name
         if not self.device_connector.connected:
             return
         self.device_connector.adb_screen(os.path.join(self.currentScreensPath(), filename))

@@ -93,6 +93,7 @@ class TouchManagerWindow(QWidget):
         lay_vertical_0.addWidget(QLabel())
 
         self.screen_btn.setText("Get screen")
+        self.screen_btn.setEnabled(False)
 
         self.export_btn.setText("save")
         self.export_btn.setFixedWidth(100)
@@ -188,6 +189,14 @@ class TouchManagerWindow(QWidget):
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
         self.model.onLineWidthChanged.connect(self.onLineWidthChanged)
         self.model.screensFolderChanged.connect(self.onFolderChanged)
+        self.model.onDeviceConnectionChanged.connect(self.onCurrentDeviceConnectionChanged)
+        self.model.onDeviceCheckingConnectionChanged.connect(self.onCurrentDeviceCheckingConnectionChanged)
+
+    def onCurrentDeviceConnectionChanged(self, connected: bool):
+        self.screen_btn.setEnabled(connected)
+
+    def onCurrentDeviceCheckingConnectionChanged(self, checking: bool):
+        self.screen_btn.setText("Get screen" if not checking else "...")
 
     def clearWidget(self, widget: QWidget):
         widget.setParent(None)

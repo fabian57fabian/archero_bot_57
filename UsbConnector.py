@@ -32,7 +32,7 @@ class UsbConnector(object):
         if self.connected != c:
             self.connected = c
             for f in self.connectionChangedFunctions:
-                f()
+                f(self.connected)
 
     def checkingConnectionChange(self, state: bool):
         for f in self.checkingConnectionFunctions:
@@ -277,3 +277,6 @@ class UsbConnector(object):
         self._continousCheckStopRequired = False
         self.connectionCheckThread.function = self._oneCheck
         self.connectionCheckThread.start()
+
+    def isConnected(self):
+        return self.connected
