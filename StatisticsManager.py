@@ -7,7 +7,11 @@ import time
 class StatisticsManager(object):
 
     def __init__(self):
-        self.file_path = "datas/statistics.csv"
+        self.statistics_folder = 'datas'
+        if not os.path.isdir(self.statistics_folder):
+            print("info: creating statistics folder (this should already exist, something wrong is going on)")
+            os.mkdir(self.statistics_folder)
+        self.file_path = os.path.join(self.statistics_folder, 'statistics.csv')
         self.dateFormat = "%d%m%Y_%H%M%S"
         if not os.path.exists(self.file_path):
             self._write(self.getHeader())
