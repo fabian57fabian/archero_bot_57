@@ -15,16 +15,17 @@ Watch the installation and usage of the emulator (Nox Player):
 <a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="200"></a>
 ## Contents
 1. [Introduction](#introduction)
-2. [Installation on Linux](#Installation-on-Linux)
+2. [Installation on Linux](#installation-on-linux)
 3. [Installation on Windows](#installation-on-windows)
-4. [Platform installation (emulator)](#platform-installation)
-5. [Game lock disabling](#disable-blue-auto-lock-screen)
-6. [Usage](#usage)
-7. [Game Description](#game-description)
-8. [Coordinates management](#coordinates-management)
-9. [How it works](#how-it-works)
-10. [Coordinates check explained](#coordinates-check-explained)
-11. [Extra](#extra)
+4. [Installation on MAC](#installation-on-mac)
+5. [Platform installation (emulator)](#platform-installation)
+6. [Game lock disabling](#disable-blue-auto-lock-screen)
+7. [Usage](#usage)
+8. [Game Description](#game-description)
+9. [Coordinates management](#coordinates-management)
+10. [How it works](#how-it-works)
+11. [Coordinates check explained](#coordinates-check-explained)
+12. [Extra](#extra)
 
 ## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
@@ -33,6 +34,7 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
 - Supported OS:
   - Windows
   - Ubuntu/Linux distro
+  - MAC OS (tested once)
 
 - Supported platform:
   - Usb connection to phone
@@ -40,7 +42,7 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
 
 - Supported dungeons:
   - 3 . Abandoned Dungeon: tested, FAILING
-  - 6 . The Cave: tested, FAILING with 1 year update
+  - 6 . The Cave: tested, partilly passing
   - 10 . The Cave: tests TBD, FAILING with 1 year update
 
 - Tested resolutions
@@ -81,6 +83,26 @@ Follow these steps:
   `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
   
 - Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
+
+## Installation on MAC
+
+Follow these steps:
+- Install [Homebrew](https://brew.sh/)
+- Install [ADB](https://medium.com/macoclock/launch-adb-installed-by-homebrew-on-macos-59d87f4336c9)
+
+  ```bash
+  brew install android-platform-tools
+  ```
+
+- Install Python prerequirements
+
+  ```bash
+  pip install Pillow matplotlib numpy pure-python-adb
+  pip install pyqt5
+  ```
+
+- Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
+- Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
 
 ## Platform installation
 This bot can work either connected to smartphone trough usb or with Nox emulator on your pc.
