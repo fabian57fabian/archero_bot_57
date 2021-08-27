@@ -56,6 +56,11 @@ If you don't find your screen resolution and you want to contribue, follow these
 Installation steps can be found in [this wiki page](wiki/Installation.md).
 
 ## Usage
+
+Simple explanation video here:
+
+<a href="https://www.youtube.com/watch?v=XbjphfEp8yw"><img src="repo_images/thumbnail_video_3.png" height="200"></a>
+
 Once cloned the repo and installed all necessary stuff, execute **GameController.py**.
 \\
 Wait for the interface to connect to the device. It will automatically try to connect to phone or to Nox emulator.
