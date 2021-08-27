@@ -33,13 +33,13 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - MAC OS (tested once)
 
 - Supported platform:
-  - Usb connection to phone
-  - Nox emulator (installation video coming soon)
+  - Usb connection to phone (with 1080x1920 resolution mandatory)
+  - Nox emulator
 
 - Supported dungeons:
   - 3 . Abandoned Dungeon: tested, FAILING
-  - 6 . The Cave: tested, partilly passing
-  - 10 . The Cave: tests TBD, FAILING with 1 year update
+  - 6 . **The Cave: tested, WORKING**
+  - 10 . The Cave: tested, FAILING
 
 - Tested resolutions
   - 1080x1920 is full working. Remaining tests have to be done
