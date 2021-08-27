@@ -88,7 +88,19 @@ class GameScreenConnector:
     def checkDoorsOpen(self, frame=None):
         if frame is None:
             frame = self.getFrame()
-        # Add opened doors check
+        # Check white light horizontal line inside door
+        #490x630 to 600x630 hor line
+        sizes = self.hor_lines['hor_door_light']
+        line_door = self._getHorLine(sizes, frame)
+        white_yellow = True
+        for px in line_door:
+            # check if pixels are 250-255, 250-255, 190-255
+            if px[0] <= 250 or px[1] <= 250 or px[2] <= 190:
+                white_yellow = False
+                break
+        if white_yellow:
+            return True
+        #check hp bar height....
         px_up = 50
         h_bar = self.hor_lines['hor_hp_bar'][1]  # HP bar height
         for i in range(1, 4, 1):
