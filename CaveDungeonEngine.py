@@ -221,10 +221,10 @@ class CaveEngine(QObject):
         px, dir = self.screen_connector.getPlayerDecentering()
         self.wait(0.5)
         if dir == 'left':
-            self.swipe('w', .9)
+            self.swipe('w', 1.1)
             self.swipe('ne', 4.5)
         elif dir == 'right':
-            self.swipe('e', .9)
+            self.swipe('e', 1.1)
             self.swipe('nw', 4.5)
         elif dir == "center":
             self.swipe('n', 2)
@@ -546,9 +546,26 @@ class CaveEngine(QObject):
                 self.boss_lvl()
             self.changeCurrentLevel(self.currentLevel + 1)
         self.wait(5)
-        if self.screen_connector.checkFrame('endgame'):
+        is_endgame = self.screen_connector.checkFrame('endgame')
+        on_menu = False
+        retries_endgame = 5
+        while is_endgame:
             self.tap('close_end')
+            self.wait(3)
+            is_endgame = self.screen_connector.checkFrame('endgame')
+            if not is_endgame:
+                on_menu = self.screen_connector.checkFrame('menu_home')
+                if not on_menu:
+                    print("Unable to exit from endgame. Not on endgame anymore but not on menu)")
+                    self._exitEngine()
+            retries_endgame -=1
+            if retries_endgame<=0:
+                break
+        if on_menu:
             self.gameWon.emit()
+        else:
+            print("Unable to exit from endgame. Closing")
+            self._exitEngine()
 
     def changeCurrentLevel(self, new_lvl):
         self.currentLevel = new_lvl
@@ -571,6 +588,11 @@ class CaveEngine(QObject):
         print("Main menu")
         self.tap('start')
         self.wait(3)
+        state = self.screen_connector.getFrameState()
+        if state == "start_with_raid" or state == "start_with_raid_empty":
+            self.tap('start_no_raid')
+            self.wait(3)
+        # expect to be in game started
 
     def quick_test_functions(self):
         pass
