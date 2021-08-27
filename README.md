@@ -6,12 +6,9 @@
 
 Link to project report [here](https://drive.google.com/file/d/1XNmw7Y6tWK9RgFCfA8D5IR0QW33SuNl1/view?usp=sharing) and presentation ppt [here](https://docs.google.com/presentation/d/1nsljsOx4Gm5zqlYnrV9i76_Bf3rhMB8ho33xZHl8He8/edit?usp=sharing)
 
-Watch the installation video:
+Watch the installation video and usage video (emulator Nox Player):
 
 <a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="200"></a>
-
-Watch the installation and usage of the emulator (Nox Player):
-
 <a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="200"></a>
 ## Contents
 - [Introduction](#introduction)
