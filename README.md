@@ -4,13 +4,9 @@
   <img src="repo_images/logo_small.png" width =100>
 </p>
 
-Link to project report [here](https://drive.google.com/file/d/1XNmw7Y6tWK9RgFCfA8D5IR0QW33SuNl1/view?usp=sharing) and presentation ppt [here](https://docs.google.com/presentation/d/1nsljsOx4Gm5zqlYnrV9i76_Bf3rhMB8ho33xZHl8He8/edit?usp=sharing)
+Installation videos (youtube playlist):
 
-Watch the installation video, Nox emulator installation and fast usage videos:
-
-<a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="150"></a>
-<a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="150"></a>
-<a href="https://www.youtube.com/watch?v=XbjphfEp8yw"><img src="repo_images/thumbnail_video_3.png" height="150"></a>
+<a href="https://www.youtube.com/watch?v=XbjphfEp8yw&list=PLM2cUDSTXRIyGTJmGR0Gv3cvVIHC6EmyK&index=4"><img src="repo_images/video_thumbnail.png" height="100"></a>
 
 
 ## Contents
@@ -142,6 +138,8 @@ Every game statistics is saved in datas folder as a **statisics** csv file. It c
 This is usefull in future games plotting to know how it performed.
 
 ## Extra
+
+Link to project report [here](https://drive.google.com/file/d/1XNmw7Y6tWK9RgFCfA8D5IR0QW33SuNl1/view?usp=sharing) and presentation ppt [here](https://docs.google.com/presentation/d/1nsljsOx4Gm5zqlYnrV9i76_Bf3rhMB8ho33xZHl8He8/edit?usp=sharing)
 
 Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsung S10e (1080x2280).
 \
