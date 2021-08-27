@@ -544,6 +544,7 @@ class CaveEngine(QObject):
                 self.boss_final()
             elif self.levels_type[self.currentLevel] == self.t_boss:
                 self.boss_lvl()
+                self.wait(4)
             self.changeCurrentLevel(self.currentLevel + 1)
         self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         self._manage_exit_from_endgame()
@@ -551,9 +552,11 @@ class CaveEngine(QObject):
             self.gameWon.emit()
 
     def _manage_exit_from_endgame(self):
-        self.wait(5)
-        is_endgame = self.screen_connector.checkFrame('endgame')
-        if not is_endgame:
+        self.wait(3)
+        state = self.screen_connector.getFrameState()
+        if state == 'menu_home':
+            return
+        if not state == 'endgame':
             # exit if i'm not on ending screen
             raise Exception("unknown screen")
         self.tap('close_end')
