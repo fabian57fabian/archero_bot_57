@@ -545,27 +545,28 @@ class CaveEngine(QObject):
             elif self.levels_type[self.currentLevel] == self.t_boss:
                 self.boss_lvl()
             self.changeCurrentLevel(self.currentLevel + 1)
+        self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
+        self._manage_exit_from_endgame()
+        if self.screen_connector.checkFrame('menu_home'):
+            self.gameWon.emit()
+
+    def _manage_exit_from_endgame(self):
         self.wait(5)
         is_endgame = self.screen_connector.checkFrame('endgame')
-        on_menu = False
-        retries_endgame = 5
-        while is_endgame:
+        if not is_endgame:
+            # exit if i'm not on ending screen
+            raise Exception("unknown screen")
+        self.tap('close_end')
+        self.wait(3)
+        is_endgame = self.screen_connector.checkFrame('endgame')
+        # check if i actually exited
+        if is_endgame:
             self.tap('close_end')
             self.wait(3)
-            is_endgame = self.screen_connector.checkFrame('endgame')
-            if not is_endgame:
-                on_menu = self.screen_connector.checkFrame('menu_home')
-                if not on_menu:
-                    print("Unable to exit from endgame. Not on endgame anymore but not on menu)")
-                    self._exitEngine()
-            retries_endgame -=1
-            if retries_endgame<=0:
-                break
-        if on_menu:
-            self.gameWon.emit()
-        else:
-            print("Unable to exit from endgame. Closing")
-            self._exitEngine()
+        is_endgame = self.screen_connector.checkFrame('endgame')
+        if is_endgame:
+            # can't exit
+            raise Exception("unknown screen")
 
     def changeCurrentLevel(self, new_lvl):
         self.currentLevel = new_lvl
