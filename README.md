@@ -14,18 +14,14 @@ Watch the installation and usage of the emulator (Nox Player):
 
 <a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="200"></a>
 ## Contents
-1. [Introduction](#introduction)
-2. [Installation on Linux](#installation-on-linux)
-3. [Installation on Windows](#installation-on-windows)
-4. [Installation on MAC](#installation-on-mac)
-5. [Platform installation (emulator)](#platform-installation)
-6. [Game lock disabling](#disable-blue-auto-lock-screen)
-7. [Usage](#usage)
-8. [Game Description](#game-description)
-9. [Coordinates management](#coordinates-management)
-10. [How it works](#how-it-works)
-11. [Coordinates check explained](#coordinates-check-explained)
-12. [Extra](#extra)
+- [Introduction](#introduction)
+- [Installation](#installation) (go to [this](wiki/Installation.md) link)
+- [Usage](#usage)
+- [Game Description](#game-description)
+- [Coordinates management](#coordinates-management)
+- [How it works](#how-it-works)
+- [Coordinates check explained](#coordinates-check-explained)
+- [Extra](#extra)
 
 ## Introduction 
 This is an archero bot that works on a mobile smartphone connected with usb cable.
@@ -47,10 +43,7 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
 
 - Tested resolutions
   - 1080x1920 is full working. Remaining tests have to be done
-  - 1080x2220 is full working. All tests show good coordinates positioning.
-  - 1080x2280 is working. Remaining tests have to be done
-  - 1080x2340 is working. Remaining tests have to be done
-  - failing on other resolutions, but working on...
+  - 1080x2220, 1080x2280 and 1080x2340 are DEPRECATED. They were added to fit various smartphones but development became a nightmare.
 
 - Equipment:
   - Try to use all **dodging equip** and life/atk gaining equipment
@@ -58,79 +51,25 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
 
 If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
 
-## Installation on Linux
-Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__, __pyqt5__:
-- `$ apt install adb`
-- `$ pip install Pillow matplotlib numpy pure-python-adb`
-- `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
-- Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
-- Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
+## Installation
 
-## Installation on Windows
-Follow these steps:
-- Install latest __python__ from [here](https://www.python.org/downloads/). When installing, make sure to select "Add to PATH" in first page of installation wizard
-- Install __Android Debug Bridge__:
-  - Download adb package from [here](https://www.androidworld.it/2017/01/07/adb-fastboot-download-windows-mac-linux-450541/)
-  - Extract the compressed file (Left click -> Extract Here)
-  - Rename the extracted folder to 'adb'
-  - Copy 'adb' folder into 'C:'
-  - Go to Control Panel -> System -> Advanced system settings -> Environment Variables
-  - Under "System variables" list, find 'Path', click on it and then click on 'Edit...' button below
-  - Click 'New' and in the created TextBox write 'C:\adb'
-  - Click 'OK' and then exit
-- Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter:
-  
-  `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
-  
-- Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
-
-## Installation on MAC
-
-Follow these steps:
-- Install [Homebrew](https://brew.sh/)
-- Install [ADB](https://medium.com/macoclock/launch-adb-installed-by-homebrew-on-macos-59d87f4336c9)
-
-  ```bash
-  brew install android-platform-tools
-  ```
-
-- Install Python prerequirements
-
-  ```bash
-  pip install Pillow matplotlib numpy pure-python-adb
-  pip install pyqt5
-  ```
-
-- Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
-- Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
-
-## Platform installation
-This bot can work either connected to smartphone trough usb or with Nox emulator on your pc.
-
-If you want to use your phone, skip these steps.
-
-If you want to use the emulator:
-- Download Nox emulator from [here](https://www.bignox.com/) and install it.
-- Open the emulator
-- Insert your google mail and password (the account that you use on your phone, that archero uses to save data).
-- Enable debug mode (settings->info and tap 7 times on build, then go back, development options, activate debug usb)
-- Download the archero bot on the emulator.
-- Open it
-
-### Disable Blue auto lock screen
-When using this bot with a Samsung (like S7, S8, S9, S10 and S20 along with plus, edge, note and ultra versions) the Game Tools will automatically lock your screen with a little blue lock every 35 seconds.
-To disable it, follow this:
-
-- Open your gamea, and swipe UP FROM THE BOTTOM OF THE SCREEN. You will see the Game Tools icon in the bottom left. Click this.
-- Click on Advanced game features.
-- Turn Auto screen lock OFF 
-
-Thanks to [userYIxYmjMxs6](https://us.community.samsung.com/t5/user/viewprofilepage/user-id/14128964) for this [post](https://us.community.samsung.com/t5/Galaxy-S8/Annoying-quot-Drag-Lock-icon-to-unlock-quot/td-p/539737) on samsung community.
+Installation steps can be found in [this wiki page](wiki/Installation.md).
 
 ## Usage
-Once cloned the repo, execute **GameController.py**. The interface is not complete but provides basic view and play operations.
-\
-Remember to __disable notifications__ or __activate Do Not Disturb mode__.
+Once cloned the repo and installed all necessary stuff, execute **GameController.py**.
+\\
+Wait for the interface to connect to the device. It will automatically try to connect to phone or to Nox emulator.
+\\
+Once connected, just manually open your app on phone/emulator and let it on the main menu screen with level 6 "the Cave" selected. If you have notifications or first game setuup, please manually do it before.
+\\
+Now you can press the play button and it will start playing over and over again until no more energy is left.
+\\
+If somehow it screwes up, just go to the following room. do not press anything once entered a new room. Then select the room number you're in inside the GameController and press start again.
+If you are in the intro level, please go to level 1, select it and press play.
+\\
+If you pause and want to start again, you have to manually go to the next room and select its number from GameController.
+This is needed because when pressing play, the bot will start thinking that you are at the start of the room in center position.
+
 
 
 ### Game description
