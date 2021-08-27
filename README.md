@@ -6,10 +6,13 @@
 
 Link to project report [here](https://drive.google.com/file/d/1XNmw7Y6tWK9RgFCfA8D5IR0QW33SuNl1/view?usp=sharing) and presentation ppt [here](https://docs.google.com/presentation/d/1nsljsOx4Gm5zqlYnrV9i76_Bf3rhMB8ho33xZHl8He8/edit?usp=sharing)
 
-Watch the installation video and usage video (emulator Nox Player):
+Watch the installation video, Nox emulator installation and fast usage videos:
 
-<a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="200"></a>
-<a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="200"></a>
+<a href="https://www.youtube.com/watch?v=XZTI_USaY-4"><img src="repo_images/video_thumbnail.png" height="150"></a>
+<a href="https://youtu.be/TDmbmIrT5Vc"><img src="repo_images/video_thumbnail_emulator.PNG" height="150"></a>
+<a href="https://www.youtube.com/watch?v=XbjphfEp8yw"><img src="repo_images/thumbnail_video_3.png" height="150"></a>
+
+
 ## Contents
 - [Introduction](#introduction)
 - [Installation](#installation) (go to [this](wiki/Installation.md) link)
@@ -54,9 +57,7 @@ Installation steps can be found in [this wiki page](wiki/Installation.md).
 
 ## Usage
 
-Simple explanation video here:
-
-<a href="https://www.youtube.com/watch?v=XbjphfEp8yw"><img src="repo_images/thumbnail_video_3.png" height="200"></a>
+Simple explanation video [here](https://www.youtube.com/watch?v=XbjphfEp8yw):
 
 Once cloned the repo and installed all necessary stuff, execute **GameController.py**.
 \\
