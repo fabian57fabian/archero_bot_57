@@ -8,6 +8,9 @@ Installation videos (youtube playlist):
 
 <a href="https://www.youtube.com/watch?v=XbjphfEp8yw&list=PLM2cUDSTXRIyGTJmGR0Gv3cvVIHC6EmyK&index=4"><img src="repo_images/video_thumbnail.png" height="100"></a>
 
+If you want, you can send me a beer here:
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/fabian57fabian) 
 
 ## Contents
 - [Introduction](#introduction)
