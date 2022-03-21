@@ -34,7 +34,7 @@ class TouchManagerController(QObject):
         self.model = model
         self.dict_selected = ""
         self.image_selected = ""
-        self.currentImage: QPixmap = None
+        self.currentImage: QPixmap = QPixmap(1920, 1080) #basic image
         self.current_image_size = [0, 0]
         self.selectedCoordinateIndex = 0
         self.currentCoordinates = [[0, 0]]
