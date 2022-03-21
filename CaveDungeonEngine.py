@@ -649,4 +649,5 @@ class CaveEngine(QObject):
 
     def pressCloseEndIfEndedFrame(self):
         if self.screen_connector.checkFrame('endgame'):
+            self.wait(2)
             self.tap('close_end')
