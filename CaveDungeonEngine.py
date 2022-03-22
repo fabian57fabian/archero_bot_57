@@ -735,6 +735,14 @@ class CaveEngine(QObject):
             print("Collecting time prize")
             self.tap("resume")
             self.wait(3)
+        if self.screen_connector.checkFrame("popup_home_patrol"):
+            print("Collecting time patrol")
+            self.tap("collect_hero_patrol")
+            self.wait(3)
+            self.tap("collect_hero_patrol")#click again somewhere to close popup with token things
+        if self.screen_connector.checkFrame("btn_home_time_reward"):
+            self.tap("close_hero_patrol")
+            self.wait(3)
         if self.currentLevel == 0:
             if self.UseManualStart:
                 a = input("Press enter to start a game (your energy bar must be at least 5)")
