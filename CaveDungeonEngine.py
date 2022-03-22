@@ -81,6 +81,99 @@ class CaveEngine(QObject):
     }
     max_loops_game = 20
 
+    # lowest is better
+    tier_list_abilities = {
+        "multishot": 1,
+        "ricochet": 2,
+        "front_arrow_1": 70,
+        "piercing_shot": 40,
+        "bouncy_wall": 30,
+        "diagonal_arrows": 33,
+        "side_arrows_1": 80,
+        "rear_arrow_1": 81,
+        "bolt": 22,
+        "freeze": 21,
+        "poison_touch": 20,
+        "blaze": 23,
+        "element_upgrade": 66,
+        "element_burst": 67,
+        "dark_touch": 68,
+        "chilling_blast": 69,
+        "death_bomb": 18,
+        "obsidian_circle": 25,
+        "death_nova": 26,
+        "attack_boost_major": 3,
+        "attack_boost_minor": 5,
+        "attack_speed_boost_major": 4,
+        "attack_speed_boost_minor": 6,
+        "crit_master_minor": 8,
+        "crit_master_major": 7,
+        "hp_plus": 0,
+        "attack_plus": 9,
+        "crit_plus": 10,
+        "speed_plus": 11,
+        "hp_gain_aura": 12,
+        "crit_aura": 13,
+        "invincibily_star": 14,
+        "shield_guard": 15,
+        "hp_boost": 16,
+        "strong_heart": 17,
+        "heal": 27,
+        "bloodthrist": 29,
+        "wingman": 28,
+        "spirit_front_arrow": 71,
+        "spirit_multishot": 72,
+        "spirit_diagonal_arrow_1": 73,
+        "spirit_attack_speed_boost": 74,
+        "spirit_crit_boost": 75,
+        "spirit_speed_boost": 76,
+        "spirit_blaze": 77,
+        "spirit_freeze": 78,
+        "spirit_poisoned_touch": 79,
+        "spirit_bolt": 82,
+        "fire_circle": 83,
+        "ice_circle": 84,
+        "poison_circle": 85,
+        "bolt_circle": 86,
+        "blazing_strike": 87,
+        "frost_strike": 88,
+        "toxic_strike": 89,
+        "bolt_strike": 90,
+        "fire_sword": 91,
+        "ice_sword": 92,
+        "poison_sword": 93,
+        "bolt_sword": 94,
+        "blazing_star": 95,
+        "frost_star": 96,
+        "toxic_star": 97,
+        "bolt_star": 98,
+        "blazing_meteor": 99,
+        "frost_meteor": 100,
+        "toxic_meteor": 101,
+        "bolt_meteor": 102,
+        "fory": 103,
+        "rage": 104,
+        "grace": 105,
+        "agility": 106,
+        "headshot": 107,
+        "smart": 108,
+        "greed": 109,
+        "overdraft": 110,
+        "holy_touch": 111,
+        "strong_strong_heart": 112,
+        "dodge_master": 113,
+        "extra_life": 114,
+        "low_projectile": 115,
+        "shadow_clone": 116,
+        "summon_one_eyed_bat": 117,
+        "inspire": 118,
+        "water_walker": 119,
+        "through_the_wall": 120,
+        "giant": 121,
+        "dwarf": 122,
+        "unknown": 999999
+    }
+
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.currentLevel = 0
@@ -410,7 +503,7 @@ class CaveEngine(QObject):
             state = self.screen_connector.getFrameState()
             print("state: %s" % state)
             if state == "select_ability":
-                self.tap('ability_left')
+                self.chooseBestAbility()
                 self.wait(3)
             elif state == "fortune_wheel":
                 self.tap('lucky_wheel_start')
@@ -446,6 +539,27 @@ class CaveEngine(QObject):
             i += 1
             self.wait(.1)
         return i
+
+    def chooseBestAbility(self):
+        abilities = self.screen_connector.getAbilityType()
+        try:
+            to_press = 'ability_left'
+            t1 = self.tier_list_abilities[abilities['l']]
+            t2 = self.tier_list_abilities[abilities['c']]
+            t3 = self.tier_list_abilities[abilities['r']]
+            if t1 < t2 and t1 < t3:
+                to_press = 'ability_left'
+                print("Found best ability as " + abilities['l'])
+            if t2 < t1 and t2 < t3:
+                to_press = 'ability_center'
+                print("Found best ability as " + abilities['c'])
+            if t3 < t2 and t3 < t1:
+                to_press = 'ability_right'
+                print("Found best ability as " + abilities['r'])
+            self.tap(to_press)
+        except Exception as e:
+            print("Unable to correctly choose best ability. Randomly choosing left")
+            self.tap('ability_left')
 
     def normal_lvl(self):
         self.goTroughDungeon()
@@ -520,7 +634,8 @@ class CaveEngine(QObject):
     def intro_lvl(self):
         self.wait(3)
         self.tap('ability_daemon_reject')
-        self.tap('ability_left')
+        self.chooseBestAbility()
+        #self.tap('ability_left')
         self.swipe('n', 3)
         self.wait(5)
         self.tap('lucky_wheel_start')

@@ -126,13 +126,17 @@ class UsbConnector(object):
         os.system("adb exec-out screencap -p > " + name)
         return True
 
-    def adb_screen_getpixels(self):
+    def adb_screen_getpixels(self, return_pillow:bool):
         if not self.connected:
             return np.zeros((1080, 2220))
         bytes_screen = self.my_device.screencap()
-        with Image.open(io.BytesIO(bytes_screen)) as im:
+        im = Image.open(io.BytesIO(bytes_screen))
+        if not return_pillow:
             pixval = np.array(im.getdata())
-        return pixval
+            im.close()
+            return pixval
+        else:
+            return im
 
     def adb_swipe(self, locations, s) -> bool:
         if not self.connected:

@@ -1,3 +1,6 @@
+import json
+import numpy as np
+from PIL import Image
 from UsbConnector import UsbConnector
 import os
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder
@@ -23,6 +26,19 @@ class GameScreenConnector:
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
         self.stopRequested = False
+        self.abilities_treshold = 300  # TODO: check
+        self.abilities_templates = {}
+
+    def load_abilities_templates(self):
+        file = os.path.join("datas", buildDataFolder(self.width, self.height), "coords", "abilities_templates_fns.json")
+        abilities_folder = os.path.join("datas", buildDataFolder(self.width, self.height), "abilities")
+        with open(file) as file_in:
+            abs_json = json.load(file_in)
+        abilities = {}
+        for ab, fn in abs_json.items():
+            with Image.open(os.path.join(abilities_folder, fn)) as im:
+                abilities[ab] = np.array(im.getdata())
+        return abilities
 
     def changeDeviceConnector(self, new_dev):
         self.device_connector = new_dev
@@ -39,6 +55,8 @@ class GameScreenConnector:
         self.specific_checks_coords = loadJsonData(self.specific_checks_path)
         self.static_coords = loadJsonData(self.coords_path)
         self.hor_lines = loadJsonData(self.hor_lines_path)
+
+        self.abilities_templates = self.load_abilities_templates()
 
     def pixel_equals(self, px_readed, px_expected, around=5):
         arr = [5, 5, 5]
@@ -138,10 +156,10 @@ class GameScreenConnector:
                                                    dict_to_take[coords_name]["values"], around=around)
         return is_equal
 
-    def getFrame(self):
+    def getFrame(self, return_pillow:bool=False):
         if self.stopRequested:
             exit()
-        return self.device_connector.adb_screen_getpixels()
+        return self.device_connector.adb_screen_getpixels(return_pillow)
 
     def getFrameStateComplete(self, frame=None) -> dict:
         """
@@ -157,6 +175,46 @@ class GameScreenConnector:
             if self.debug: print("Checking %s, around = %d" % (k, around))
             result[k] = self._check_screen_points_equal(frame, v["coordinates"], v["values"], around=around)
         return result
+
+    def _extract_abilities_3(self, frame):
+        #TODO: get thoose from json file in coords
+        w, h = 1080, 1920
+
+        sw, sh = 239, 239
+        y1 = 1157
+        x1, x2, x3 = 90, 420, 750
+
+        c1 = (x1, y1, x1 + sw, y1 + sh)
+        c2 = (x2, y1, x2 + sw, y1 + sh)
+        c3 = (x3, y1, x3 + sw, y1 + sh)
+
+        crp1 = np.array(frame.crop(c1).getdata())
+        crp2 = np.array(frame.crop(c2).getdata())
+        crp3 = np.array(frame.crop(c3).getdata())
+
+        return crp1, crp2, crp3
+
+
+    def getAbilityType(self, frame=None) -> dict:
+        """
+        Computes the ability extraction by simil-template matching
+        Args:
+            frame:
+
+        Returns:
+
+        """
+        if frame is None:
+            frame = self.getFrame(return_pillow=True)
+        a1, a2, a3 = self._extract_abilities_3(frame)
+        states = {"l":"unknown", "c":"unknown", "r":"unknown"}
+        for ab_image, k in zip([a1, a2, a3], states.keys()):
+            for ab_name, ab_template in self.abilities_templates.items():
+                dist = np.sum(np.abs(ab_image - ab_template))
+                if dist < self.abilities_treshold:
+                    states[k] = ab_name
+                    break
+        return states
 
     def getFrameState(self, frame=None) -> str:
         """
