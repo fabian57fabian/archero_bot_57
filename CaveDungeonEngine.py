@@ -314,15 +314,29 @@ class CaveEngine(QObject):
         px, dir = self.screen_connector.getPlayerDecentering()
         self.wait(0.5)
         if dir == 'left':
-            self.swipe('w', 1.1)
-            self.swipe('ne', 4.5)
+            self.swipe('w', 1.3)
+            self.wait(.2)
+            self.swipe('n', 3)
+            self.wait(.2)
+            self.swipe('ne', 5.5)
         elif dir == 'right':
-            self.swipe('e', 1.1)
-            self.swipe('nw', 4.5)
+            self.swipe('e', 1.3)
+            self.wait(.2)
+            self.swipe('n', 3)
+            self.wait(.2)
+            self.swipe('nw', 5.5)
         elif dir == "center":
-            self.swipe('n', 2)
+            self.swipe('e', 1.3)
+            self.wait(.2)
+            self.swipe('n', 3)
+            self.wait(.2)
+            self.swipe('nw', 5.5)
         else:
-            self.swipe('n', 2)
+            self.swipe('e', 1.3)
+            self.wait(.2)
+            self.swipe('n', 3)
+            self.wait(.2)
+            self.swipe('nw', 5.5)
         if second_check:
             if self.screen_connector.getFrameState() != "in_game":
                 self.reactGamePopups()
