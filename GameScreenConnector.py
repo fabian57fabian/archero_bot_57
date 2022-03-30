@@ -219,15 +219,14 @@ class GameScreenConnector:
         if states["r"] == "unknown": self.save_unknown_ability(cr3)
         return states
 
-    def save_unknown_ability(self, ability_np):
-        im = Image.fromarray(ability_np)
+    def save_unknown_ability(self, ability_pil):
         num = 0
         fn = "unknown_ability_{}.png".format(num)
         while os.path.exists(fn):
             num += 1
             fn = "unknown_ability_{}.png".format(num)
         path = os.path.join(self.abilities_unknown_fld, fn)
-        im.save(path)
+        ability_pil.save(path)
         print("Unknown ability {} saved in {}".format(num, path))
 
     def getFrameState(self, frame=None) -> str:
