@@ -30,6 +30,7 @@ class GameScreenConnector:
         self.abilities_templates = {}
         self.abilities_unknown_fld = "abilities_unknown"
         if not os.path.exists(self.abilities_unknown_fld): os.mkdir(self.abilities_unknown_fld)
+        self.general_templates = {}
 
     def load_abilities_templates(self):
         file = os.path.join("datas", "abilities", "abilities_templates_fns.json")
@@ -41,6 +42,18 @@ class GameScreenConnector:
             with Image.open(os.path.join(abilities_folder, fn)) as im:
                 abilities[ab] = np.array(im.getdata())
         return abilities
+
+    def load_general_templates(self):
+        file = os.path.join("datas", "general", "general_templates.json")
+        general_folder = os.path.join("datas", "general", "general_templates")
+        with open(file) as file_in:
+            gen_json = json.load(file_in)
+        templates = {}
+        for ab, v in gen_json.items():
+            templates[ab] = v
+            with Image.open(os.path.join(general_folder, v["fn"])) as im:
+                templates[ab]["template"] = np.array(im.getdata())
+        return templates
 
     def changeDeviceConnector(self, new_dev):
         self.device_connector = new_dev
@@ -59,6 +72,7 @@ class GameScreenConnector:
         self.hor_lines = loadJsonData(self.hor_lines_path)
 
         self.abilities_templates = self.load_abilities_templates()
+        self.general_templates = self.load_general_templates()
 
     def pixel_equals(self, px_readed, px_expected, around=5):
         arr = [5, 5, 5]
@@ -134,6 +148,9 @@ class GameScreenConnector:
                     break
             if white:
                 return True
+        #check template
+        res = self._check_general_template("doors_open", frame)
+        if res: return True
         return False
 
     def checkFrame(self, coords_name: str, frame=None):
@@ -218,6 +235,21 @@ class GameScreenConnector:
         if states["c"] == "unknown": self.save_unknown_ability(cr2)
         if states["r"] == "unknown": self.save_unknown_ability(cr3)
         return states
+
+    def _check_general_template(self, name_of_template, frame=None):
+        """
+        Computes a frame check based on saved data and returns true if thery are similar.
+        :param name_of_template:
+        :param frame:
+        :return:
+        """
+        if frame is None:
+            frame = self.getFrame(return_pillow=True)
+        v = self.general_templates[name_of_template]
+        crp = frame.crop(v["bbox"])
+        crp_np = np.array(crp.getdata())
+        dist = np.mean(np.abs(crp_np - v["template"]))
+        return dist < v["th"]
 
     def save_unknown_ability(self, ability_pil):
         num = 0

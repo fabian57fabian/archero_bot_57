@@ -599,7 +599,7 @@ class CaveEngine(QObject):
             self.gameWon.emit()
 
     def _manage_exit_from_endgame(self):
-        self.wait(3)
+        self.wait(8)
         state = self.screen_connector.getFrameState()
         if state == 'menu_home':
             return
