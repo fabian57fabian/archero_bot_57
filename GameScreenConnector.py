@@ -119,6 +119,13 @@ class GameScreenConnector:
         if self.debug: print("-----------------------------------")
         return equal
 
+    def checkBoss6Died(self, frame=None):
+        if frame is None:
+            frame = self.getFrame(return_pillow=True)
+        # check up field empty (no boss inside)
+        res = self._check_general_template("final_boss_empty_up_field", frame)
+        return res
+
     def checkDoorsOpen(self, frame=None):
         if frame is None:
             frame = self.getFrame()
@@ -243,6 +250,7 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
+        return False #TODO: update sizes
         if frame is None:
             frame = self.getFrame(return_pillow=True)
         v = self.general_templates[name_of_template]

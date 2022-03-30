@@ -625,7 +625,13 @@ class CaveEngine(QObject):
     def boss_final(self):
         self.wait(2)
         self.swipe('w', 3)
-        self.wait(50)
+        max_wait = 50
+        i = 0
+        while i < max_wait:
+            self.wait(2)
+            if self.screen_connector.checkBoss6Died():
+                break
+            i += max_wait/2
         self.reactGamePopups()
         #self.tap('start')
         self.wait(2)
