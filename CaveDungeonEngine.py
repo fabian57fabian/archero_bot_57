@@ -627,13 +627,13 @@ class CaveEngine(QObject):
         self.swipe('w', 3)
         self.wait(50)
         self.reactGamePopups()
-        self.tap('start')
+        #self.tap('start')
         self.wait(2)
         self.swipe('n', 5)
         self.wait(.5)
         self.swipe('ne', 3)
         self.wait(5)
-        self.tap('close_end')  # this is to wxit
+        #self.tap('close_end')  # this is to wxit
 
     def chooseCave(self):
         print("Main menu")
