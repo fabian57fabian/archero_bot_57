@@ -190,11 +190,8 @@ class GameScreenConnector:
         c2 = (x2, y1, x2 + sw, y1 + sh)
         c3 = (x3, y1, x3 + sw, y1 + sh)
 
-        crp1 = np.array(frame.crop(c1).getdata())
-        crp2 = np.array(frame.crop(c2).getdata())
-        crp3 = np.array(frame.crop(c3).getdata())
-
-        return crp1, crp2, crp3
+        cr1, cr2, cr3 = frame.crop(c1), frame.crop(c2), frame.crop(c3)
+        return cr1, cr2, cr3
 
 
     def getAbilityType(self, frame=None) -> dict:
@@ -208,7 +205,8 @@ class GameScreenConnector:
         """
         if frame is None:
             frame = self.getFrame(return_pillow=True)
-        a1, a2, a3 = self._extract_abilities_3(frame)
+        cr1, cr2, cr3 = self._extract_abilities_3(frame)
+        a1, a2, a3 = np.array(cr1.getdata()), np.array(cr2.getdata()), np.array(cr3.getdata())
         states = {"l":"unknown", "c":"unknown", "r":"unknown"}
         for ab_image, k in zip([a1, a2, a3], states.keys()):
             for ab_name, ab_template in self.abilities_templates.items():
@@ -216,9 +214,9 @@ class GameScreenConnector:
                 if dist < self.abilities_treshold:
                     states[k] = ab_name
                     break
-        if states["l"] == "unknown": self.save_unknown_ability(a1)
-        if states["c"] == "unknown": self.save_unknown_ability(a2)
-        if states["r"] == "unknown": self.save_unknown_ability(a3)
+        if states["l"] == "unknown": self.save_unknown_ability(cr1)
+        if states["c"] == "unknown": self.save_unknown_ability(cr2)
+        if states["r"] == "unknown": self.save_unknown_ability(cr3)
         return states
 
     def save_unknown_ability(self, ability_np):
