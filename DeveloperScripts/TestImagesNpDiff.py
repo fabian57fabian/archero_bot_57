@@ -36,7 +36,7 @@ def test_diff(fn1, folder, plot=False):
 
 
 if __name__ == '__main__':
-    fld = "..\\datas\\1080x1920\\abilities"
-    fn = "..\\datas\\1080x1920\\abilities\\ability_30.png"
+    fld = "..\\datas\\abilities\\abilities_templates"
+    fn = "..\\datas\\abilities\\abilities_templates\\ability_30.png"
 
     test_diff(fn, fld, plot=True)

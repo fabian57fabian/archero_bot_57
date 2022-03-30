@@ -33,7 +33,7 @@ class GameScreenConnector:
 
     def load_abilities_templates(self):
         file = os.path.join("datas", "abilities", "abilities_templates_fns.json")
-        abilities_folder = os.path.join("datas", buildDataFolder(self.width, self.height), "abilities")
+        abilities_folder = os.path.join("datas", "abilities", "abilities_templates")
         with open(file) as file_in:
             abs_json = json.load(file_in)
         abilities = {}

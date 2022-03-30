@@ -13,4 +13,4 @@ def create_abilities_dict(in_path:str, out_fn:str):
         json.dump(abilities_dict, f, indent=2)
 
 if __name__ == '__main__':
-    create_abilities_dict(in_path='..\\datas\\1080x1920\\abilities', out_fn='..\\datas\\1080x1920\\coords\\abilities_dists.json')
+    create_abilities_dict(in_path='../datas/abilities/abilities_templates', out_fn='..\\datas\\abilities\\abilities_dists.json')
