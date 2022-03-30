@@ -221,11 +221,10 @@ class GameScreenConnector:
 
     def save_unknown_ability(self, ability_pil):
         num = 0
-        fn = "unknown_ability_{}.png".format(num)
-        while os.path.exists(fn):
+        path = os.path.join(self.abilities_unknown_fld, "unknown_ability_{}.png".format(num))
+        while os.path.exists(path):
             num += 1
-            fn = "unknown_ability_{}.png".format(num)
-        path = os.path.join(self.abilities_unknown_fld, fn)
+            path = os.path.join(self.abilities_unknown_fld, "unknown_ability_{}.png".format(num))
         ability_pil.save(path)
         print("Unknown ability {} saved in {}".format(num, path))
 
