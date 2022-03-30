@@ -32,7 +32,7 @@ class GameScreenConnector:
         if not os.path.exists(self.abilities_unknown_fld): os.mkdir(self.abilities_unknown_fld)
 
     def load_abilities_templates(self):
-        file = os.path.join("datas", buildDataFolder(self.width, self.height), "coords", "abilities_templates_fns.json")
+        file = os.path.join("datas", "abilities", "abilities_templates_fns.json")
         abilities_folder = os.path.join("datas", buildDataFolder(self.width, self.height), "abilities")
         with open(file) as file_in:
             abs_json = json.load(file_in)

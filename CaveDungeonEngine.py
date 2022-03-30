@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -7,6 +8,7 @@ from StatisticsManager import StatisticsManager
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, \
     getCoordFilePath
 import enum
+import os
 
 
 class HealingStrategy(enum.Enum):
@@ -82,102 +84,13 @@ class CaveEngine(QObject):
     max_loops_game = 20
 
     # lowest is better
-    tier_list_abilities = {
-        "multishot": 1,
-        "ricochet": 2,
-        "front_arrow_1": 70,
-        "piercing_shot": 40,
-        "bouncy_wall": 30,
-        "diagonal_arrows": 33,
-        "side_arrows_1": 80,
-        "rear_arrow_1": 81,
-        "bolt": 22,
-        "freeze": 21,
-        "poison_touch": 20,
-        "blaze": 23,
-        "element_upgrade": 66,
-        "element_burst": 67,
-        "dark_touch": 68,
-        "chilling_blast": 69,
-        "death_bomb": 18,
-        "obsidian_circle": 25,
-        "death_nova": 26,
-        "attack_boost_major": 3,
-        "attack_boost_minor": 5,
-        "attack_speed_boost_major": 4,
-        "attack_speed_boost_minor": 6,
-        "crit_master_minor": 8,
-        "crit_master_major": 7,
-        "hp_plus": 0,
-        "attack_plus": 9,
-        "crit_plus": 10,
-        "speed_plus": 11,
-        "hp_gain_aura": 12,
-        "crit_aura": 13,
-        "invincibily_star": 14,
-        "shield_guard": 15,
-        "hp_boost": 16,
-        "strong_heart": 17,
-        "heal": 27,
-        "bloodthrist": 29,
-        "wingman": 28,
-        "spirit_front_arrow": 71,
-        "spirit_multishot": 72,
-        "spirit_diagonal_arrow_1": 73,
-        "spirit_attack_speed_boost": 74,
-        "spirit_crit_boost": 75,
-        "spirit_speed_boost": 76,
-        "spirit_blaze": 77,
-        "spirit_freeze": 78,
-        "spirit_poisoned_touch": 79,
-        "spirit_bolt": 82,
-        "fire_circle": 83,
-        "ice_circle": 84,
-        "poison_circle": 85,
-        "bolt_circle": 86,
-        "blazing_strike": 87,
-        "frost_strike": 88,
-        "toxic_strike": 89,
-        "bolt_strike": 90,
-        "fire_sword": 91,
-        "ice_sword": 92,
-        "poison_sword": 93,
-        "bolt_sword": 94,
-        "blazing_star": 95,
-        "frost_star": 96,
-        "toxic_star": 97,
-        "bolt_star": 98,
-        "blazing_meteor": 99,
-        "frost_meteor": 100,
-        "toxic_meteor": 101,
-        "bolt_meteor": 102,
-        "fory": 103,
-        "rage": 104,
-        "grace": 105,
-        "agility": 106,
-        "headshot": 107,
-        "smart": 108,
-        "greed": 109,
-        "overdraft": 110,
-        "holy_touch": 111,
-        "strong_strong_heart": 112,
-        "dodge_master": 113,
-        "extra_life": 114,
-        "low_projectile": 115,
-        "shadow_clone": 116,
-        "summon_one_eyed_bat": 117,
-        "inspire": 118,
-        "water_walker": 119,
-        "through_the_wall": 120,
-        "giant": 121,
-        "dwarf": 122,
-        "unknown": 999999
-    }
+    tier_list_abilities = {}
 
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.currentLevel = 0
         self.currentDungeon = 6
+        self.load_tier_list()
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
@@ -197,6 +110,11 @@ class CaveEngine(QObject):
         if connectImmediately:
             self.initDeviceConnector()
         self.check_seconds = 4
+
+    def load_tier_list(self):
+        file = os.path.join("datas", "abilities", "tier_list.json")
+        with open(file) as file_in:
+            self.tier_list_abilities = json.load(file_in)
 
     def initDataFolders(self):
         self.dataFolders = readAllSizesFolders()
