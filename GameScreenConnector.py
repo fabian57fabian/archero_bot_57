@@ -26,7 +26,7 @@ class GameScreenConnector:
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
         self.stopRequested = False
-        self.abilities_treshold = 300  # TODO: check
+        self.abilities_treshold = 1
         self.abilities_templates = {}
         self.abilities_unknown_fld = "abilities_unknown"
         if not os.path.exists(self.abilities_unknown_fld): os.mkdir(self.abilities_unknown_fld)
@@ -210,7 +210,7 @@ class GameScreenConnector:
         states = {"l":"unknown", "c":"unknown", "r":"unknown"}
         for ab_image, k in zip([a1, a2, a3], states.keys()):
             for ab_name, ab_template in self.abilities_templates.items():
-                dist = np.sum(np.abs(ab_image - ab_template))
+                dist = np.mean(np.abs(ab_image - ab_template))
                 if dist < self.abilities_treshold:
                     states[k] = ab_name
                     break
