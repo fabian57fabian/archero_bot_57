@@ -28,6 +28,8 @@ class GameScreenConnector:
         self.stopRequested = False
         self.abilities_treshold = 300  # TODO: check
         self.abilities_templates = {}
+        self.abilities_unknown_fld = "abilities_unknown"
+        if not os.path.exists(self.abilities_unknown_fld): os.mkdir(self.abilities_unknown_fld)
 
     def load_abilities_templates(self):
         file = os.path.join("datas", buildDataFolder(self.width, self.height), "coords", "abilities_templates_fns.json")
@@ -214,7 +216,21 @@ class GameScreenConnector:
                 if dist < self.abilities_treshold:
                     states[k] = ab_name
                     break
+        if states["l"] == "unknown": self.save_unknown_ability(a1)
+        if states["c"] == "unknown": self.save_unknown_ability(a2)
+        if states["r"] == "unknown": self.save_unknown_ability(a3)
         return states
+
+    def save_unknown_ability(self, ability_np):
+        im = Image.fromarray(ability_np)
+        num = 0
+        fn = "unknown_ability_{}.png".format(num)
+        while os.path.exists(fn):
+            num += 1
+            fn = "unknown_ability_{}.png".format(num)
+        path = os.path.join(self.abilities_unknown_fld, fn)
+        im.save(path)
+        print("Unknown ability {} saved in {}".format(num, path))
 
     def getFrameState(self, frame=None) -> str:
         """
