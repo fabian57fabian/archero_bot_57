@@ -40,7 +40,8 @@ class QDeskArea(QWidget):
                 levelState.SetState(PlayState.ToBePlayed)
 
     def logArrived(self, log: str):
-        self.chapersState[self.model.engine.currentLevel].addLog(log)
+        if self.model.engine.currentLevel <= self.model.engine.MAX_LEVEL:
+            self.chapersState[self.model.engine.currentLevel].addLog(log)
 
     def build_add_btn(self):
         button = QPushButton(self)
