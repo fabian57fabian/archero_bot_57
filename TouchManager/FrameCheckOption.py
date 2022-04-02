@@ -123,9 +123,11 @@ class FrameCheckOption(QWidget):
             lay_row.addWidget(rbtn)
             self.lay.addLayout(lay_row)
         if len(self.rBtns) > 0:
-            self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(True)
-            self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
-            self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(False)
+            # this is not working as intended after an update.
+            #self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(True)
+            #self.rBtns[self.controller.selectedCoordinateIndex].setChecked(True)
+            #self.rBtns[self.controller.selectedCoordinateIndex].blockSignals(False)
+            pass
 
     def onManualChoose(self, i, event):
         self.controller.rquestFrameCheckCoordinateColorManualChange(i)

@@ -14,10 +14,7 @@ def crop_from_file(fn:str, coords):
 
 
 if __name__ == '__main__':
-    y1 = 630
-    y2 = 650
-    x1 = 480
-    x2 = 600
+    x1, y1, x2, y2 = 350,30,750,70
 
     bbox = (x1, y1, x2, y2)
     crop_from_file(fn='..\\datas\\1080x1920\\screens\\play_lvl18_doors_open.png', coords=bbox)

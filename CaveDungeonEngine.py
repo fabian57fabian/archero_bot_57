@@ -626,12 +626,16 @@ class CaveEngine(QObject):
         self.wait(2)
         self.swipe('w', 3)
         max_wait = 50
+        sleep_btw_screens=2
         i = 0
-        while i < max_wait:
-            self.wait(2)
+        while i < max_wait/sleep_btw_screens:
+            self.wait(sleep_btw_screens)
+            if self.screen_connector.getFrameState() != "in_game":
+                self.reactGamePopups()
+                break
             if self.screen_connector.checkBoss6Died():
                 break
-            i += max_wait/2
+            i += 1
         self.reactGamePopups()
         #self.tap('start')
         self.wait(2)
@@ -662,6 +666,7 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def start_one_game(self):
+        self.screen_connector.checkDoorsOpen()
         self.start_date = datetime.now()
         self.stat_lvl_start = self.currentLevel
         self.stopRequested = False

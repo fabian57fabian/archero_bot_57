@@ -247,15 +247,23 @@ class GameScreenConnector:
         """
         Computes a frame check based on saved data and returns true if thery are similar.
         :param name_of_template:
-        :param frame:
+        :param frame: Either flattern ZZZx4 np.ndarray or PIL full image
         :return:
         """
-        return False #TODO: update sizes
         if frame is None:
             frame = self.getFrame(return_pillow=True)
         v = self.general_templates[name_of_template]
-        crp = frame.crop(v["bbox"])
-        crp_np = np.array(crp.getdata())
+        if type(frame) == np.ndarray:
+            x1,y1,x2,y2 = v["bbox"]
+            frame2 = frame.reshape(self.height, self.width, 4)
+            fram2_crp = frame2[y1:y2, x1:x2]
+            crp_np = fram2_crp.reshape(fram2_crp.shape[0]*fram2_crp.shape[1], 4)
+        else: #PIL
+            crp = frame.crop(v["bbox"])
+            crp_np = np.array(crp.getdata())
+        if crp_np.shape[0] != v["template"].shape[0] or crp_np.shape[1] != v["template"].shape[1]:
+            print("Error during templates check: wrong shape")
+            return False
         dist = np.mean(np.abs(crp_np - v["template"]))
         return dist < v["th"]
 

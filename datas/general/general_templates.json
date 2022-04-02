@@ -1,4 +1,4 @@
 {
 	"doors_open": {"fn": "door_opened.png", "th":25, "bbox": [480,630,600,650]},
-	"final_boss_empty_up_field": {"fn": "door_opened.png", "th":50, "bbox": [350,30,750,70]}
+	"final_boss_empty_up_field": {"fn": "final_boss_empty_up_field.png", "th":50, "bbox": [350,30,750,70]}
 }
