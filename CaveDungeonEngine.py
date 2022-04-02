@@ -479,15 +479,18 @@ class CaveEngine(QObject):
             t1 = self.tier_list_abilities[abilities['l']]
             t2 = self.tier_list_abilities[abilities['c']]
             t3 = self.tier_list_abilities[abilities['r']]
+            best = ""
             if t1 < t2 and t1 < t3:
                 to_press = 'ability_left'
-                print("Found best ability as " + abilities['l'])
+                best = abilities['l']
             if t2 < t1 and t2 < t3:
                 to_press = 'ability_center'
-                print("Found best ability as " + abilities['c'])
+                best = abilities['c']
             if t3 < t2 and t3 < t1:
                 to_press = 'ability_right'
-                print("Found best ability as " + abilities['r'])
+                best = abilities['r']
+            print("Found best ability as " + best)
+            self.log("Choosing '{}'".format(best))
             self.tap(to_press)
         except Exception as e:
             print("Unable to correctly choose best ability. Randomly choosing left")
