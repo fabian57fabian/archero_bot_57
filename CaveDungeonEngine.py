@@ -222,18 +222,32 @@ class CaveEngine(QObject):
         time.sleep(decimal)
 
     def exit_dungeon_uncentered(self):
-        if self.currentDungeon == 3:
-            self.exit_dungeon_uncentered_simplified()
-        else:
-            self.exit_dungeon_uncentered_simplified()
-
-    def exit_dungeon_uncentered_simplified(self, do_second_check=True):
         self.wait(0.5)
+        if self.currentDungeon == 3:
+            self.exit_movement_dungeon6()
+        elif self.currentDungeon == 6:
+            self.exit_movement_dungeon6()
+        elif self.currentDungeon == 10:
+            self.exit_movement_dungeon10()
+        else:
+            self.exit_movement_dungeon6()
+        self.exit_dungeon_uncentered_simplified()
+
+    def exit_movement_dungeon6(self):
         self.swipe('w', 1.3)
         self.wait(.2)
         self.swipe('n', 3)
         self.wait(.2)
         self.swipe('ne', 5.5)
+
+    def exit_movement_dungeon10(self):
+        self.swipe('e', 1.3)
+        self.wait(.2)
+        self.swipe('n', 3)
+        self.wait(.2)
+        self.swipe('nw', 5.5)
+
+    def exit_dungeon_uncentered_simplified(self, do_second_check=True):
         if do_second_check:
             if self.screen_connector.getFrameState() != "in_game":
                 self.reactGamePopups()

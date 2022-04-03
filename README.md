@@ -19,6 +19,7 @@ If you want, you can send me a beer here:
 - [Game Description](#game-description)
 - [Coordinates management](#coordinates-management)
 - [How it works](#how-it-works)
+- [Auto ability check](#auto-ability-check)
 - [Coordinates check explained](#coordinates-check-explained)
 - [Extra](#extra)
 
@@ -38,15 +39,11 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
 - Supported dungeons:
   - 3 . Abandoned Dungeon: tested, FAILING
   - 6 . **The Cave: tested, WORKING**
-  - 10 . The Cave: tested, FAILING
+  - 10 . **Land of Doom: tested, WORKING up to lvl 19**
 
 - Tested resolutions
-  - 1080x1920 is full working. Remaining tests have to be done
-  - 1080x2220, 1080x2280 and 1080x2340 are DEPRECATED. They were added to fit various smartphones but development became a nightmare.
-
-- Equipment:
-  - Try to use all **dodging equip** and life/atk gaining equipment
-  - does **NOT** work with **enlightement** book (yet)
+  - 1080x1920 is full working.
+  - other resolutions are DEPRECATED. They were added to fit various smartphones but development became a nightmare.
 
 If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
 
@@ -59,31 +56,32 @@ Installation steps can be found in [this wiki page](wiki/Installation.md).
 Simple explanation video [here](https://www.youtube.com/watch?v=XbjphfEp8yw):
 
 Once cloned the repo and installed all necessary stuff, execute **GameController.py**.
-\\
+
 Wait for the interface to connect to the device. It will automatically try to connect to phone or to Nox emulator.
-\\
+
 Once connected, just manually open your app on phone/emulator and let it on the main menu screen with level 6 "the Cave" selected. If you have notifications or first game setuup, please manually do it before.
-\\
+
 Now you can press the play button and it will start playing over and over again until no more energy is left.
-\\
-If somehow it screwes up, just go to the following room. do not press anything once entered a new room. Then select the room number you're in inside the GameController and press start again.
+
+If somehow it screwes up, just press the stop button, manually put your archer in next room at bottom. do not press anything once entered a new room. Then select the room number you're in inside the GameController and press start again.
 If you are in the intro level, please go to level 1, select it and press play.
-\\
+
 If you pause and want to start again, you have to manually go to the next room and select its number from GameController.
 This is needed because when pressing play, the bot will start thinking that you are at the start of the room in center position.
 
+- Equipment suggestion:
+  - Try to use all **dodging equip** and life/atk gaining equipment
+  - do **NOT** use **enlightement** book (yet)
 
 
 ### Game description
-Set dungeon to **The Cave** (number 6) and run the executable GameController.py:
-\
-If you launch from terminal, it is possible to specify the starting level of first run (e.g. `python static_bot_cave.py 16`).
-\
-If setting start from 0, the program will check your energy. If 5 or above, then starts a game and plays until he dies. He normally does between 12 to 20 levels.
-\
+Select your dungeon (e.g. **The Cave**) and run the executable GameController.py:
+
+If you start the bot when inside main game menu, the program will check your energy. If 5 or above, then starts a game and plays until he dies or reaches endgame.
+
 Once it ends, he goes to main menu and checks another time if it has energy.
 This program is not perfect. If he somehow thinks to be on a different level but the game is ahead, please manually end the game, return to main menu and restart the game.
-\
+
 Even if it will fail, no harm will be done (it will not exit and click randomly on your phone).
 
 ## Coordinates Management
@@ -119,17 +117,24 @@ When we are in need to check something on the screen, we take a screenshot (save
 For example when checking if having 5 or more energy to play one game, we check that pixel corresponding to 5th bar of energy is blue:
 
 ![Check_bar](wiki_data/check_energy_green_bar_location.png)
+
 ### Coordinates check explained
 In order to detect the game state, a static coordinate check is done.
 For each interesting state (on pause, on devil question, on skill choose) there is a list of (x,y) coordinates that checks if the color is in a specific color range.
 Example:
-\
+
 Checking 'endgame' consist in checking that we see the 'blue' color in 3 different points.
-\
+
 These coordinates have to have red, green, blue colors in an interval being (48, 98, 199) +- 5.
-\
+
 In the future implementation, this hole static check will be replaced by a neural network model trained to automatically detect those data in the screenshot.
 
+## Auto ability check
+When a 'choose new ability' screen arrives, it recognizes every ability and choose the best one based on a *tier list*.
+
+This can be found in datas/abilities/tier_list.json and every ability template can be found in datas/abilities/abilities_templates .
+
+A future work will be to integrate an UI to drag and drop abilities and changing the tier list.
 
 ## Issue: Adb not working
 If adb doesn't work or installation failed, check out this [video](https://www.youtube.com/watch?v=vr0GLIufzkM). It explains how to install on windows and ubuntu.
