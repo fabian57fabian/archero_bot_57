@@ -223,10 +223,25 @@ class CaveEngine(QObject):
 
     def exit_dungeon_uncentered(self):
         if self.currentDungeon == 3:
-            self.exit_dungeon_uncentered_new()
+            self.exit_dungeon_uncentered_simplified()
         else:
-            self.exit_dungeon_uncentered_new()
+            self.exit_dungeon_uncentered_simplified()
 
+    def exit_dungeon_uncentered_simplified(self, do_second_check=True):
+        self.wait(0.5)
+        self.swipe('w', 1.3)
+        self.wait(.2)
+        self.swipe('n', 3)
+        self.wait(.2)
+        self.swipe('ne', 5.5)
+        if do_second_check:
+            if self.screen_connector.getFrameState() != "in_game":
+                self.reactGamePopups()
+                self.exit_dungeon_uncentered_new(do_second_check=False)
+        self.wait(1)  # Safety wait for extra check
+
+    # DEPRECATED
+    """
     def exit_dungeon_uncentered_new(self, second_check=True):
         # Center
         px, dir = self.screen_connector.getPlayerDecentering()
@@ -260,7 +275,10 @@ class CaveEngine(QObject):
                 self.reactGamePopups()
                 self.exit_dungeon_uncentered_new(False)
         self.wait(1)  # Safety wait for extra check
+    """
 
+    # DEPRECATED
+    """
     def exit_dungeon_uncentered_old(self):
         self.wait(2)
         upper_line = self.screen_connector.getHorLine("hor_up_line")
@@ -281,6 +299,7 @@ class CaveEngine(QObject):
                 if not self.screen_connector.checkUpperLineHasChanged(upper_line):
                     raise Exception('unable_exit_dungeon')
         self.log("Exit level")
+    """
 
     def goTroughDungeon10(self):
         print("Going through dungeon (designed for #10)")
