@@ -418,7 +418,13 @@ class CaveEngine(QObject):
                     print("Unknown screen situation detected. Checking again...")
                     self.wait(2)
                     if self.screen_connector.getFrameState() == "unknown":
-                        raise Exception('unknown_screen_state')
+                        print("Unknown screen situation detected. Checking again x2...")
+                        self.wait(2)
+                        if self.screen_connector.getFrameState() == "unknown":
+                            raise Exception('unknown_screen_state')
+                        else:
+                            recheck = True
+                            continue
                     else:
                         recheck = True
                         continue
