@@ -251,7 +251,7 @@ class CaveEngine(QObject):
         if do_second_check:
             if self.screen_connector.getFrameState() != "in_game":
                 self.reactGamePopups()
-                self.exit_dungeon_uncentered_new(do_second_check=False)
+                self.exit_dungeon_uncentered_simplified(do_second_check=False)
         self.wait(1)  # Safety wait for extra check
 
     # DEPRECATED
