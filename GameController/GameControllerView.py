@@ -148,7 +148,7 @@ class GameControllerWindow(QWidget):
         self.lblInfoHealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.cBoxhealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
-        upd_str = "Updates: ..."
+        upd_str = "All updated."
         if self.model.updates_available:
             upd_str = "Updates available!"
         self.lblUpdates.setText(upd_str)

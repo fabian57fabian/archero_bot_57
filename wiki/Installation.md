@@ -3,7 +3,7 @@
 ## Installation on Linux
 Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotlib__, __numpy__, __pure-python-adb__, __pyqt5__:
 - `$ apt install adb`
-- `$ pip install Pillow matplotlib numpy pure-python-adb`
+- `$ pip install Pillow matplotlib numpy pure-python-adb requests`
 - `$ pip install pyqt5` . If it fails, try with `$ sudo apt-get install python3-pyqt5`
 - Install __Android Studio__ with sdk ([link here](https://developer.android.com/studio))
 - Enable __debug mode__ on your Smartphone (Settings -> about phone/info and tap 7 times on kernel version, then Settings -> debug options, activate it, debug mode and activate it). May vary based on phone model.
@@ -22,7 +22,7 @@ Follow these steps:
   - Click 'OK' and then exit
 - Open a Command Line (press start, write CMD, press enter) and execute following commands by copying and pasting in the command line and pressing enter:
   
-  `pip install Pillow matplotlib numpy pure-python-adb pyqt5`
+  `pip install Pillow matplotlib numpy pure-python-adb pyqt5 requests`
   
 - Finally, download this program by clicking (in this page) on "Clone or download ->Download Zip". Once downloaded extract the compressed file (Left click -> Extract Here) and copy where you want. This is the program folder.
 
