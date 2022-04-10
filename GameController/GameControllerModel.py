@@ -5,7 +5,7 @@ from CaveDungeonEngine import CaveEngine
 import time
 from UsbConnector import UsbConnector
 from WorkerThread import WorkerThread
-
+from update_manager import UpdatesManager
 import enum
 
 
@@ -21,6 +21,7 @@ class GameControllerModel(QObject):
     checkConnectionStateChanged = pyqtSignal(bool)
     resolutionChanged = pyqtSignal(str)
     dataFolderChanged = pyqtSignal(str)
+    updatesAvailableEvent = pyqtSignal(str)
 
     # onButtonLocationChanged = pyqtSignal(str)
     # onImageSelected = pyqtSignal()
@@ -28,6 +29,7 @@ class GameControllerModel(QObject):
     def __init__(self):
         super(QObject, self).__init__()
         # Default data
+        self.updates_available = False
         self.engine = CaveEngine()
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
@@ -38,6 +40,7 @@ class GameControllerModel(QObject):
         self.icons_dataset = self.load_icons()
         self.currentEngineState: EngineState = EngineState.Ready
         self.workerThread: WorkerThread = None
+        self.updates_man = UpdatesManager()
 
     def connected(self):
         return self.engine.device_connector.connected
@@ -61,6 +64,12 @@ class GameControllerModel(QObject):
 
     def load_data(self):
         pass
+
+    def check_for_updates(self):
+        to_update = self.updates_man.ask_for_updates()
+        if to_update:
+            self.updates_available = True
+            self.updatesAvailableEvent.emit("New updates available!")
 
     def getLevelsNames(self):
         return self.engine.levels_type

@@ -14,6 +14,7 @@ if __name__ == "__main__":
     ui = GameControllerWindow(model, controller)
     ui.setupUi(MainWindow)
     model.load_data()
+    model.check_for_updates()
     MainWindow.show()
     result = app.exec_()
     model.requestClose()

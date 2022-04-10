@@ -33,6 +33,7 @@ class GameControllerWindow(QWidget):
         self.lblDataFolder = QLabel()
         self.lblConnectionStatus = QLabel()
         self.lblCheckConnectionStatus = QLabel()
+        self.lblUpdates = QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
@@ -58,6 +59,11 @@ class GameControllerWindow(QWidget):
         self.model.engine.healingStrategyChanged.connect(self.updateHealingStrategyChange)
         self.model.engine.currentDungeonChanged.connect(self.onCurrentDungeonChanged)
         self.cBoxhealStrategy.currentIndexChanged.connect(self.onChangeHealStrategy)
+        self.model.updatesAvailableEvent.connect(self.on_UpdatesAreAvailable)
+
+    def on_UpdatesAreAvailable(self, mess:str):
+        self.lblUpdates.setStyleSheet("background-color: #6e6e6e; color: yellow")
+        self.lblUpdates.setText(mess)
 
     def updateHealingStrategyChange(self, strat: HealingStrategy):
         #['Always power','Always heal']
@@ -135,12 +141,18 @@ class GameControllerWindow(QWidget):
         self.lblInfoHealStrategy.setText('Healing Strategy:')
         self.toolbarOptions.addWidget(self.lblInfoHealStrategy)
         self.toolbarOptions.addWidget(self.cBoxhealStrategy)
+        self.toolbarOptions.addWidget(self.lblUpdates)
 
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.lblInfoHealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.cBoxhealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
+        upd_str = "Updates: ..."
+        if self.model.updates_available:
+            upd_str = "Updates available!"
+        self.lblUpdates.setText(upd_str)
+        self.lblUpdates.setStyleSheet("background-color: #6e6e6e; color: white")
         self.size_info_lbl.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblConnectionStatus.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblCheckConnectionStatus.setStyleSheet("color: white")
