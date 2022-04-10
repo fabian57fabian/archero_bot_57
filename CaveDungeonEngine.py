@@ -11,9 +11,9 @@ import enum
 import os
 
 
-class HealingStrategy(enum.Enum):
-    AlwaysHeal = 0
-    AlwaysPowerUp = 1
+class HealingStrategy(str, enum.Enum):
+    AlwaysHeal = "always_heal"
+    AlwaysPowerUp = "always_power"
 
 
 class CaveEngine(QObject):
@@ -23,7 +23,8 @@ class CaveEngine(QObject):
     dataFolderChanged = pyqtSignal(str)
     noEnergyLeft = pyqtSignal()
     gameWon = pyqtSignal()
-    healingStrategyChanged = pyqtSignal(bool)
+    healingStrategyChanged = pyqtSignal(HealingStrategy)
+    currentDungeonChanged = pyqtSignal(int)
 
     # onDictionaryTapsChanged = pyqtSignal(dict)
     # onButtonLocationChanged = pyqtSignal(str)
@@ -51,6 +52,45 @@ class CaveEngine(QObject):
         "se": "down-right",
         "sw": "down-left",
     }
+
+    chapters = {
+        "1": "Verdant Prairie",
+        "2": "Storm Desert",
+        "3": "Abandoned Dungeon",
+        "4": "Crystal Mines",
+        "5": "Lost Castle",
+        "6": "Cave of Bones",
+        "7": "Barens of Shadow",
+        "8": "Silent Expanse",
+        "9": "Frozen Pinnacle",
+        "10": "Land of Doom",
+        "11": "The Capital",
+        "12": "Dungeon of Traps",
+        "13": "Lava Land",
+        "14": "Eskimo Lands",
+        "15": "Pharaoh's Chamber",
+        "16": "Archaic Temple",
+        "17": "Dragon Lair",
+        "18": "Escape Chamber",
+        "19": "devil's Tavern",
+        "20": "Palace of Light",
+        "21": "Nightmare Land",
+        "22": "Tranquil Forest",
+        "23": "Underwater Ruins",
+        "24": "Silent Wilderness",
+        "25": "Death Bar",
+        "26": "Land of the Dead",
+        "27": "Sky Castle",
+        "28": "Sandy Town",
+        "29": "dark forest",
+        "30": "Shattered Abyss",
+        "31": "Underwater City",
+        "32": "Evil Castle",
+        "33": "Aeon Temple",
+        "34": "sakura Court"
+    }
+
+    allowed_chapters = [3, 6, 10]
 
     t_intro = 'intro'
     t_normal = 'normal'
@@ -106,6 +146,9 @@ class CaveEngine(QObject):
         self.currentDataFolder = ''
         self.dataFolders = {}
         self.healingStrategy = HealingStrategy.AlwaysPowerUp
+        self.current_settings = {}
+        self.current_settings_path = 'current_settings.json'
+        self.load_current_settings()
         self.centerAfterCrossingDungeon = False
         if connectImmediately:
             self.initDeviceConnector()
@@ -128,12 +171,43 @@ class CaveEngine(QObject):
     def initdeviceconnector(self):
         self.device_connector.connect()
 
-    def changeHealStrategy(self, always_heal: bool):
-        self.healingStrategy = HealingStrategy.AlwaysHeal if always_heal else HealingStrategy.AlwaysPowerUp
-        self.healingStrategyChanged.emit(always_heal)
+    def _create_default_current_settings(self):
+        new_sett = {
+            "healing_strategy": HealingStrategy.AlwaysHeal,
+            "selected_dungeon": 6
+        }
+        saveJsonData_oneIndent(self.current_settings_path, new_sett)
+
+    def load_current_settings(self):
+        if not os.path.exists(self.current_settings_path):
+            print("Creating basic current settings...")
+            self._create_default_current_settings()
+        try:
+            new_sett = loadJsonData(self.current_settings_path)
+        except Exception as e:
+            print("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
+            self._create_default_current_settings()
+            new_sett = loadJsonData(self.current_settings_path)
+        if "healing_strategy" not in new_sett or "selected_dungeon" not in new_sett:
+            print("Corrupted/errored current settings. ")
+            print("Creating basic current settings...")
+            self._create_default_current_settings()
+        new_sett = loadJsonData(self.current_settings_path)
+        self.current_settings = new_sett
+        self.healingStrategy = HealingStrategy(self.current_settings["healing_strategy"])
+        self.currentDungeon = int(self.current_settings["selected_dungeon"])
+
+    def changeHealStrategy(self, strat: HealingStrategy):
+        self.healingStrategy = strat
+        self.current_settings['healing_strategy'] = self.healingStrategy
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.healingStrategyChanged.emit(strat)
 
     def changeChapter(self, new_chapter):
         self.currentDungeon = new_chapter
+        self.current_settings['selected_dungeon'] = str(self.currentDungeon)
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.currentDungeonChanged.emit(new_chapter)
 
     def onConnectionStateChanged(self, connected):
         if connected:

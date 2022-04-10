@@ -15,7 +15,6 @@ class QDungeonSelector(QWidget):
         # self.setStyleSheet("background-color: white")
         self.lblCurrentDungeon = QLabel()
         self.layoutMainHor = QHBoxLayout()
-        self.currentChapter = self.model.chapters[0]
         self.requested_w, self.requested_h = parent.get_toolbar_size()
         self.initUI()
         self.initConnectors()
@@ -34,44 +33,40 @@ class QDungeonSelector(QWidget):
         self.layoutMainHor.setSpacing(0)
         self.layoutMainHor.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layoutMainHor)
-        self.SelectionEnabled = True # Set this to block dungeon select
 
     def initConnectors(self):
-        self.controller.chapterChanged.connect(self.onCurrentChapterChanged)
+        self.model.engine.currentDungeonChanged.connect(self.onCurrentChapterChanged)
 
     def onChapterClick(self, event):
-        if self.SelectionEnabled:
-            self.askForChapter()
-
-    def getChapterNumber(self, ch_name):
-        # ch = self.model.chapters[target_ch]
-        splat = ch_name.split('.')
-        return int(splat[0])
+        ret, new_ch = self.askForChapter()
+        if ret:
+            self.controller.requestchangeCurrentChapter(new_ch)
 
     def askForChapter(self):
         chapters = []
         selected_ch = 0
         chapter_index_curr = 0
-        for ch in self.model.getChapters():
-            ch_num = self.getChapterNumber(ch)
-            if ch_num in self.model.allowed_chapters:
-                chapters.append(ch)
-                if ch_num == self.model.engine.currentDungeon:
-                    selected_ch = chapter_index_curr
+        for ch_num, name in self.model.engine.chapters.items():
+            if int(ch_num) in self.model.engine.allowed_chapters:
+                ch_view_name = "{}. {}".format(ch_num, name)
+                chapters.append(ch_view_name)
+                if int(ch_num) == self.model.engine.currentDungeon:
+                    selected_ch = ch_view_name
                 chapter_index_curr += 1
         dialog = QInputDialog()
         dialog.setStyleSheet("")
         dialog.setComboBoxItems(chapters)
         dialog.setWindowTitle("Select chapter")
         dialog.setLabelText("Chapter:")
+        dialog.setTextValue(selected_ch)
         ret = dialog.exec()
+        new_ch = -1
         if ret:
-            new_ch = self.getChapterNumber(dialog.textValue())
-            self.controller.requestchangeCurrentChapter(new_ch)
+            new_ch = int(dialog.textValue().split('.')[0])
+        return ret, new_ch
 
     def onCurrentChapterChanged(self, ch_number: int):
         self.lblCurrentDungeon.clear()
         pixmap = QtGui.QPixmap(self.model.getChapterImagePath(ch_number))
         pixmap = pixmap.scaled(self.lblCurrentDungeon.width(), self.lblCurrentDungeon.height(), Qt.KeepAspectRatio)
         self.lblCurrentDungeon.setPixmap(pixmap)
-        self.currentChapter = self.model.chapters[ch_number]

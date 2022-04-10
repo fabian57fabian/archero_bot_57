@@ -10,6 +10,8 @@ TouchManager/__pycache__/*
 
 abilities_unknown/
 
+current_settings.json
+
 utility_test_data.csv
 
 # All personal statiostics data

@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QResizeEvent
 
+from CaveDungeonEngine import HealingStrategy
 from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -36,10 +37,13 @@ class GameControllerWindow(QWidget):
         self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
         self.infoLabel = QLabel()
         self.cBoxhealStrategy = QComboBox()
+        self.cBoxhealStrategy.blockSignals(True)
+        self.cBoxhealStrategy.addItems(['Always power','Always heal'])
+        self.cBoxhealStrategy.blockSignals(False)
         self.lblInfoHealStrategy = QLabel()
         # self.setupUi()
+        self.updateHealingStrategyChange(self.model.engine.healingStrategy)
         self.initConnectors()
-        self.onChangeHealStrategy(self.model.engine.healingStrategy == self.model.engine.healingStrategy.AlwaysHeal)
         # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
@@ -51,18 +55,25 @@ class GameControllerWindow(QWidget):
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
         self.model.engine.levelChanged.connect(self.onLevelChanged)
-        self.model.engine.healingStrategyChanged.connect(self.onHealingStrategyChange)
+        self.model.engine.healingStrategyChanged.connect(self.updateHealingStrategyChange)
+        self.model.engine.currentDungeonChanged.connect(self.onCurrentDungeonChanged)
         self.cBoxhealStrategy.currentIndexChanged.connect(self.onChangeHealStrategy)
 
-    def onHealingStrategyChange(self, always_heal: bool):
-        index = 1 if always_heal else 0
-        if self.cBoxhealStrategy.currentIndex != index:
+    def updateHealingStrategyChange(self, strat: HealingStrategy):
+        #['Always power','Always heal']
+        index = 1 if strat == HealingStrategy.AlwaysHeal else 0
+        curr = self.cBoxhealStrategy.currentIndex
+        if curr != index:
             self.cBoxhealStrategy.blockSignals(True)
             self.cBoxhealStrategy.setCurrentIndex(index)
             self.cBoxhealStrategy.blockSignals(False)
 
+    def onCurrentDungeonChanged(self, new_dungeon: int):
+        self.infoLabel.setText("Current dungeon: {}".format(new_dungeon))
+
     def onChangeHealStrategy(self, new_index):
-        self.controller.requestChangeHealingStrategy(new_index == 1)
+        strat = HealingStrategy.AlwaysHeal if new_index == 1 else HealingStrategy.AlwaysPowerUp
+        self.model.engine.changeHealStrategy(strat)
 
     def onLevelChanged(self, newLevel):
         self.currentLevelWidget.changeLevel(newLevel)
@@ -121,7 +132,6 @@ class GameControllerWindow(QWidget):
         self.toolbarOptions.addWidget(self.lblConnectionStatus)
         self.toolbarOptions.addWidget(self.lblCheckConnectionStatus)
 
-        self.cBoxhealStrategy.addItems(['Always power','Always heal'])
         self.lblInfoHealStrategy.setText('Healing Strategy:')
         self.toolbarOptions.addWidget(self.lblInfoHealStrategy)
         self.toolbarOptions.addWidget(self.cBoxhealStrategy)

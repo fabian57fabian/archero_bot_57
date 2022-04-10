@@ -37,21 +37,6 @@ class GameControllerModel(QObject):
         self.icon_path = "icons"
         self.icons_dataset = self.load_icons()
         self.currentEngineState: EngineState = EngineState.Ready
-        self.chapters = ["1. Verdant Prairie",
-                         "2. Storm Desert",
-                         "3. Abandoned Dungeon",
-                         "4. Crystal Mines",
-                         "5. Lost Castle",
-                         "6. Cave of Bones",
-                         "7. Barens of Shadow",
-                         "8. Silent Expanse",
-                         "9. Frozen Pinnacle",
-                         "10. Land of Doom",
-                         "11. The Capital",
-                         "12. Dungeon of Traps",
-                         "13. Lava Land",
-                         "14. Eskimo Lands"]
-        self.allowed_chapters = [3, 6, 10]
         self.workerThread: WorkerThread = None
 
     def connected(self):
@@ -93,7 +78,11 @@ class GameControllerModel(QObject):
         return self.chapters
 
     def getChapterImagePath(self, ch_number: int) -> str:
-        return os.path.join(self.ch_images_path, "ch" + str(ch_number) + self.ch_image_ext)
+        path = os.path.join(self.ch_images_path, "ch" + str(ch_number) + self.ch_image_ext)
+        if not os.path.exists(path):
+            print("Unavailable Dungeon image {}".format(ch_number))
+            path = os.path.join(self.ch_images_path, "ch_ERR" + self.ch_image_ext)
+        return path
 
     def getChNumberFromString(self, ch_str) -> int:
         for i, ch in enumerate(self.chapters):
