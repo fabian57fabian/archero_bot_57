@@ -103,6 +103,7 @@ class GameControllerWindow(QWidget):
 
     def onConnectionStateChange(self, connected: bool):
         if connected:
+            print("**************** GAME READY ****************") 
             self.infoLabel.setText("Device found! Engine is ready")
             self.lblConnectionStatus.setText("Connected")
             self.lblConnectionStatus.setStyleSheet("color: white")
