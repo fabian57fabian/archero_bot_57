@@ -6,6 +6,7 @@ from GameController.GameControllerController import GameControllerController
 if __name__ == "__main__":
     import sys
 
+    print("**************** GAME STARTED ****************")
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     MainWindow.setWindowTitle("Game Controller")
