@@ -1,0 +1,33 @@
+Updated: 11-May-2022
+
+Archero_Bot_57 Change Log:
+- updated several files with tons of self.logs and print.logs for better game play and debug
+- changed game default resolution from 2220x1920 to 1080x1920
+- fixed several spelling missmatches between abilities tier_list, template, and files
+- replaced abilities files with 1080x1920 resolution 
+- reordered abilities_tier_list to better support bot strengths
+- updated gamescreenconnector with additional door_checks and boss_checks
+- updated general_template and added additional files to general folder for better door and boss checks
+- added better dungeon_exit stragety and dungeon_exit checks
+- updated dungen exit movements
+- updated movements goTroughDungeon for dungeon 10; tested good on both normal/boss modes
+- added slight time dely in dungeon movements 3, 6, 10
+- updated letPlay to include patrols; in attempt to increase killing efficency
+- added main_menu exception to reactGamePopups; changed max_loops exit
+- updated both heal_lvl entry and exit strageties
+- updated both boss_lvl movement and exit strageties
+- updated final_boss dead detection; updated exit stragety
+- cleaned up intro_lvl; added logs  
+- added new frame, frame checks, and claim-close buttons for VIP-Privilege rewards
+- updated start_one_game; added popup_vip_rewards check; created if-else for chooseCave vs playCave; added mainscreen exception; updated energy wait to 60 minutes; and added loop counter
+- updated chooseCave; added self.level.emit; added playCave as exit
+- updated play_cave print.logs; updated game won msg game_state; changed playCave exit to mange_exit_from_engame; removed self.level.emit to fix GUI rest bug on loop
+- update pressColoseEndIfEndedFrame; added currentLevel reset to fix loop but 
+- moved some code peices around in cavedungeonengine and removed some deprecated code
+
+
+Things I may have broke or known bugs:
+- Return counter in the GUI, per level, its gone
+- centerPlayer; don't seem to center correctly
+- GUI play button don't reume play after paused or stopped; requires engine/game close and complete restart
+- TouchManager not loading; giving interger errors
