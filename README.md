@@ -1,9 +1,5 @@
 # Archero Bot 57-DEV (AdminZero)
 
-<p align="center">
-  <img src="repo_images/logo_small.png" width =100>
-</p>
-
 Installation videos (youtube playlist):
 
 <a href="https://www.youtube.com/watch?v=XbjphfEp8yw&list=PLM2cUDSTXRIyGTJmGR0Gv3cvVIHC6EmyK&index=4"><img src="repo_images/video_thumbnail.png" height="100"></a>
