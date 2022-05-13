@@ -4,8 +4,7 @@ from CaveDungeonEngine import HealingStrategy
 from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, \
-    QInputDialog, QGridLayout, QWidget, QSpacerItem, QComboBox
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea, QLabel, QFormLayout, QMainWindow, QInputDialog, QGridLayout, QWidget, QSpacerItem, QComboBox
 import os
 from GameController.QToolboxActions import QToolboxActions
 from GameController.QToolboxRun import QToolboxRun
@@ -14,7 +13,6 @@ from GameController.QDungeonControl import QDungeonController
 from GameController.GameControllerController import GameControllerController
 from GameController.QLevelViewer import QLevelViewer
 from GameController.QDungeonSelector import QDungeonSelector
-
 
 class GameControllerWindow(QWidget):
     def __init__(self, model: GameControllerModel, controller: GameControllerController):
@@ -26,7 +24,6 @@ class GameControllerWindow(QWidget):
         self.main_layout = QGridLayout()
         self.toolbarOptions = QVBoxLayout()
         self.dungeonSelector = QDungeonSelector(self, controller, model)
-        # self.widRun = QToolboxRun(self)
         self.currentLevelWidget = QLevelViewer(self.model, 0)
         self.widActions = QToolboxActions(self)
         self.size_info_lbl = QLabel("Screen size:\n1x1")
@@ -35,20 +32,19 @@ class GameControllerWindow(QWidget):
         self.lblCheckConnectionStatus = QLabel()
         self.lblUpdates = QLabel()
         self.controlWidget = QDungeonController(self, controller, model)
-        self.content_wid = QDeskArea(self, controller, model)  # QtWidgets.QWidget()
+        self.content_wid = QDeskArea(self, controller, model)
         self.infoLabel = QLabel()
         self.cBoxhealStrategy = QComboBox()
         self.cBoxhealStrategy.blockSignals(True)
         self.cBoxhealStrategy.addItems(['Always power','Always heal'])
         self.cBoxhealStrategy.blockSignals(False)
         self.lblInfoHealStrategy = QLabel()
-        # self.setupUi()
         self.updateHealingStrategyChange(self.model.engine.healingStrategy)
         self.initConnectors()
-        # self.model.onSourceChanged.connect(self.source_changed)
 
     def initConnectors(self):
         self.model.engine.gameWon.connect(self.onGameWon)
+        self.model.engine.gamePaused.connect(self.onGamePaused)
         self.model.engine.noEnergyLeft.connect(self.onNoEnergyLeft)
         self.model.engineStatechanged.connect(self.onEngineStateChanged)
         self.model.connectionStateChanged.connect(self.onConnectionStateChange)
@@ -66,7 +62,6 @@ class GameControllerWindow(QWidget):
         self.lblUpdates.setText(mess)
 
     def updateHealingStrategyChange(self, strat: HealingStrategy):
-        #['Always power','Always heal']
         index = 1 if strat == HealingStrategy.AlwaysHeal else 0
         curr = self.cBoxhealStrategy.currentIndex
         if curr != index:
@@ -89,6 +84,9 @@ class GameControllerWindow(QWidget):
 
     def onNoEnergyLeft(self):
         self.infoLabel.setText("No energy left. Waiting until refill to play again.")
+
+    def onGamePaused(self):
+        self.infoLabel.setText("Engine paused.")
 
     def onEngineStateChanged(self, state: EngineState):
         if state == EngineState.Playing:
@@ -177,7 +175,6 @@ class GameControllerWindow(QWidget):
 
         self.content_wid.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
-        # self.content_wid.setStyleSheet("background-color: rgb(43, 43, 43)")
         self.main_layout.addWidget(self.content_wid, 1, 1)
         self.setStyleSheet("background-color: #6e6e6e")
         main_window.setStyleSheet("background-color: #6e6e6e")
@@ -186,5 +183,3 @@ class GameControllerWindow(QWidget):
 
         self.onScreenDataChanged()  # To initialize
         self.onConnectionStateChange(self.model.connected())  # To initialize
-        # self.setCentralWidget(centralwidget)
-        # centralwidget.setLayout(self.main_layout)
