@@ -20,8 +20,8 @@ If you want, you can send me a beer here:
 - [Extra](#extra)
 
 ## Introduction 
-This is an archero bot that can work on a mobile smartphone connected with usb cable, but designed specificly for NOX emulator at 080x1920 mobile resolution.
-It was originally build to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded, designed and tested speifically for dungeon caves 3, 6, and 10 (both normal and hero modes). It can also do other levels 1-15, though not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels.
+This is an archero bot that can work on a mobile smartphone connected with usb cable, but designed specificly for NOX emulator at 1080x1920 mobile resolution.
+It was originally built to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded: designed and tested speifically for dungeon caves 3, 6, and 10 (for both normal and hero modes). It can also do other levels 1-15, though not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels. If you plan to try the other levels beside 3, 6, or 10, results will vary depending on how OP your character is for that level.
 
 - Supported OS:
   - Windows
@@ -32,10 +32,11 @@ It was originally build to continously start a game (dungeon 6: the cave), play 
   - Usb connection to phone (with 1080x1920 resolution mandatory)
   - Nox emulator
 
-- Supported dungeons:
-  - 3 . Abandoned Dungeon: tested, FAILING
+- Supported dungeons (Normal and Boss Modes):
+  - 3 . **Abandoned Dungeon: tested, WORKING**
   - 6 . **The Cave: tested, WORKING**
-  - 10 . **Land of Doom: tested, WORKING up to lvl 19**
+  - 10 . **Land of Doom: tested, WORKING**
+  - 1-15 . Other dungens: tested, mostly working...
 
 - Tested resolutions
   - 1080x1920 is full working.
