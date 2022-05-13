@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
 from GameController.GameControllerModel import GameControllerModel,EngineState
 
-
 class QLevelViewer(QWidget):
     onLevelClicked = pyqtSignal()
 
@@ -40,7 +39,6 @@ class QLevelViewer(QWidget):
         self.frame.setStyleSheet(
             "background-color: rgb({}, {}, {}); border-radius: 5px;".format(level_color[0], level_color[1],
                                                                             level_color[2]))
-
     def changeLevel(self, newlevel: int, level_name=None):
         self.level_num = newlevel
         if level_name is not None:
@@ -101,4 +99,4 @@ class QLevelViewer(QWidget):
         self.model.engineStatechanged.connect(self.onPlayStateChanged)
 
     def onPlayStateChanged(self, newState: EngineState):
-        self.updateClickableUi(self.isClickable and (not newState == EngineState.Playing))
+        self.updateClickableUi(self.isClickable and ( not newState == EngineState.Playing))

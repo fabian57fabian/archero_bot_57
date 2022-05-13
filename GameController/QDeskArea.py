@@ -40,7 +40,7 @@ class QDeskArea(QWidget):
                 levelState.SetState(PlayState.ToBePlayed)
 
     def logArrived(self, log: str):
-        if self.model.engine.currentLevel <= self.model.engine.MAX_LEVEL:
+        if self.model.engine.currentLevel <= self.model.engine.max_level:
             self.chapersState[self.model.engine.currentLevel].addLog(log)
 
     def build_add_btn(self):
@@ -72,13 +72,7 @@ class QDeskArea(QWidget):
                 object.SetState(PlayState.Playing)
             self.chapersState.append(object)
             v_layouts[i % line_elements].addWidget(object)
-            # self.box.addWidget(object)
-        # self.insertMockupData()
         self.widget.setLayout(self.box)
-
-        # Scroll Area Properties
-        # self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        # self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(self.widget)
         self.scroll.setAlignment(Qt.AlignCenter)
