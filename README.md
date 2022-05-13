@@ -1,4 +1,4 @@
-# Archero Bot 57
+# Archero Bot 57-DEV (AdminZero)
 
 <p align="center">
   <img src="repo_images/logo_small.png" width =100>
@@ -10,7 +10,7 @@ Installation videos (youtube playlist):
 
 If you want, you can send me a beer here:
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/fabian57fabian) 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=7K6JZHBK9SB2Y&no_recurring=0&currency_code=USD) 
 
 ## Contents
 - [Introduction](#introduction)
@@ -24,8 +24,8 @@ If you want, you can send me a beer here:
 - [Extra](#extra)
 
 ## Introduction 
-This is an archero bot that works on a mobile smartphone connected with usb cable.
-It was originally build to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart.
+This is an archero bot that can work on a mobile smartphone connected with usb cable, but designed specificly for NOX emulator at 080x1920 mobile resolution.
+It was originally build to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded, designed and tested speifically for dungeon caves 3, 6, and 10 (both normal and hero modes). It can also do other levels 1-15, though not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels.
 
 - Supported OS:
   - Windows
