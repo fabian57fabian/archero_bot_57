@@ -5,10 +5,9 @@ from UsbConnector import UsbConnector
 import os
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder
 
-
 class GameScreenConnector:
     def __init__(self, device_connector=None):
-        self.debug = True
+        self.debug = True # set False to stop print debug messages in console
         self.device_connector = device_connector
         self.width = 0
         self.height = 0
@@ -472,7 +471,7 @@ class GameScreenConnector:
         line_filtered = self.filterRawHpLine_window(line)
         # center_diff = self.getPlayerDecenteringByStartStop(line_filtered)
         center_diff = self.getPlayerDecenteringByMaxGreenGroup(line_filtered)
-        if abs(center_diff) < (self.door_width * self.width) / 4.0:
+        if abs(center_diff) < (self.door_width * self.width) / 2.0:
             dir = "center"
         else:
             dir = "right" if center_diff < 0 else "left"
