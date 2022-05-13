@@ -772,8 +772,8 @@ class CaveEngine(QObject):
         self.log("Attacking Boss")
         self.swipe('w', 2)
         i = 0
-        while i < max_wait:
-            self.wait(sleep_btw_screens)
+        while i < self.max_wait:
+            self.wait(self.sleep_btw_screens)
             if self.screen_connector.checkBoss3Died():
                 if self.debug: print("boss dead and door open #3")
                 self.log("Boss Dead")
