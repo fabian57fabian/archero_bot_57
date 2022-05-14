@@ -591,8 +591,8 @@ class CaveEngine(QObject):
                             self.disableLogs = False
                         # added random escape methods for 10, 30, 50 level chapters
                         else:
-                            if i <= _time * .2:
-                                if self.debug: print("letPlay time < 20%")
+                            if i <= _time * .5:
+                                if self.debug: print("letPlay time < 50%")
                                 self.log("Escape plan #3")
                                 self.disableLogs = True
                                 self.swipe('s', 2)
@@ -603,8 +603,8 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 2)
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
-                            if i <= _time * .6:
-                                if self.debug: print("letPlay time < 60%")
+                            if i <= _time * .7:
+                                if self.debug: print("letPlay time < 70%")
                                 self.log("Escape plan #2")
                                 self.disableLogs = True
                                 self.swipe('s', .3)
@@ -622,7 +622,7 @@ class CaveEngine(QObject):
                                 self.swipe('w', 0.4)
                                 self.swipe('nw', 2)
                                 self.swipe('ne', 3)
-                                self.swipe('s', 0.3)
+                                self.swipe('s', 0.6)
                                 self.swipe('e', 0.4)
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 3)
