@@ -40,6 +40,8 @@ class QDeskArea(QWidget):
                 levelState.SetState(PlayState.ToBePlayed)
 
     def logArrived(self, log: str):
+        if self.model.engine.currentLevel > self.model.engine.max_level:
+            print("QDeskArea... max_level > 20 might cause problems")
         if self.model.engine.currentLevel <= self.model.engine.max_level:
             self.chapersState[self.model.engine.currentLevel].addLog(log)
 
