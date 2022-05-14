@@ -6,7 +6,6 @@ import time
 from UsbConnector import UsbConnector
 from WorkerThread import WorkerThread
 from update_manager import UpdatesManager
-from GameController import GameControllerView
 import enum
 
 class EngineState(enum.Enum):
