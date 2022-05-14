@@ -2,7 +2,8 @@ Archero_Bot_57 Change Log:
 
 Things I may have broke or known bugs:
 - centerPlayer; don't seem to center correctly
-- TouchManager not loading; giving interger errors
+- TouchManager still not loading; giving interger errors
+- StaticCoordsChecker gives format conversion error
 
 Updated: 15-May-2022
 - Fixed the GUI play, pause, stop, close buttons now all work properly and don't crash the game anymore.
