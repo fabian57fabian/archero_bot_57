@@ -102,7 +102,7 @@ class GameControllerModel(QObject):
         self.engineStatechanged.emit(state)
 
     def requestClose(self):
-        if self.debug: print("GUI close button selected")
+        if self.debug: print("GUI Button. *** CLOSE ***")
         self.engine.device_connector.stopConnectionCheck()
         if self.currentEngineState == EngineState.Playing:
             if self.debug: print("Stopping engine before closing")
@@ -114,7 +114,7 @@ class GameControllerModel(QObject):
 
     def _stopEngineUnsafe(self):
         try:
-            if self.debug: print("GameControllerModel Restarting engine!")
+            if self.debug: print("Restarting game engine!")
             self.engine.setStopRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
@@ -124,14 +124,14 @@ class GameControllerModel(QObject):
 
     def waitForEngineEnd(self):
         if self.workerThread is not None:
-            if self.debug: print("Waiting for thread to finish")
+            if self.debug: print("Waiting on thread")
             self.workerThread.join()
-            if self.debug: print("Thread ended")
+            if self.debug: print("Old thread ended")
         else:
             if self.debug: print("No active threads")
 
     def playDungeon(self):
-        if self.debug: print("GUI play button selected")
+        if self.debug: print("GUI Button *** PLAY ***")
         if self.workerThread is not None:
             if self.debug: print("Another thread is already running")
             self.stopDungeon()
@@ -140,15 +140,15 @@ class GameControllerModel(QObject):
             self.setEngineState(EngineState.Playing)
             self.workerThread.function = self.engine.start_infinite_play
             self.workerThread.start()
-            if self.debug: print("Thread started")
+            if self.debug: print("New thread started")
             
     def pauseDungeon(self):
-        if self.debug: print("GUI pause button selected")
+        if self.debug: print("GUI Button *** PAUSE ***")
         self._stopEngineUnsafe()
         if self.debug: print("Pause action completed")
     
     def stopDungeon(self):
-            if self.debug: print("GUI stop button selected")
+            if self.debug: print("GUI Button *** STOP ***")
             self.pauseDungeon()
             self.setEngineState(EngineState.StopInvoked)
             self.setEngineState(EngineState.Ready)
