@@ -115,7 +115,7 @@ class GameControllerModel(QObject):
 
     def _stopEngineUnsafe(self):
         try:
-            if self.debug: print("Unsafe... Restarting engine!")
+            if self.debug: print("GameControllerModel Restarting engine!")
             self.engine.setStopRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
