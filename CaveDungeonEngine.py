@@ -121,6 +121,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = True # set False to stop print debug messages in console
+        self.vip_priv_rewards = True # set True if you get VIP or Privledge rewards
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -242,7 +243,7 @@ class CaveEngine(QObject):
         self.stopRequested = True
         self.screen_connector.stopRequested = True
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            if self.debug: print("*** Saving Statistics #4 ***")
+            if self.debug: print("*** Saving Statistics #3 ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
     def setStartRequested(self):
@@ -716,7 +717,7 @@ class CaveEngine(QObject):
 
     def intro_lvl(self):
         if self.debug: print("Getting Start Items")
-        self.wait(6) # inital wait for ability wheel to load
+        self.wait(8) # inital wait for ability wheel to load
         self.chooseBestAbility()
         self.swipe('n', 3)
         self.tap('lucky_wheel_start')
@@ -833,8 +834,70 @@ class CaveEngine(QObject):
     def start_one_game(self):
         i = 1
         while i <= self.max_loops_game:
+            self.log("Checking conditions")
+            self.log("Please wait...")
             self.screen_connector.checkDoorsOpen()
             self.start_date = datetime.now()
+            self.screen_connector.stopRequested = False
+            if self.debug: print("Checking for new_season")
+            if self.screen_connector.checkFrame("popup_new_season"):
+                if self.debug: print("Okay to New Season")
+                self.log("Okay to New Season")
+                self.tap("close_need_this")
+                self.wait(5)
+            if self.debug: print("Checking for patrol_reward")
+            if self.screen_connector.checkFrame("popup_home_patrol"):
+                if self.debug: print("Collecting time patrol")
+                self.log("Collecting Time Patrol")
+                self.tap("collect_hero_patrol")
+                self.wait(5)
+                self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
+            if self.debug: print("Checking for patrol_close")
+            if self.screen_connector.checkFrame("btn_home_time_reward"):
+                self.tap("close_hero_patrol")
+                self.log("Closing Patrol")
+                self.wait(5)
+            if self.debug: print("Checking for vip_reward_1")
+            if self.screen_connector.checkFrame("popup_vip_rewards"):
+                if self.vip_priv_rewards:
+                    if self.debug: print("Collecting VIP-Privilege Rewards 1")
+                    self.log("VIP-Privilege Rewards 1")
+                    self.tap("collect_vip_rewards")
+                    self.wait(5)
+                self.tap("close_vip_rewards")
+                self.wait(5)
+            if self.debug: print("Checking for vip_reward_2")
+            if self.screen_connector.checkFrame("popup_vip_rewards"):
+                if self.vip_priv_rewards:
+                    if self.debug: print("Collecting VIP-Privilege Rewards 2")
+                    self.log("VIP-Privilege Rewards 2")
+                    self.tap("collect_vip_rewards")
+                    self.wait(5)
+                self.tap("close_vip_rewards")
+                self.wait(5)
+            if self.debug: print("Checking for need_this")
+            if self.screen_connector.checkFrame("popup_need_this"):
+                 if self.debug: print("Rejecting Must Need Ad")
+                 self.log("Rejecting Must Need Ad")
+                 self.tap("close_need_this")
+                 self.wait(5)
+            if self.debug: print("Checking for time_prize")
+            if self.screen_connector.checkFrame("time_prize"):
+                if self.debug: print("Collecting time prize")
+                self.log("Collecting Time Prize")
+                self.tap("collect_time_prize")
+                self.wait(5)
+                self.tap("resume")
+                self.wait(2) 
+            if self.currentLevel == 0:
+                 if self.debug: print("Checking for energy")
+                 while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
+                    if self.debug: print("No energy, waiting for 60 minute")
+                    self.log("No Energy")
+                    self.noEnergyLeft.emit()
+                    self.wait(3605) # wait for time to gain 5 energy 
+            print("New game. Starting from level %d" % self.currentLevel)
+            self.log("New Game Started")
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("Selected Dungeon is 3/6/10")
                 self.stat_lvl_start = self.currentLevel
@@ -846,46 +909,6 @@ class CaveEngine(QObject):
                     if self.screen_connector.checkFrame('menu_home'):
                         self.currentLevel = 0 # allows to start playing 20+ levels
                         self.stat_lvl_start = self.currentLevel
-            self.screen_connector.stopRequested = False
-            self.log("New Game Started")
-            print("New game. Starting from level %d" % self.currentLevel)
-            if self.screen_connector.checkFrame("popup_vip_rewards"):
-                if self.debug: print("Collecting VIP-Privilege Rewards 1")
-                self.log("VIP-Privilege Rewards 1")
-                self.tap("collect_vip_rewards")
-                self.wait(5)
-                self.tap("close_vip_rewards")# click again somewhere to close popup with token things
-                self.wait(5)
-            if self.screen_connector.checkFrame("popup_vip_rewards"):
-                if self.debug: print("Collecting VIP-Privilege Rewards 2")
-                self.log("VIP-Privilege Rewards 2")
-                self.tap("collect_vip_rewards")
-                self.wait(5)
-                self.tap("close_vip_rewards")# click again somewhere to close popup with token things
-                self.wait(5)
-            if self.screen_connector.checkFrame("time_prize"):
-                if self.debug: print("Collecting time prize")
-                self.log("Collecting Time Prize")
-                self.tap("collect_time_prize")
-                self.wait(5)
-                self.tap("resume")
-                self.wait(2)
-            if self.screen_connector.checkFrame("popup_home_patrol"):
-                if self.debug: print("Collecting time patrol")
-                self.log("Collecting Time Patrol")
-                self.tap("collect_hero_patrol")
-                self.wait(5)
-                self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
-            if self.screen_connector.checkFrame("btn_home_time_reward"):
-                self.tap("close_hero_patrol")
-                self.log("Closing Patrol")
-                self.wait(5)
-            if self.currentLevel == 0:
-                while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
-                    if self.debug: print("No energy, waiting for 60 minute")
-                    self.log("No Energy")
-                    self.noEnergyLeft.emit()
-                    self.wait(3605) # wait for time to gain 5 energy
             try:
                 if self.currentLevel == 0:
                     if self.debug: print("start_one_game level = 0")
@@ -925,7 +948,10 @@ class CaveEngine(QObject):
         self.log("Main Menu")
         self.tap('start')
         self.wait(2) # wait for no_raid button to load
-        self.tap('start_no_raid')
+        if self.debug: print("Checking for raid options")
+        if self.screen_connector.checkFrame("quick_raid_option"):
+            if self.debug: print("Choosing normal raid")
+            self.tap('start_no_raid')
         self.play_cave()
 
     def play_cave(self):
@@ -987,6 +1013,6 @@ class CaveEngine(QObject):
     def _exitEngine(self):
         print ("Game Engine Closed")
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            if self.debug: print("*** Saving Statistics #3 ***")
+            if self.debug: print("*** Saving Statistics #4 ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         exit(1)
