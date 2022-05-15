@@ -32,7 +32,6 @@ class CaveEngine(QObject):
     sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
     
     UseGeneratedData = False # Set True to use TouchManager generated data
-    UseManualStart = False # Set True to use ManualStart paths (not recommended)
     SkipEnergyCheck = False # Set True to not check for energy (not recommended)
     
     data_pack = 'datas'
@@ -882,15 +881,11 @@ class CaveEngine(QObject):
                 self.log("Closing Patrol")
                 self.wait(5)
             if self.currentLevel == 0:
-                if self.UseManualStart:
-                    a = input("Press enter to start a game (your energy bar must be at least 5)")
-                    self.log("Beging Dungeon Raid!")
-                else:
-                    while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
-                        if self.debug: print("No energy, waiting for 60 minute")
-                        self.log("No Energy")
-                        self.noEnergyLeft.emit()
-                        self.wait(3605) # wait for time to gain 5 energy
+                while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
+                    if self.debug: print("No energy, waiting for 60 minute")
+                    self.log("No Energy")
+                    self.noEnergyLeft.emit()
+                    self.wait(3605) # wait for time to gain 5 energy
             try:
                 if self.currentLevel == 0:
                     if self.debug: print("start_one_game level = 0")
@@ -922,7 +917,7 @@ class CaveEngine(QObject):
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
         if i > self.max_loops_game:
-            if self.debug: print("Max Farming loops reached")
+            if self.debug: print("Max farming loops reached")
             raise Exception('farm_loop_max')
         
     def chooseCave(self):
