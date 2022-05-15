@@ -832,7 +832,7 @@ class CaveEngine(QObject):
             self.normal_lvl()
 
     def start_one_game(self):
-        i = 1
+        i = 0
         while i <= self.max_loops_game:
             self.log("Checking conditions")
             self.log("Please wait...")
@@ -893,7 +893,13 @@ class CaveEngine(QObject):
                 state = self.screen_connector.getFrameState()
                 if self.debug: print("state: %s" % state)
                 if state != 'in_game':
-                    if self.debug: print("You are not in a dungeon, reseting to level 0")
+                    if self.debug: print("Something is not right, or you are not in a dungeon, trying again.")
+                    self.log("Something is wrong")
+                    self.log("Close all popups")
+                    self.log("You must be in game")
+                    self.log("Without door open")
+                    self.log("Stop and try again")
+                    self.wait(1) # wait for logs to display
                     self.currentLevel = 0 # allows to continue playing if not ingame
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
@@ -941,9 +947,9 @@ class CaveEngine(QObject):
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("*** Saving Statistics #2 ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
+            i += 1
             print(">>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<")
             print(i)
-            i += 1
         if i > self.max_loops_game:
             if self.debug: print("Max farming loops reached")
             raise Exception('farm_loop_max')
