@@ -896,8 +896,7 @@ class CaveEngine(QObject):
             except Exception as exc:
                 if exc.args[0] == 'mainscreen':
                     if self.debug: print("Main Menu. Restarting game now.")
-                    self.log("Restarting game now")
-                    return
+                    self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
                     if self.debug: print("Unknows screen state. Exiting instead of doing trouble")
                     self.log("Unknown Screens... halp!")
@@ -910,11 +909,11 @@ class CaveEngine(QObject):
                     if self.debug: print("Got an unknown exception: %s" % exc)
                     self.log("Unknown Problem... halp!")
                     self._exitEngine()
-            print("Completed Farm Loop")
-            print(i)
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("*** Saving Statistics #2 ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
+            print(">>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<")
+            print(i)
             i += 1
         if i > self.max_loops_game:
             if self.debug: print("Max farming loops reached")
