@@ -889,13 +889,19 @@ class CaveEngine(QObject):
                 self.wait(5)
                 self.tap("resume")
                 self.wait(2) 
+            if self.currentLevel > 0:
+                state = self.screen_connector.getFrameState()
+                if self.debug: print("state: %s" % state)
+                if state != 'in_game':
+                    if self.debug: print("You are not in a dungeon, reseting to level 0")
+                    self.currentLevel = 0 # allows to continue playing if not ingame
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
                  while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
                     if self.debug: print("No energy, waiting for 60 minute")
                     self.log("No Energy")
                     self.noEnergyLeft.emit()
-                    self.wait(3605) # wait for time to gain 5 energy 
+                    self.wait(3605) # wait for time to gain 5 energy        
             print("New game. Starting from level %d" % self.currentLevel)
             self.log("New Game Started")
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
