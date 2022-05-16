@@ -565,21 +565,21 @@ class CaveEngine(QObject):
                     self.log("Gained Experience")
                     return
                 elif state == "in_game":
-                    if self.screen_connector.checkDoorsOpen(frame):
-                        if self.debug: print("Door is OPEN #1 <---------######")
-                        self.log("The Door is Open")
-                        return
-                    if self.screen_connector.checkDoorsOpen1(frame):
-                        if self.debug: print("Door is OPEN #2 <---------######")
-                        self.log("The Door is Open")
-                        return
-                    if self.screen_connector.checkDoorsOpen2(frame):
-                        if self.debug: print("Door is OPEN #3 <---------######")
-                        self.log("The Door is Open")
-                        return
-                    else:
-                        # added movement to increase kill enemy efficency
-                        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+                    # added movement to increase kill enemy efficency
+                    if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+                        if self.screen_connector.checkDoorsOpen(frame):
+                            if self.debug: print("Door is OPEN #1 <---------######")
+                            self.log("The Door is Open")
+                            return
+                        if self.screen_connector.checkDoorsOpen1(frame):
+                            if self.debug: print("Door is OPEN #2 <---------######")
+                            self.log("The Door is Open")
+                            return
+                        if self.screen_connector.checkDoorsOpen2(frame):
+                            if self.debug: print("Door is OPEN #3 <---------######")
+                            self.log("The Door is Open")
+                            return
+                        else:
                             if self.debug: print("Doing patrol")
                             self.log("Doing Patrol")
                             self.disableLogs = True
@@ -591,9 +591,10 @@ class CaveEngine(QObject):
                             self.wait(2)
                             self.swipe('w', 0.33)
                             self.disableLogs = False
-                        # added random escape methods for 10, 30, 50 level chapters
-                        else:
-                            if i >= _time * .85:
+                            if self.debug: print("Still playing but level not ended")
+                    # added random escape methods for 10, 30, 50 level chapters
+                    else:
+                        if i >= _time * .85:
                                 if self.debug: print("Let-Play. Time < 100%")
                                 self.log("Escape route #1")
                                 self.disableLogs = True
@@ -606,20 +607,22 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 3)
                                 self.disableLogs = False
-                            if _time * .7 <= i < _time * .85:
+                        if _time * .7 <= i < _time * .85:
                                 if self.debug: print("Let-Play. Time < 85%")
                                 self.log("Escape route #2")
                                 self.disableLogs = True
                                 self.swipe('s', .5)
                                 self.swipe('sw', 2)
+                                self.swipe('n', 1)
                                 self.swipe('nw', 2)
                                 self.swipe('ne', 2)
                                 self.swipe('s', .5)
                                 self.swipe('se', 2)
+                                self.swipe('n', 1)
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 2)
                                 self.disableLogs = False
-                            if _time * .5 <= i < _time * .7:
+                        if _time * .5 <= i < _time * .7:
                                 if self.debug: print("Let-Play. Time < 70%")
                                 self.log("Escape route #3")
                                 self.disableLogs = True
@@ -630,7 +633,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 1)
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
-                            if _time * .35 <= i < _time * .5:
+                        if _time * .35 <= i < _time * .5:
                                 if self.debug: print("Let-Play. Time < 50%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
@@ -642,7 +645,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 2)
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
-                            if i < _time * .35:
+                        if i < _time * .35:
                                 if self.debug: print("Let-Play. Time < 35%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
@@ -650,11 +653,12 @@ class CaveEngine(QObject):
                                 self.swipe('n', 1)
                                 self.swipe('nw', 2)
                                 self.swipe('sw', 2)
-                                self.swipe('e', 1)
+                                self.swipe('n', 2)
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 2)
                                 self.disableLogs = False
-                        if self.debug: print("Still playing but level not ended")
+                        else:
+                            if self.debug: print("Still playing but level not ended")
 
     def reactGamePopups(self) -> int:
         state = ""
