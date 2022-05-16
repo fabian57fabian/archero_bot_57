@@ -897,10 +897,10 @@ class CaveEngine(QObject):
                     self.log("Something is wrong")
                     self.log("Close all popups")
                     self.log("You must be in game")
-                    self.log("Without door open")
-                    self.log("Stop and try again")
+                    self.log("at start of new room")
+                    self.log("Trying level 0 now")
                     self.wait(1) # wait for logs to display
-                    self.currentLevel = 0 # allows to continue playing if not ingame
+                    self.currentLevel = 0 # allows to continue playing if at home_menu
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
                  while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
@@ -908,8 +908,6 @@ class CaveEngine(QObject):
                     self.log("No Energy")
                     self.noEnergyLeft.emit()
                     self.wait(3605) # wait for time to gain 5 energy        
-            print("New game. Starting from level %d" % self.currentLevel)
-            self.log("New Game Started")
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("Selected Dungeon is 3/6/10")
                 self.stat_lvl_start = self.currentLevel
@@ -921,6 +919,9 @@ class CaveEngine(QObject):
                     if self.screen_connector.checkFrame('menu_home'):
                         self.currentLevel = 0 # allows to start playing 20+ levels
                         self.stat_lvl_start = self.currentLevel
+            self.wait(4) # for GUI logs to sync
+            print("New game. Starting from level %d" % self.currentLevel)
+            self.log("New Game Started")
             try:
                 if self.currentLevel == 0:
                     if self.debug: print("start_one_game level = 0")
