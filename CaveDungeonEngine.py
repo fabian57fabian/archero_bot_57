@@ -593,30 +593,7 @@ class CaveEngine(QObject):
                             self.disableLogs = False
                         # added random escape methods for 10, 30, 50 level chapters
                         else:
-                            if i <= _time * .5:
-                                if self.debug: print("Let-Play. Time < 50%")
-                                self.log("Escape route #3")
-                                self.disableLogs = True
-                                self.swipe('s', 2)
-                                self.swipe('nw', 2)
-                                self.swipe('ne', 2)
-                                self.swipe('s', 2)
-                                self.swipe('ne', 2)
-                                self.swipe('nw', 2)
-                                self.swipe('ne', 2)
-                                self.disableLogs = False
-                            if i <= _time * .75:
-                                if self.debug: print("Let-Play. Time < 75%")
-                                self.log("Escape route #2")
-                                self.disableLogs = True
-                                self.swipe('s', .3)
-                                self.swipe('ne', 1)
-                                self.swipe('nw', 2)
-                                self.swipe('s', .3)
-                                self.swipe('nw', 1)
-                                self.swipe('ne', 2)
-                                self.disableLogs = False
-                            if i <= _time * 1:
+                            if i >= _time * .85:
                                 if self.debug: print("Let-Play. Time < 100%")
                                 self.log("Escape route #1")
                                 self.disableLogs = True
@@ -628,6 +605,54 @@ class CaveEngine(QObject):
                                 self.swipe('e', 0.4)
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 3)
+                                self.disableLogs = False
+                            if _time * .7 <= i < _time * .85:
+                                if self.debug: print("Let-Play. Time < 85%")
+                                self.log("Escape route #2")
+                                self.disableLogs = True
+                                self.swipe('s', .5)
+                                self.swipe('sw', 2)
+                                self.swipe('nw', 2)
+                                self.swipe('ne', 2)
+                                self.swipe('s', .5)
+                                self.swipe('se', 2)
+                                self.swipe('ne', 2)
+                                self.swipe('nw', 2)
+                                self.disableLogs = False
+                            if _time * .5 <= i < _time * .7:
+                                if self.debug: print("Let-Play. Time < 70%")
+                                self.log("Escape route #3")
+                                self.disableLogs = True
+                                self.swipe('s', .3)
+                                self.swipe('ne', 1)
+                                self.swipe('nw', 2)
+                                self.swipe('s', .3)
+                                self.swipe('nw', 1)
+                                self.swipe('ne', 2)
+                                self.disableLogs = False
+                            if _time * .35 <= i < _time * .5:
+                                if self.debug: print("Let-Play. Time < 50%")
+                                self.log("Escape route #4")
+                                self.disableLogs = True
+                                self.swipe('sw', 2)
+                                self.swipe('n', 1)
+                                self.swipe('ne', 2)
+                                self.swipe('se', 2)
+                                self.swipe('w', 1)
+                                self.swipe('nw', 2)
+                                self.swipe('ne', 2)
+                                self.disableLogs = False
+                            if i < _time * .35:
+                                if self.debug: print("Let-Play. Time < 35%")
+                                self.log("Escape route #4")
+                                self.disableLogs = True
+                                self.swipe('se', 2)
+                                self.swipe('n', 1)
+                                self.swipe('nw', 2)
+                                self.swipe('sw', 2)
+                                self.swipe('e', 1)
+                                self.swipe('ne', 2)
+                                self.swipe('nw', 2)
                                 self.disableLogs = False
                         if self.debug: print("Still playing but level not ended")
 
@@ -900,7 +925,7 @@ class CaveEngine(QObject):
                     self.log("at start of new room")
                     self.log("Trying level 0 now")
                     self.wait(1) # wait for logs to display
-                    self.currentLevel = 0 # allows to continue playing if at home_menu
+                    self.currentLevel = 0 # allows to continue playing if at home_menu      
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
                  while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
@@ -919,7 +944,7 @@ class CaveEngine(QObject):
                     if self.screen_connector.checkFrame('menu_home'):
                         self.currentLevel = 0 # allows to start playing 20+ levels
                         self.stat_lvl_start = self.currentLevel
-            self.wait(4) # for GUI logs to sync
+            self.wait(6) # for GUI logs to sync
             print("New game. Starting from level %d" % self.currentLevel)
             self.log("New Game Started")
             try:
