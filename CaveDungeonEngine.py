@@ -587,7 +587,9 @@ class CaveEngine(QObject):
                             self.wait(2)
                             self.swipe('e', 0.33)
                             self.wait(2)
-                            self.swipe('e', 0.66)
+                            self.swipe('e', 0.33)
+                            self.wait(2)
+                            self.swipe('e', 0.33)
                             self.wait(2)
                             self.swipe('w', 0.33)
                             self.disableLogs = False
@@ -608,7 +610,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 3)
                                 self.disableLogs = False
                         if _time * .6 < i <= _time * .8:
-                                if self.debug: print("Let-Play. Time < 85%")
+                                if self.debug: print("Let-Play. Time < 80%")
                                 self.log("Escape route #2")
                                 self.disableLogs = True
                                 self.swipe('s', .5)
@@ -623,7 +625,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 2)
                                 self.disableLogs = False
                         if _time * .4 < i <= _time * .6:
-                                if self.debug: print("Let-Play. Time < 70%")
+                                if self.debug: print("Let-Play. Time < 60%")
                                 self.log("Escape route #3")
                                 self.disableLogs = True
                                 self.swipe('s', .3)
@@ -634,7 +636,7 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
                         if _time * .2 < i <= _time * .4:
-                                if self.debug: print("Let-Play. Time < 50%")
+                                if self.debug: print("Let-Play. Time < 40%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
                                 self.swipe('sw', 2)
@@ -646,7 +648,7 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
                         if i <= _time * .2:
-                                if self.debug: print("Let-Play. Time < 35%")
+                                if self.debug: print("Let-Play. Time < 20%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
                                 self.swipe('se', 2)
@@ -681,14 +683,22 @@ class CaveEngine(QObject):
                 self.tap('ability_daemon_reject')
                 self.wait(2)
             elif state == "ad_ask":
-                self.tap('spin_wheel_back')
-                self.wait(2)
+                if self.battle_pass_advanced:
+                    self.tap('lucky_wheel_start')
+                    self.wait(6)
+                else:
+                    self.tap('spin_wheel_back')
+                    self.wait(2)
             elif state == "mistery_vendor":
                 self.tap('spin_wheel_back')
                 self.wait(2)
             elif state == "special_gift_respin":
-                self.tap('spin_wheel_back')
-                self.wait(2)
+                if self.battle_pass_advanced:
+                    self.tap('lucky_wheel_start')
+                    self.wait(6)
+                else:
+                    self.tap('spin_wheel_back')
+                    self.wait(2)
             elif state == "angel_heal":
                 self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
@@ -883,24 +893,23 @@ class CaveEngine(QObject):
                 self.tap("close_hero_patrol")
                 self.log("Closing Patrol")
                 self.wait(4)
-            if self.debug: print("Checking for vip_reward_1")
-            if self.screen_connector.checkFrame("popup_vip_rewards"):
-                if self.vip_priv_rewards:
+            if self.vip_priv_rewards:
+                if self.debug: print("Checking for vip_reward_1")
+                if self.screen_connector.checkFrame("popup_vip_rewards"):
                     if self.debug: print("Collecting VIP-Privilege Rewards 1")
                     self.log("VIP-Privilege Rewards 1")
                     self.tap("collect_vip_rewards")
                     self.wait(5)
-                self.tap("close_vip_rewards")
-                self.wait(4)
-            if self.debug: print("Checking for vip_reward_2")
-            if self.screen_connector.checkFrame("popup_vip_rewards"):
-                if self.vip_priv_rewards:
+                    self.tap("close_vip_rewards")
+                    self.wait(4)
+                if self.debug: print("Checking for vip_reward_2")
+                if self.screen_connector.checkFrame("popup_vip_rewards"):
                     if self.debug: print("Collecting VIP-Privilege Rewards 2")
                     self.log("VIP-Privilege Rewards 2")
                     self.tap("collect_vip_rewards")
                     self.wait(5)
-                self.tap("close_vip_rewards")
-                self.wait(4)
+                    self.tap("close_vip_rewards")
+                    self.wait(4)
             if self.debug: print("Checking for need_this")
             if self.screen_connector.checkFrame("popup_need_this"):
                  if self.debug: print("Rejecting Must Need Ad")
@@ -919,14 +928,14 @@ class CaveEngine(QObject):
                 state = self.screen_connector.getFrameState()
                 if self.debug: print("state: %s" % state)
                 if state != 'in_game':
-                    if self.debug: print("Something is not right, or you are not in a dungeon.")
+                    if self.debug: print("Something is not right...")
+                    self.reactGamePopups()
+                    state = self.screen_connector.getFrameState()
                     if state == 'menu_home':
                         if self.debug: print("Home Menu detected... setting to lvl 0 now.")
                         self.log("Trying level 0 now")
                         self.wait(1) # wait for logs to display
                         self.currentLevel = 0 # allows to continue playing if at home_menu
-                    else:
-                        self.reactGamePopups()
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
                  while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
