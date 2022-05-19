@@ -25,10 +25,10 @@ class CaveEngine(QObject):
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
-    playtime = 100 # set loops for letPlay (default 100, total patrol loops = playtime/self.check_seconds)
+    playtime = 25 # set loops for letPlay (default 50, total patrol loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
-    max_loops_game = 25 # set loops for start_one_game (default 20, farming cycles to do)
-    max_wait = 10 # set loops for final_boss (default 10, increase sleep screens if need more time)
+    max_loops_game = 50 # set loops for start_one_game (default 25, farming cycles to do)
+    max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
     sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
     
     UseGeneratedData = False # Set True to use TouchManager generated data
@@ -529,10 +529,13 @@ class CaveEngine(QObject):
                         continue
                 elif state == "endgame" or state == "repeat_endgame_question":
                     if self.debug: print("Ley-Play. Endgame Detected")
+                    if state == "repeat_endgame_question":
+                        if self.debug: print("state = repeat_endgame_question")
                     self.altEndgameClose()
                     return
                 elif state == "menu_home":
-                    raise Exception('mainscreen')
+                    return
+                    #raise Exception('mainscreen')
                 elif state == "select_ability":
                     if self.debug: print("Level ended. New Abilities.")
                     self.log("New Abilities")
@@ -591,7 +594,7 @@ class CaveEngine(QObject):
                             if self.debug: print("Still playing but level not ended")
                     # added random escape methods for 10, 30, 50 level chapters
                     else:
-                        if i >= _time * .85:
+                        if i > _time * .8:
                                 if self.debug: print("Let-Play. Time < 100%")
                                 self.log("Escape route #1")
                                 self.disableLogs = True
@@ -604,7 +607,7 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 3)
                                 self.disableLogs = False
-                        if _time * .7 <= i < _time * .85:
+                        if _time * .6 < i <= _time * .8:
                                 if self.debug: print("Let-Play. Time < 85%")
                                 self.log("Escape route #2")
                                 self.disableLogs = True
@@ -619,7 +622,7 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 2)
                                 self.disableLogs = False
-                        if _time * .5 <= i < _time * .7:
+                        if _time * .4 < i <= _time * .6:
                                 if self.debug: print("Let-Play. Time < 70%")
                                 self.log("Escape route #3")
                                 self.disableLogs = True
@@ -630,7 +633,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 1)
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
-                        if _time * .35 <= i < _time * .5:
+                        if _time * .2 < i <= _time * .4:
                                 if self.debug: print("Let-Play. Time < 50%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
@@ -642,7 +645,7 @@ class CaveEngine(QObject):
                                 self.swipe('nw', 2)
                                 self.swipe('ne', 2)
                                 self.disableLogs = False
-                        if i < _time * .35:
+                        if i <= _time * .2:
                                 if self.debug: print("Let-Play. Time < 35%")
                                 self.log("Escape route #4")
                                 self.disableLogs = True
@@ -699,9 +702,12 @@ class CaveEngine(QObject):
                 self.wait(2)
             elif state == "endgame" or state == "repeat_endgame_question":
                 if self.debug: print("React-Popup. Endgame Detected")
+                if state == "repeat_endgame_question":
+                    if self.debug: print("state = repeat_endgame_question")
                 self.altEndgameClose()
             elif state == "menu_home":
-                raise Exception('mainscreen')
+                return
+                #raise Exception('mainscreen')
             i += 1
         return i
 
@@ -856,27 +862,27 @@ class CaveEngine(QObject):
         while i <= self.max_loops_game:
             self.log("Checking conditions")
             self.log("Please wait...")
-            self.screen_connector.checkDoorsOpen()
+            #self.screen_connector.checkDoorsOpen()
             self.start_date = datetime.now()
             self.screen_connector.stopRequested = False
             if self.debug: print("Checking for new_season")
             if self.screen_connector.checkFrame("popup_new_season"):
                 if self.debug: print("Okay to New Season")
                 self.log("Okay to New Season")
-                self.tap("close_need_this")
-                self.wait(5)
+                self.tap("close_new_season")
+                self.wait(4)
             if self.debug: print("Checking for patrol_reward")
             if self.screen_connector.checkFrame("popup_home_patrol"):
                 if self.debug: print("Collecting time patrol")
                 self.log("Collecting Time Patrol")
                 self.tap("collect_hero_patrol")
-                self.wait(5)
+                self.wait(6)
                 self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
             if self.debug: print("Checking for patrol_close")
             if self.screen_connector.checkFrame("btn_home_time_reward"):
                 self.tap("close_hero_patrol")
                 self.log("Closing Patrol")
-                self.wait(5)
+                self.wait(4)
             if self.debug: print("Checking for vip_reward_1")
             if self.screen_connector.checkFrame("popup_vip_rewards"):
                 if self.vip_priv_rewards:
@@ -885,7 +891,7 @@ class CaveEngine(QObject):
                     self.tap("collect_vip_rewards")
                     self.wait(5)
                 self.tap("close_vip_rewards")
-                self.wait(5)
+                self.wait(4)
             if self.debug: print("Checking for vip_reward_2")
             if self.screen_connector.checkFrame("popup_vip_rewards"):
                 if self.vip_priv_rewards:
@@ -894,13 +900,13 @@ class CaveEngine(QObject):
                     self.tap("collect_vip_rewards")
                     self.wait(5)
                 self.tap("close_vip_rewards")
-                self.wait(5)
+                self.wait(4)
             if self.debug: print("Checking for need_this")
             if self.screen_connector.checkFrame("popup_need_this"):
                  if self.debug: print("Rejecting Must Need Ad")
                  self.log("Rejecting Must Need Ad")
                  self.tap("close_need_this")
-                 self.wait(5)
+                 self.wait(4)
             if self.debug: print("Checking for time_prize")
             if self.screen_connector.checkFrame("time_prize"):
                 if self.debug: print("Collecting time prize")
@@ -913,14 +919,14 @@ class CaveEngine(QObject):
                 state = self.screen_connector.getFrameState()
                 if self.debug: print("state: %s" % state)
                 if state != 'in_game':
-                    if self.debug: print("Something is not right, or you are not in a dungeon, trying again.")
-                    self.log("Something is wrong")
-                    self.log("Close all popups")
-                    self.log("You must be in game")
-                    self.log("at start of new room")
-                    self.log("Trying level 0 now")
-                    self.wait(1) # wait for logs to display
-                    self.currentLevel = 0 # allows to continue playing if at home_menu      
+                    if self.debug: print("Something is not right, or you are not in a dungeon.")
+                    if state == 'menu_home':
+                        if self.debug: print("Home Menu detected... setting to lvl 0 now.")
+                        self.log("Trying level 0 now")
+                        self.wait(1) # wait for logs to display
+                        self.currentLevel = 0 # allows to continue playing if at home_menu
+                    else:
+                        self.reactGamePopups()
             if self.currentLevel == 0:
                  if self.debug: print("Checking for energy")
                  while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
@@ -930,7 +936,10 @@ class CaveEngine(QObject):
                     self.wait(3605) # wait for time to gain 5 energy        
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("Selected Dungeon is 3/6/10")
-                self.stat_lvl_start = self.currentLevel
+                if self.currentLevel >= 21:
+                    self.currentLevel = 1
+                else:
+                    self.stat_lvl_start = self.currentLevel
             else:
                 if self.debug: print("Selected Dungeon is *** NOT *** 3/6/10")
                 if not self.screen_connector.checkFrame('endgame'):
@@ -1024,7 +1033,7 @@ class CaveEngine(QObject):
             return
         if state != 'endgame':
             self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
-            self.wait(8) # wait for endgame loot screen to load
+            self.wait(4) # wait for endgame loot screen to load
         if state == 'endgame':
             if self.debug: print("Play-Cave. You won!")
             self.log("You won, Game over!")
@@ -1038,17 +1047,15 @@ class CaveEngine(QObject):
         if self.debug: print("state: %s" % state)
         if state == 'endgame':
             self.pressCloseEndgame()
-            self.wait(8) # wait for go back to main menu
+            self.wait(6) # wait for go back to main menu
 
     def pressCloseEndgame(self):
         if self.debug: print("Going back to main Menu")
         self.tap('close_end')
         self.currentLevel = 0
-        self.wait(8) # wait for go back to main menu
+        self.wait(6) # wait for go back to main menu
 
     def altEndgameClose(self):
-        if state == "repeat_endgame_question":
-            if self.debug: print("state = repeat_endgame_question")
         if self.debug: print("You died or you won! Either way, game over!")
         self.log("You died or won!")
         self.log("Either way, it's over!")
