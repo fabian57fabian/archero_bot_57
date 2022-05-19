@@ -122,6 +122,8 @@ class CaveEngine(QObject):
         super(QObject, self).__init__()
         self.debug = True # set False to stop print debug messages in console
         self.vip_priv_rewards = True # set True if you get VIP or Privledge rewards
+        self.battle_pass_rewards = True # set True if you get battle pass rewards
+        self.battle_pass_advanced = True # set True if you get battle pass advanced
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -527,12 +529,7 @@ class CaveEngine(QObject):
                         continue
                 elif state == "endgame" or state == "repeat_endgame_question":
                     if self.debug: print("Ley-Play. Endgame Detected")
-                    if state == "repeat_endgame_question":
-                        if self.debug: print("state = repeat_endgame_question")
-                    if self.debug: print("You died or you won! Either way, game over!")
-                    self.log("You died or won!")
-                    self.log("Either way, it's over!")
-                    self.pressCloseEndgame()
+                    self.altEndgameClose()
                     return
                 elif state == "menu_home":
                     raise Exception('mainscreen')
@@ -701,14 +698,8 @@ class CaveEngine(QObject):
                 self.tap("resume")
                 self.wait(2)
             elif state == "endgame" or state == "repeat_endgame_question":
-                if self.debug: print("React-Popups Endgame Detected")
-                if state == "repeat_endgame_question":
-                    if self.debug: print("state = repeat_endgame_question")
-                if self.debug: print("You died or you won! Either way, game over!")
-                self.log("You died or won!")
-                self.log("Either way, it's over!")
-                self.pressCloseEndgame()
-                self.wait(2)
+                if self.debug: print("React-Popup. Endgame Detected")
+                self.altEndgameClose()
             elif state == "menu_home":
                 raise Exception('mainscreen')
             i += 1
@@ -746,7 +737,7 @@ class CaveEngine(QObject):
 
     def intro_lvl(self):
         if self.debug: print("Getting Start Items")
-        self.wait(8) # inital wait for ability wheel to load
+        self.wait(10) # inital wait for ability wheel to load
         self.chooseBestAbility()
         self.swipe('n', 3)
         self.tap('lucky_wheel_start')
@@ -1032,7 +1023,7 @@ class CaveEngine(QObject):
         if state == 'menu_home':
             return
         if state != 'endgame':
-            self.tap('close_end') # maybe you leveled up trying to get endgame
+            self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
             self.wait(8) # wait for endgame loot screen to load
         if state == 'endgame':
             if self.debug: print("Play-Cave. You won!")
@@ -1041,12 +1032,6 @@ class CaveEngine(QObject):
             self.pressCloseEndgame()
         self.pressCloseEndIfEndedFrame()
 
-    def pressCloseEndgame(self):
-        if self.debug: print("Going back to main Menu")
-        self.tap('close_end')
-        self.currentLevel = 0
-        self.wait(8) # wait for go back to main menu
-
     def pressCloseEndIfEndedFrame(self):
         if self.debug: print("pressCoseEndIfEndedFrame Check")
         state = self.screen_connector.getFrameState()
@@ -1054,6 +1039,21 @@ class CaveEngine(QObject):
         if state == 'endgame':
             self.pressCloseEndgame()
             self.wait(8) # wait for go back to main menu
+
+    def pressCloseEndgame(self):
+        if self.debug: print("Going back to main Menu")
+        self.tap('close_end')
+        self.currentLevel = 0
+        self.wait(8) # wait for go back to main menu
+
+    def altEndgameClose(self):
+        if state == "repeat_endgame_question":
+            if self.debug: print("state = repeat_endgame_question")
+        if self.debug: print("You died or you won! Either way, game over!")
+        self.log("You died or won!")
+        self.log("Either way, it's over!")
+        self.wait(8) # wait for load endgame
+        self.tap('level_up_endgame')
 
     def _exitEngine(self):
         print ("Game Engine Closed")
