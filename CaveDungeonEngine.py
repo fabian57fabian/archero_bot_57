@@ -25,11 +25,12 @@ class CaveEngine(QObject):
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
-    playtime = 25 # set loops for letPlay (default 50, total patrol loops = playtime/self.check_seconds)
+    playtime = 100 # set loop time for letPlay (default 100, total loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
-    max_loops_game = 50 # set loops for start_one_game (default 25, farming cycles to do)
+    max_loops_game = 50 # set loops for start_one_game (default 50, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
     sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
+    max_buy_energy = 2 # set number of times to buy energy if self.buy_energy = True
     
     UseGeneratedData = False # Set True to use TouchManager generated data
     SkipEnergyCheck = False # Set True to not check for energy (not recommended)
@@ -121,6 +122,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = True # set False to stop print debug messages in console
+        self.buy_energy = False # set True to spend gems to buy more energy when needed
         self.vip_priv_rewards = True # set True if you get VIP or Privledge rewards
         self.battle_pass_rewards = True # set True if you get battle pass rewards
         self.battle_pass_advanced = True # set True if you get battle pass advanced
@@ -532,10 +534,8 @@ class CaveEngine(QObject):
                     if state == "repeat_endgame_question":
                         if self.debug: print("state = repeat_endgame_question")
                     self.altEndgameClose()
-                    return
                 elif state == "menu_home":
-                    return
-                    #raise Exception('mainscreen')
+                    raise Exception('mainscreen')
                 elif state == "select_ability":
                     if self.debug: print("Level ended. New Abilities.")
                     self.log("New Abilities")
@@ -561,7 +561,7 @@ class CaveEngine(QObject):
                     self.log("Angel Arrived")
                     return
                 elif check_exp_bar and self.screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
-                    if self.debug: print("Experience gained!")
+                    if self.debug: print("Level ended. Experience gained!")
                     self.log("Gained Experience")
                     return
                 elif state == "in_game":
@@ -591,7 +591,9 @@ class CaveEngine(QObject):
                             self.wait(2)
                             self.swipe('e', 0.33)
                             self.wait(2)
-                            self.swipe('w', 0.33)
+                            self.swipe('e', 0.33)
+                            self.wait(2)
+                            self.swipe('w', 0.66)
                             self.disableLogs = False
                             if self.debug: print("Still playing but level not ended")
                     # added random escape methods for 10, 30, 50 level chapters
@@ -670,7 +672,10 @@ class CaveEngine(QObject):
                 exit()
             if i > self.max_loops_popup:
                 if self.debug: print("React-Popups. Max loops reached")
-                raise Exception('unknown_screen_state')    
+                if self.debug: print("Trying something...")
+                self.wait(8) # wait for load endgame
+                self.tap('level_up_endgame')
+                return  
             if self.debug: print("React-Popups. Checking screen...")
             state = self.screen_connector.getFrameState()
             if self.debug: print("state: %s" % state)
@@ -717,7 +722,7 @@ class CaveEngine(QObject):
                 self.altEndgameClose()
             elif state == "menu_home":
                 return
-                #raise Exception('mainscreen')
+            #raise Exception('mainscreen')
             i += 1
         return i
 
@@ -728,13 +733,13 @@ class CaveEngine(QObject):
             t2 = self.tier_list_abilities[abilities['c']]
             t3 = self.tier_list_abilities[abilities['r']]
             best = ""
-            if t1 < t2 and t1 < t3:
+            if t1 <= t2 and t1 <= t3:
                 to_press = 'ability_left'
                 best = abilities['l']
-            if t2 < t1 and t2 < t3:
+            if t2 <= t1 and t2 <= t3:
                 to_press = 'ability_center'
                 best = abilities['c']
-            if t3 < t2 and t3 < t1:
+            if t3 <= t2 and t3 <= t1:
                 to_press = 'ability_right'
                 best = abilities['r']
             if self.debug: print("Found best ability as " + best)
@@ -781,6 +786,12 @@ class CaveEngine(QObject):
     def heal_lvl(self):
         if self.debug: print("heal_lvl")
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+            self.log("Cenering Self")
+            self.disableLogs = True
+            self.swipe('s', 2)
+            self.swipe('e', 2)
+            self.swipe('w', .9)
+            self.disableLogs = False
             self.log("Approaching Healer")
             self.disableLogs = True
             self.swipe('n', 1.5)
@@ -791,7 +802,8 @@ class CaveEngine(QObject):
             if self.debug: print("Exiting Heal")
             self.log("Leaving Healer")
             self.disableLogs = True
-            self.swipe('n', 1)
+            self.swipe('e', 1)
+            self.swipe('nw', 2)
             self.disableLogs = False
             self.log("Left Dungeon")
             self.wait(1)
@@ -869,9 +881,13 @@ class CaveEngine(QObject):
 
     def start_one_game(self):
         i = 0
+        energy_count = 1
         while i <= self.max_loops_game:
             self.log("Checking conditions")
             self.log("Please wait...")
+            if self.debug: print("React-Popups. Checking screen...")
+            state = self.screen_connector.getFrameState()
+            if self.debug: print("state: %s" % state)
             #self.screen_connector.checkDoorsOpen()
             self.start_date = datetime.now()
             self.screen_connector.stopRequested = False
@@ -937,12 +953,28 @@ class CaveEngine(QObject):
                         self.wait(1) # wait for logs to display
                         self.currentLevel = 0 # allows to continue playing if at home_menu
             if self.currentLevel == 0:
-                 if self.debug: print("Checking for energy")
-                 while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
-                    if self.debug: print("No energy, waiting for 60 minute")
-                    self.log("No Energy")
-                    self.noEnergyLeft.emit()
-                    self.wait(3605) # wait for time to gain 5 energy        
+                if self.debug: print("Checking for energy")
+                while (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
+                    state = self.screen_connector.getFrameState()
+                    if self.buy_energy and state == 'menu_home':
+                        if energy_count <= self.max_buy_energy:
+                            self.tap('open_energy_buy')
+                            self.wait(6) # wait for load energy store
+                            self.tap('buy_more_energy')
+                            self.wait(6) # wait for load energy bar
+                            if self.debug: print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                            print(energy_count)
+                            energy_count += 1
+                        else:
+                            if self.debug: print("Max energy buy reached, waiting for 60 minutes")
+                            self.log("No Energy")
+                            self.noEnergyLeft.emit()
+                            self.wait(3605) # wait for time to gain 5 energy
+                    else:
+                        if self.debug: print("No energy, waiting for 60 minutes")
+                        self.log("No Energy")
+                        self.noEnergyLeft.emit()
+                        self.wait(3605) # wait for time to gain 5 energy        
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("Selected Dungeon is 3/6/10")
                 if self.currentLevel >= 21:
@@ -968,14 +1000,14 @@ class CaveEngine(QObject):
                     if self.debug: print("start_one_game level > 0")
                     self.play_cave()
             except Exception as exc:
-                if exc.args[0] == 'mainscreen':
+                if exc.args[0] == "mainscreen":
                     if self.debug: print("Main Menu. Restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
                     if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-                        if self.debug: print("Unknows screen state. Exiting instead of doing trouble")
+                        if self.debug: print("Unknows screen state.  Trying a restart...")
                         self.log("Unknown Screens... halp!")
-                        self._exitEngine()
+                        #self._exitEngine()
                     else:
                         if self.debug: print("Unknown State. Trying a game restart now.")
                 elif exc.args[0] == "farm_loop_max":
@@ -990,7 +1022,7 @@ class CaveEngine(QObject):
                 if self.debug: print("*** Saving Statistics #2 ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
-            print(">>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<")
+            print(">>>>>>>>>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<<<<<<<<")
             print(i)
         if i > self.max_loops_game:
             if self.debug: print("Max farming loops reached")
