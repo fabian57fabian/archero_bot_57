@@ -13,6 +13,19 @@ class HealingStrategy(str, enum.Enum):
     AlwaysHeal = "always_heal"
     AlwaysPowerUp = "always_power"
 
+class EnergyStrategy(str, enum.Enum):
+    AlwaysBuy = "always_buy"
+    AlwaysBuy2 = "always_buy2"
+    AlwaysIgnore = "always_ignore"
+
+class VIPSub(str, enum.Enum):
+    TrueVIP = "vip_true"
+    FalseVIP = "vip_false"
+
+class BattlepassAdvSub(str, enum.Enum):
+    TrueBPAdv = "bpadv_true"
+    FalseBPAdv = "bpadv_false"
+
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
     addLog = pyqtSignal(str)
@@ -22,6 +35,9 @@ class CaveEngine(QObject):
     gameWon = pyqtSignal()
     gamePaused = pyqtSignal()
     healingStrategyChanged = pyqtSignal(HealingStrategy)
+    energyStrategyChanged = pyqtSignal(EnergyStrategy)
+    vipSubChanged = pyqtSignal(VIPSub)
+    bpadvSubChanged = pyqtSignal(BattlepassAdvSub)
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
@@ -30,7 +46,7 @@ class CaveEngine(QObject):
     max_loops_game = 50 # set loops for start_one_game (default 50, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
     sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
-    max_buy_energy = 2 # set number of times to buy energy if self.buy_energy = True
+    max_buy_energy = 1 # set number of times to buy energy if self.buy_energy = True
     
     UseGeneratedData = False # Set True to use TouchManager generated data
     SkipEnergyCheck = False # Set True to not check for energy (not recommended)
@@ -122,10 +138,6 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = True # set False to stop print debug messages in console
-        self.buy_energy = False # set True to spend gems to buy more energy when needed
-        self.vip_priv_rewards = True # set True if you get VIP or Privledge rewards
-        self.battle_pass_rewards = False # set True if you get battle pass rewards
-        self.battle_pass_advanced = False # set True if you get battle pass advanced
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -145,6 +157,9 @@ class CaveEngine(QObject):
         self.currentDataFolder = ''
         self.dataFolders = {}
         self.healingStrategy = HealingStrategy.AlwaysPowerUp
+        self.energyStrategy = EnergyStrategy.AlwaysIgnore
+        self.vipSub = VIPSub.FalseVIP
+        self.bpadvSub = BattlepassAdvSub.FalseBPAdv
         self.current_settings = {}
         self.current_settings_path = 'current_settings.json'
         self.load_current_settings()
@@ -175,8 +190,11 @@ class CaveEngine(QObject):
     def _create_default_current_settings(self):
         if self.debug: print("Loading Default Settings")
         new_sett = {
+            "selected_dungeon": 3,
             "healing_strategy": HealingStrategy.AlwaysHeal,
-            "selected_dungeon": 6
+            "energy_strategy": EnergyStrategy.AlwaysIgnore,
+            "vip_sub": VIPSub.FalseVIP,
+            "bpadv_sub": BattlepassAdvSub.FalseBPAdv
         }
         saveJsonData_oneIndent(self.current_settings_path, new_sett)
 
@@ -191,14 +209,17 @@ class CaveEngine(QObject):
             if self.debug: print("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
             self._create_default_current_settings()
             new_sett = loadJsonData(self.current_settings_path)
-        if "healing_strategy" not in new_sett or "selected_dungeon" not in new_sett:
+        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett:
             if self.debug: print("Corrupted/errored current settings. ")
             if self.debug: print("Creating basic current settings...")
             self._create_default_current_settings()
         new_sett = loadJsonData(self.current_settings_path)
         self.current_settings = new_sett
-        self.healingStrategy = HealingStrategy(self.current_settings["healing_strategy"])
         self.currentDungeon = int(self.current_settings["selected_dungeon"])
+        self.healingStrategy = HealingStrategy(self.current_settings["healing_strategy"])
+        self.energyStrategy = EnergyStrategy(self.current_settings["energy_strategy"])
+        self.vipSub = VIPSub(self.current_settings["vip_sub"])
+        self.bpadvSub = BattlepassAdvSub(self.current_settings["bpadv_sub"])
 
     def changeHealStrategy(self, strat: HealingStrategy):
         if self.debug: print("Loading Heal Strategy")
@@ -207,6 +228,27 @@ class CaveEngine(QObject):
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.healingStrategyChanged.emit(strat)
 
+    def changeEnergyStrategy(self, strat1: EnergyStrategy):
+        if self.debug: print("Loading Energy Strategy")
+        self.energyStrategy = strat1
+        self.current_settings['energy_strategy'] = self.energyStrategy
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.energyStrategyChanged.emit(strat1)
+
+    def changeVIPSub(self, strat2: VIPSub):
+        if self.debug: print("Updating VIP Subscripton")
+        self.vipSub = strat2
+        self.current_settings['vip_sub'] = self.vipSub
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.vipSubChanged.emit(strat2)
+
+    def changeBattlepassAdvSub(self, strat3: BattlepassAdvSub):
+        if self.debug: print("Updating Battlepass Choice")
+        self.bpadvSub = strat3
+        self.current_settings['bpadv_sub'] = self.bpadvSub
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.bpadvSubChanged.emit(strat3)
+        
     def changeChapter(self, new_chapter):
         if self.debug: print("Loading Selected Chapter")
         self.currentDungeon = new_chapter
@@ -247,7 +289,7 @@ class CaveEngine(QObject):
         self.stopRequested = True
         self.screen_connector.stopRequested = True
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            if self.debug: print("*** Saving Statistics # - Game Stopped ***")
+            if self.debug: print("*** Saving Statistics - Game Stopped ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
     def setStartRequested(self):
@@ -688,7 +730,7 @@ class CaveEngine(QObject):
                 self.tap('ability_daemon_reject')
                 self.wait(2)
             elif state == "ad_ask":
-                if self.battle_pass_advanced:
+                if self.battle_pass_advanced or self.battle_pass_rewards:
                     self.tap('lucky_wheel_start')
                     self.wait(6)
                 else:
@@ -748,10 +790,10 @@ class CaveEngine(QObject):
             if t1 <= t2 and t1 <= t3:
                 to_press = 'ability_left'
                 best = abilities['l']
-            if t2 <= t1 and t2 <= t3:
+            elif t2 <= t1 and t2 <= t3:
                 to_press = 'ability_center'
                 best = abilities['c']
-            if t3 <= t2 and t3 <= t1:
+            elif t3 <= t2 and t3 <= t1:
                 to_press = 'ability_right'
                 best = abilities['r']
             if self.debug: print("Found best ability as " + best)
@@ -772,12 +814,16 @@ class CaveEngine(QObject):
         if self.debug: print("Getting Start Items")
         self.wait(10) # inital wait for ability wheel to load
         self.chooseBestAbility()
+        self.disableLogs = True
         self.swipe('n', 3)
+        self.disableLogs = False
         self.tap('lucky_wheel_start')
         self.wait(4)
         self.reactGamePopups()
         self.log("Leaving Start Room")
+        self.disableLogs = True
         self.swipe('n', 2)
+        self.disableLogs = False
         self.log("Entering Dungeon!")
         self.wait(1) # for GUI log to load
 
@@ -901,7 +947,16 @@ class CaveEngine(QObject):
             self.start_date = datetime.now()
             self.screen_connector.stopRequested = False
             self.log("Checking conditions")
-            self.log("Please wait...")
+            self.log("Please wait 1-3 minutes")
+            self.log("Checks are running")
+            if self.vipSub == VIPSub.TrueVIP:
+                self.vip_priv_rewards = True
+            else:
+                self.vip_priv_rewards = False
+            if self.bpadvSub == BattlepassAdvSub.TrueBPAdv:
+                self.battle_pass_advanced = True
+            else:
+                self.battle_pass_advanced = False
             if self.debug: print("Start-Game. Checking screen...")
             state = self.screen_connector.getFrameState()
             while energy_check:
@@ -969,7 +1024,7 @@ class CaveEngine(QObject):
                     self.tap("collect_time_prize")
                     self.wait(5)
                     self.tap("resume")
-                    self.wait(2) 
+                    self.wait(2)
                 if self.currentLevel > 0:
                     state = self.screen_connector.getFrameState()
                     if self.debug: print("state: %s" % state)
@@ -987,12 +1042,30 @@ class CaveEngine(QObject):
                     if self.debug: print("Checking for energy")
                     if self.screen_connector.checkFrame("least_5_energy"):    
                         energy_check = False
+                    if self.battle_pass_advanced:
+                            self.tap('open_energy_buy')
+                            self.wait(4) # wait for load energy store
+                            if self.screen_connector.checkFrame("free_ad_energy"):
+                                if self.debug: print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                                self.tap('get_ad_energy')
+                                self.wait(6) # wait for load energy bar
+                            else:
+                                self.tap('close_energy_buy')
+                                self.wait(6) # wait for close buy energy
                     if (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
+                        if self.energyStrategy == EnergyStrategy.AlwaysBuy:
+                            self.buy_energy = True
+                            self.max_buy_energy = 1
+                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
+                            self.buy_energy = True
+                            self.max_buy_energy = 2
+                        else:
+                            self.buy_energy = False
                         state = self.screen_connector.getFrameState()
-                        if self.buy_energy and self.battle_pass_rewards and state == 'menu_home':
+                        if self.buy_energy and state == 'menu_home':
                             if energy_count <= self.max_buy_energy:
                                 self.tap('open_energy_buy')
-                                self.wait(6) # wait for load energy store
+                                self.wait(4) # wait for load energy store
                                 self.tap('buy_more_energy')
                                 self.wait(6) # wait for load energy bar
                                 if self.debug: print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
@@ -1052,7 +1125,7 @@ class CaveEngine(QObject):
                     self.log("Unknown Problem... halp!")
                     self._exitEngine()
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-                if self.debug: print("*** Saving Statistics #1 - Game Finished ***")
+                if self.debug: print("*** Saving Statistics - Game Finished ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
             print(">>>>>>>>>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<<<<<<<<")
@@ -1069,7 +1142,7 @@ class CaveEngine(QObject):
         self.wait(2) # wait for no_raid button to load
         if self.debug: print("Checking for raid options")
         if not self.screen_connector.checkFrame("quick_raid_option"):
-            if self.debug: print("No Raid Options, win 5 times first")
+            if self.debug: print("No Quick Raid Option, win 5 times first")
         else:
             if self.debug: print("Normal raid button detected")
             self.tap('start_no_raid')
@@ -1138,6 +1211,6 @@ class CaveEngine(QObject):
     def _exitEngine(self):
         print ("Game Engine Closed")
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            if self.debug: print("*** Saving Statistics #3 - Game Closed ***")
+            if self.debug: print("*** Saving Statistics - Game Killed ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         exit(1)
