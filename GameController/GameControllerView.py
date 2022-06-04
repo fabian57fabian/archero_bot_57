@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QResizeEvent
 
-from CaveDungeonEngine import HealingStrategy
+from CaveDungeonEngine import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub
 from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -36,10 +36,28 @@ class GameControllerWindow(QWidget):
         self.infoLabel = QLabel()
         self.cBoxhealStrategy = QComboBox()
         self.cBoxhealStrategy.blockSignals(True)
-        self.cBoxhealStrategy.addItems(['Always power','Always heal'])
+        self.cBoxhealStrategy.addItems(['Always Power','Always Heal'])
         self.cBoxhealStrategy.blockSignals(False)
         self.lblInfoHealStrategy = QLabel()
         self.updateHealingStrategyChange(self.model.engine.healingStrategy)
+        self.cBoxenergyStrategy = QComboBox()
+        self.cBoxenergyStrategy.blockSignals(True)
+        self.cBoxenergyStrategy.addItems(['Do Not Buy','Buy 1 Time','Buy 2 Times'])
+        self.cBoxenergyStrategy.blockSignals(False)
+        self.lblInfoEnergyStrategy = QLabel()
+        self.updateEnergyStrategyChange(self.model.engine.energyStrategy)
+        self.cBoxvipSub = QComboBox()
+        self.cBoxvipSub.blockSignals(True)
+        self.cBoxvipSub.addItems(['VIP False','VIP True'])
+        self.cBoxvipSub.blockSignals(False)
+        self.lblInfoVIPSub = QLabel()
+        self.updateVIPSubChange(self.model.engine.vipSub)
+        self.cBoxbpadvSub = QComboBox()
+        self.cBoxbpadvSub.blockSignals(True)
+        self.cBoxbpadvSub.addItems(['BPAdv False','BPAdv True'])
+        self.cBoxbpadvSub.blockSignals(False)
+        self.lblInfoBattlepassAdvSub = QLabel()
+        self.updateBattlepassAdvSubChange(self.model.engine.bpadvSub)
         self.initConnectors()
 
     def initConnectors(self):
@@ -52,9 +70,15 @@ class GameControllerWindow(QWidget):
         self.model.engine.resolutionChanged.connect(self.onScreenDataChanged)
         self.model.engine.dataFolderChanged.connect(self.onScreenDataChanged)
         self.model.engine.levelChanged.connect(self.onLevelChanged)
-        self.model.engine.healingStrategyChanged.connect(self.updateHealingStrategyChange)
         self.model.engine.currentDungeonChanged.connect(self.onCurrentDungeonChanged)
+        self.model.engine.healingStrategyChanged.connect(self.updateHealingStrategyChange)
         self.cBoxhealStrategy.currentIndexChanged.connect(self.onChangeHealStrategy)
+        self.model.engine.energyStrategyChanged.connect(self.updateEnergyStrategyChange)
+        self.cBoxenergyStrategy.currentIndexChanged.connect(self.onChangeEnergyStrategy)
+        self.model.engine.vipSubChanged.connect(self.updateVIPSubChange)
+        self.cBoxvipSub.currentIndexChanged.connect(self.onChangeVIPSub)
+        self.model.engine.bpadvSubChanged.connect(self.updateBattlepassAdvSubChange)
+        self.cBoxbpadvSub.currentIndexChanged.connect(self.onChangeBattlepassAdvSub)
         self.model.updatesAvailableEvent.connect(self.on_UpdatesAreAvailable)
 
     def on_UpdatesAreAvailable(self, mess:str):
@@ -69,12 +93,50 @@ class GameControllerWindow(QWidget):
             self.cBoxhealStrategy.setCurrentIndex(index)
             self.cBoxhealStrategy.blockSignals(False)
 
+    def updateEnergyStrategyChange(self, strat1: EnergyStrategy):
+        index1 = 1 if strat1 == EnergyStrategy.AlwaysBuy else 0
+        index1 = 2 if strat1 == EnergyStrategy.AlwaysBuy2 else index1
+        curr1 = self.cBoxenergyStrategy.currentIndex
+        if curr1 != index1:
+            self.cBoxenergyStrategy.blockSignals(True)
+            self.cBoxenergyStrategy.setCurrentIndex(index1)
+            self.cBoxenergyStrategy.blockSignals(False)
+
+    def updateVIPSubChange(self, strat2: VIPSub):
+        index2 = 1 if strat2 == VIPSub.TrueVIP else 0
+        curr2 = self.cBoxvipSub.currentIndex
+        if curr2 != index2:
+            self.cBoxvipSub.blockSignals(True)
+            self.cBoxvipSub.setCurrentIndex(index2)
+            self.cBoxvipSub.blockSignals(False)
+
+    def updateBattlepassAdvSubChange(self, strat3: BattlepassAdvSub):
+        index3 = 1 if strat3 == BattlepassAdvSub.TrueBPAdv else 0
+        curr3 = self.cBoxbpadvSub.currentIndex
+        if curr3 != index3:
+            self.cBoxbpadvSub.blockSignals(True)
+            self.cBoxbpadvSub.setCurrentIndex(index3)
+            self.cBoxbpadvSub.blockSignals(False)
+
     def onCurrentDungeonChanged(self, new_dungeon: int):
         self.infoLabel.setText("Current dungeon: {}".format(new_dungeon))
 
     def onChangeHealStrategy(self, new_index):
         strat = HealingStrategy.AlwaysHeal if new_index == 1 else HealingStrategy.AlwaysPowerUp
         self.model.engine.changeHealStrategy(strat)
+
+    def onChangeEnergyStrategy(self, new_index1):
+        strat1 = EnergyStrategy.AlwaysBuy if new_index1 == 1 else EnergyStrategy.AlwaysIgnore
+        strat1 = EnergyStrategy.AlwaysBuy2 if new_index1 == 2 else strat1
+        self.model.engine.changeEnergyStrategy(strat1)
+
+    def onChangeVIPSub(self, new_index2):
+        strat2 = VIPSub.TrueVIP if new_index2 == 1 else VIPSub.FalseVIP
+        self.model.engine.changeVIPSub(strat2)
+
+    def onChangeBattlepassAdvSub(self, new_index3):
+        strat3 = BattlepassAdvSub.TrueBPAdv if new_index3 == 1 else BattlepassAdvSub.FalseBPAdv
+        self.model.engine.changeBattlepassAdvSub(strat3)
 
     def onLevelChanged(self, newLevel):
         self.currentLevelWidget.changeLevel(newLevel)
@@ -140,12 +202,27 @@ class GameControllerWindow(QWidget):
         self.lblInfoHealStrategy.setText('Healing Strategy:')
         self.toolbarOptions.addWidget(self.lblInfoHealStrategy)
         self.toolbarOptions.addWidget(self.cBoxhealStrategy)
+        self.lblInfoEnergyStrategy.setText('Energy Strategy:')
+        self.toolbarOptions.addWidget(self.lblInfoEnergyStrategy)
+        self.toolbarOptions.addWidget(self.cBoxenergyStrategy)
+        self.lblInfoVIPSub.setText('VIP Subscription:')
+        self.toolbarOptions.addWidget(self.lblInfoVIPSub)
+        self.toolbarOptions.addWidget(self.cBoxvipSub)
+        self.lblInfoBattlepassAdvSub.setText('BPAdv Subscription:')
+        self.toolbarOptions.addWidget(self.lblInfoBattlepassAdvSub)
+        self.toolbarOptions.addWidget(self.cBoxbpadvSub)
         self.toolbarOptions.addWidget(self.lblUpdates)
 
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.lblInfoHealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
         self.cBoxhealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblInfoEnergyStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.cBoxenergyStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblInfoVIPSub.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.cBoxvipSub.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblInfoBattlepassAdvSub.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.cBoxbpadvSub.setStyleSheet("background-color: #6e6e6e; color: white")
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
         upd_str = "All updated."
         if self.model.updates_available:
