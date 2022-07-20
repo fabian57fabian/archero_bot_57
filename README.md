@@ -1,4 +1,4 @@
-# Archero Bot 57-DEV (AdminZero)
+# Archero Bot 57
 
 Installation videos (youtube playlist):
 
@@ -6,7 +6,7 @@ Installation videos (youtube playlist):
 
 If you want, you can send me a beer here:
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=7K6JZHBK9SB2Y&no_recurring=0&currency_code=USD) 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/fabian57fabian) 
 
 ## Contents
 - [Introduction](#introduction)
@@ -151,6 +151,8 @@ Thanks to [RimanCz](https://github.com/RimanCz) for screenshorts done with Samsu
 Thanks to [MahirZukic](https://github.com/MahirZukic) for screenshorts done with Xiaomi Mi 9 (1080x2340).
 \
 Thanks to [AgamemnonasKyr](https://github.com/AgamemnonasKyr) for screenshots done for upper black strip in game (1080x2280).
+\
+Thanks to [AdminZero](https://github.com/AdminZero) for his incredible work on adding features, testing on different levels, donating to the bot and unlocking new ways of going thru dungeon.
 \
 For any bug open an issue.
 If not having a github account, email me at **fabian_57@yahoo.it**.
