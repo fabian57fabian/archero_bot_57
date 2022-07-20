@@ -1,18 +1,24 @@
 Archero_Bot_57 Change Log:
 
-Things I may have broke or known bugs:
-- centerPlayer; don't seem to center correctly
-- TouchManager still not loading; giving interger errors
+Things may be broke or known bugs:
+- centerPlayer; don't seem to center correctly (centering the player was done in previous exit_dungeon. now is kind of deprecated)
+- TouchManager still not loading; giving interger errors (maybe last python 10 version is not going well with PyQt5)
 - StaticCoordsChecker gives format conversion error
 
-Updated: 15-May-2022
+
+[V2] Updated: 20-Jul-2022
+- Optimized first frames check
+- Added user message whena  new version comes by
+- Merged all AdminZero Work from previous V1.5 version
+
+[V1.5] Updated: 15-May-2022
 - Fixed the GUI play, pause, stop, close buttons now all work properly and don't crash the game anymore.
 - Cleaned up the paths though all dungeons 3, 6, 10 and TESTED GOOD as working great!
 - Added selection for dungeons 1-15 and created 'powerplay' path that works for 99% of dungeons.
 - Cleaned up and orginzed the dungeonEngine a bit to make more sense for myself.
 - Took some screenshot so you can see what the changes look like while playing (included in this change folder).
 
-Updated: 11-May-2022
+[V1.5] Updated: 11-May-2022
 - updated several files with tons of self.logs and print.logs for better game play and debug
 - changed game default resolution from 2220x1920 to 1080x1920
 - fixed several spelling missmatches between abilities tier_list, template, and files
@@ -37,4 +43,15 @@ Updated: 11-May-2022
 - update pressColoseEndIfEndedFrame; added currentLevel reset to fix loop but 
 - moved some code peices around in cavedungeonengine and removed some deprecated code
 
+[V1] Updated: 10-Apr-2022
+- Added automatic updated check on server.
+- Added local file for current settings (healing, selected dungeon...)
+- New tier list items
 
+[V0] Updated: 3-Apr-2022
+- Solved uncentered player exit
+- Optimized room exit by chapter type
+- Better endgame checks
+
+[V0] Updated: 2-Apr-2022
+- Added PIL support alongside np.array for Device frame
