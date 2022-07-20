@@ -1072,15 +1072,15 @@ class CaveEngine(QObject):
                                 print(energy_count)
                                 energy_count += 1
                             else:
-                                if self.debug: print("Max energy buy reached, waiting for 60 minutes")
+                                if self.debug: print("Max energy buy reached, waiting for 1 minute")
                                 self.log("No Energy")
                                 self.noEnergyLeft.emit()
-                                self.wait(3605) # wait for time to gain 5 energy
+                                self.wait(60) # wait for time to gain 1 energy, then re-check
                         else:
-                            if self.debug: print("No energy, waiting for 60 minutes")
+                            if self.debug: print("No energy, waiting for 1 minute")
                             self.log("No Energy")
                             self.noEnergyLeft.emit()
-                            self.wait(3605) # wait for time to gain 5 energy        
+                            self.wait(60) # wait for time to gain 1 energy, then re-check
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
                 if self.debug: print("Selected Dungeon is 3/6/10")
                 if self.currentLevel >= 21:
