@@ -152,5 +152,7 @@ Thanks to [MahirZukic](https://github.com/MahirZukic) for screenshorts done with
 \
 Thanks to [AgamemnonasKyr](https://github.com/AgamemnonasKyr) for screenshots done for upper black strip in game (1080x2280).
 \
+Thanks to [AdminZero](https://github.com/AdminZero) for his incredible work on adding features, testing on different levels, donating to the bot and unlocking new ways of going thru dungeon.
+\
 For any bug open an issue.
 If not having a github account, email me at **fabian_57@yahoo.it**.
