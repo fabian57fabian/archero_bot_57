@@ -35,8 +35,11 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
 - Supported dungeons (Normal and Boss Modes):
   - 3 . **Abandoned Dungeon: tested, WORKING**
   - 6 . **The Cave: tested, WORKING**
+  - 7 . **Barens of Shadow: tested, WORKING**
   - 10 . **Land of Doom: tested, WORKING**
-  - 1-15 . Other dungens: tested, mostly working...
+  - 14 . **Frigid Tundra: tested, WORKING**
+  - 16 . **Archic Temple: tested, MOSTLY WORKING**
+  - 1-15 . Other dungens: tested, works some (use at own peril)...
 
 - Tested resolutions
   - 1080x1920 is full working.
