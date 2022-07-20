@@ -947,7 +947,7 @@ class CaveEngine(QObject):
             self.start_date = datetime.now()
             self.screen_connector.stopRequested = False
             self.log("Checking conditions")
-            self.log("Please wait 1-3 minutes")
+            self.log("Please wait")
             self.log("Checks are running")
             if self.vipSub == VIPSub.TrueVIP:
                 self.vip_priv_rewards = True
@@ -962,69 +962,102 @@ class CaveEngine(QObject):
             while energy_check:
                 if self.debug: print("state: %s" % state)
                 if self.debug: print("Checking for Announcement")
-                if self.screen_connector.checkFrame("game_announcement"):
+                ui_changed = False
+                frame = self.screen_connector.getFrame()
+                if self.screen_connector.checkFrame("game_announcement", frame):
                     if self.debug: print("Closing Announcement")
                     self.tap("close_announcement")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for new_season")
-                if self.screen_connector.checkFrame("popup_new_season"):
+                if self.screen_connector.checkFrame("popup_new_season", frame):
                     if self.debug: print("Okay to New Season")
                     self.tap("close_new_season")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for patrol_reward")
-                if self.screen_connector.checkFrame("popup_home_patrol"):
+                if self.screen_connector.checkFrame("popup_home_patrol", frame):
                     if self.debug: print("Collecting time patrol")
                     self.tap("collect_hero_patrol")
                     self.wait(6)
                     self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for patrol_close")
-                if self.screen_connector.checkFrame("btn_home_time_reward"):
+                if self.screen_connector.checkFrame("btn_home_time_reward", frame):
                     self.tap("close_hero_patrol")
                     self.wait(4)
+                    ui_changed = True
                 if self.vip_priv_rewards:
+                    frame = self.screen_connector.getFrame() if ui_changed else frame
+                    ui_changed = False
                     if self.debug: print("Checking for vip_reward_1")
-                    if self.screen_connector.checkFrame("popup_vip_rewards"):
+                    if self.screen_connector.checkFrame("popup_vip_rewards", frame):
                         if self.debug: print("Collecting VIP-Privilege Rewards 1")
                         self.log("VIP-Privilege Rewards 1")
                         self.tap("collect_vip_rewards")
                         self.wait(5)
                         self.tap("close_vip_rewards")
                         self.wait(4)
+                        ui_changed = True
+                    frame = self.screen_connector.getFrame() if ui_changed else frame
+                    ui_changed = False
                     if self.debug: print("Checking for vip_reward_2")
-                    if self.screen_connector.checkFrame("popup_vip_rewards"):
+                    if self.screen_connector.checkFrame("popup_vip_rewards", frame):
                         if self.debug: print("Collecting VIP-Privilege Rewards 2")
                         self.log("VIP-Privilege Rewards 2")
                         self.tap("collect_vip_rewards")
                         self.wait(5)
                         self.tap("close_vip_rewards")
                         self.wait(4)
+                        ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for need_this")
-                if self.screen_connector.checkFrame("popup_need_this"):
+                if self.screen_connector.checkFrame("popup_need_this", frame):
                     if self.debug: print("Rejecting Must Need Ad 0")
                     self.tap("close_need_this")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for need_this_1")
-                if self.screen_connector.checkFrame("popup_need_this_1"):
+                if self.screen_connector.checkFrame("popup_need_this_1", frame):
                     if self.debug: print("Rejecting Must Need Ad 1")
                     self.tap("close_need_this")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for need_this_2")
-                if self.screen_connector.checkFrame("popup_need_this_2"):
+                if self.screen_connector.checkFrame("popup_need_this_2", frame):
                     if self.debug: print("Rejecting Must Need Ad 2")
                     self.tap("close_need_this_2")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for welcome_back")
-                if self.screen_connector.checkFrame("popup_welcome_back"):
+                if self.screen_connector.checkFrame("popup_welcome_back", frame):
                     if self.debug: print("Rejecting Welcome Back Ad")
                     self.tap("close_need_this")
                     self.wait(4)
+                    ui_changed = True
+                frame = self.screen_connector.getFrame() if ui_changed else frame
+                ui_changed = False
                 if self.debug: print("Checking for time_prize")
-                if self.screen_connector.checkFrame("time_prize"):
+                if self.screen_connector.checkFrame("time_prize", frame):
                     if self.debug: print("Collecting time prize")
                     self.tap("collect_time_prize")
                     self.wait(5)
                     self.tap("resume")
                     self.wait(2)
+                    ui_changed = True
                 if self.currentLevel > 0:
                     state = self.screen_connector.getFrameState()
                     if self.debug: print("state: %s" % state)
