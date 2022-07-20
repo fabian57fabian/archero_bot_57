@@ -42,7 +42,7 @@ class GameControllerWindow(QWidget):
         self.updateHealingStrategyChange(self.model.engine.healingStrategy)
         self.cBoxenergyStrategy = QComboBox()
         self.cBoxenergyStrategy.blockSignals(True)
-        self.cBoxenergyStrategy.addItems(['Do Not Buy','Buy 1 Time','Buy 2 Times'])
+        self.cBoxenergyStrategy.addItems(['Do Not Buy','Buy 1 Time','Buy 4 Times'])
         self.cBoxenergyStrategy.blockSignals(False)
         self.lblInfoEnergyStrategy = QLabel()
         self.updateEnergyStrategyChange(self.model.engine.energyStrategy)
@@ -163,11 +163,17 @@ class GameControllerWindow(QWidget):
 
     def onConnectionStateChange(self, connected: bool):
         if connected:
-            print("**************** GAME READY ****************") 
+            print(">>>>>>>> ########################## <<<<<<<<")
+            print(">>>>>>>>  Remember to Open Archero  <<<<<<<<")
+            print(">>>>>>>> ########################## <<<<<<<<")
+            print("***************** BOT READY ****************") 
             self.infoLabel.setText("Device found! Engine is ready")
             self.lblConnectionStatus.setText("Connected")
             self.lblConnectionStatus.setStyleSheet("color: white")
         else:
+            print(">>>>>>>> ########################## <<<<<<<<")
+            print(">>>>>>>> Connect Device or Open NOX <<<<<<<<")
+            print(">>>>>>>> ########################## <<<<<<<<")
             self.infoLabel.setText("Waiting for a device to be connected")
             self.lblConnectionStatus.setText("NO device!")
             self.lblConnectionStatus.setStyleSheet("background-color: red;color:white")
