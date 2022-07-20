@@ -21,15 +21,15 @@ class QLevelViewer(QWidget):
         self.setClickable(self.isClickable)
 
     def _getColorByLevel(self, level_name: str):
-        if level_name == "intro":
+        if level_name == "Intro":
             return (247, 181, 41)
-        elif level_name == "normal":
+        elif level_name == "Normal":
             return (23, 107, 239)
-        elif level_name == "heal":
+        elif level_name == "Heal":
             return (23, 156, 82)
-        elif level_name == "boss":
+        elif level_name == "Boss":
             return (255, 62, 48)
-        elif level_name == "final_boss":
+        elif level_name == "Final_B":
             return (127, 0, 0)
         else:
             return (255, 255, 255)
