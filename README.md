@@ -6,7 +6,7 @@ Installation videos (youtube playlist):
 
 If you want, you can send me a beer here:
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=7K6JZHBK9SB2Y&no_recurring=0&currency_code=USD) 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/fabian57fabian) 
 
 ## Contents
 - [Introduction](#introduction)
