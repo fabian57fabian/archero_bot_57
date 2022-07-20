@@ -1,4 +1,4 @@
-# Archero Bot 57-DEV (AdminZero)
+# Archero Bot 57
 
 Installation videos (youtube playlist):
 
