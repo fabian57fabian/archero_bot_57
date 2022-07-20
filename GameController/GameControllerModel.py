@@ -1,5 +1,6 @@
 import os
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
 from CaveDungeonEngine import CaveEngine
 import time
@@ -58,6 +59,7 @@ class GameControllerModel(QObject):
         if to_update:
             self.updates_available = True
             self.updatesAvailableEvent.emit("New updates available!")
+            QMessageBox.information(None, "Updates available", "A new update is available.\n Update it from https://github.com/fabian57fabian/archero_bot_57")
 
     def getLevelsNames(self):
         return self.engine.levels_type
