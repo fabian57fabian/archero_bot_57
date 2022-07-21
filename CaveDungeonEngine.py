@@ -730,12 +730,13 @@ class CaveEngine(QObject):
                 self.tap('ability_daemon_reject')
                 self.wait(2)
             elif state == "ad_ask":
-                if self.battle_pass_advanced or self.battle_pass_rewards:
-                    self.tap('lucky_wheel_start')
-                    self.wait(6)
-                else:
-                    self.tap('spin_wheel_back')
-                    self.wait(2)
+                #if self.battle_pass_advanced or self.battle_pass_rewards:
+                #    self.tap('lucky_wheel_start')
+                #    self.wait(6)
+                #else:
+                # No ads accepting due to possible later conflicts...
+                self.tap('spin_wheel_back')
+                self.wait(2)
             elif state == "mistery_vendor":
                 if self.battle_pass_advanced:
                     if self.debug: print("Checking for Mystery Vendor Ad")
