@@ -1217,6 +1217,8 @@ class CaveEngine(QObject):
                                 self.log("No Energy")
                                 self.noEnergyLeft.emit()
                                 self.wait(3605) # wait for time to gain 5 energy
+                        elif state == 'in_game':
+                            break
                         else:
                             print("No energy, waiting for 60 minutes")
                             self.log("No Energy")
