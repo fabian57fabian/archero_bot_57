@@ -566,6 +566,7 @@ class CaveEngine(QObject):
             self.swipe('w', .35)
             self.swipe('nw', .4)
             self.swipe('n', 1)
+            if self.deadcheck: self.checkIfDead()
             if self.currentLevel == 18:
                 if self.debug: print("Adjusting lvl 18 Position")
                 self.disableLogs = False
@@ -577,10 +578,28 @@ class CaveEngine(QObject):
                 self.swipe('n', .4)
                 self.disableLogs = False
         if self.currentDungeon == 16:
-            self.swipe('sw', .4)
-            self.swipe('nw', .4)
-            self.swipe('n', .4)
+            self.swipe('se', .6)
+            self.swipe('e', .6)
+            self.swipe('nw', .6)
+            self.swipe('ne', .6)
             if self.deadcheck: self.checkIfDead()
+            if self.currentLevel == 18:
+                self.swipe('w', .3)
+                self.swipe('s', .6)
+                self.swipe('nw', .4)
+                self.swipe('w', .6)
+                self.swipe('ne', .6)
+                if self.deadcheck: self.checkIfDead()
+            else:
+                self.swipe('w', .3)
+                self.swipe('s', .6)
+                self.swipe('nw', .6)
+                self.swipe('ne', .6)
+                if self.deadcheck: self.checkIfDead()
+            self.swipe('n', 1.5)
+            if self.deadcheck: self.checkIfDead()
+            self.disableLogs = False
+            
 
     def goTroughDungeon6(self):
         if self.debug: print("Going through dungeon (designed for #6)")
@@ -702,17 +721,17 @@ class CaveEngine(QObject):
                         if self.debug: print("Doing patrol")
                         self.log("Doing Patrol")
                         self.disableLogs = True
-                        self.swipe('w', 0.8)
+                        self.swipe('w', 0.6)
                         if self.deadcheck: self.checkIfDead()
-                        self.swipe('e', 0.4)
+                        self.swipe('e', 0.3)
                         if self.deadcheck: self.checkIfDead()
-                        self.swipe('e', 0.4)
+                        self.swipe('e', 0.3)
                         if self.deadcheck: self.checkIfDead()
-                        self.swipe('e', 0.4)
+                        self.swipe('e', 0.3)
                         if self.deadcheck: self.checkIfDead()
-                        self.swipe('e', 0.4)
+                        self.swipe('e', 0.3)
                         if self.deadcheck: self.checkIfDead()
-                        self.swipe('w', 0.8)
+                        self.swipe('w', 0.6)
                         if self.deadcheck: self.checkIfDead()
                         self.disableLogs = False
                     # added random escape methods for 30, 50 level chapters
