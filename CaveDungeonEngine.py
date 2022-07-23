@@ -1107,15 +1107,15 @@ class CaveEngine(QObject):
                 self.wait(self.sleep_btw_screens)
                 if self.screen_connector.checkBoss3Died():
                     if self.debug: print("boss dead and door open #3")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #1")
                     break
                 if self.screen_connector.checkBoss6Died():
                     if self.debug: print("boss dead and door open #6")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #2")
                     break
                 if self.screen_connector.checkBoss10Died():
                     if self.debug: print("boss dead and door open #10")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #3")
                     break
                 if self.debug: print(i)
                 i += 1
