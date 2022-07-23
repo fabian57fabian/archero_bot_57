@@ -43,9 +43,9 @@ class CaveEngine(QObject):
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
     playtime = 50 # set loop time for letPlay (default 50, total loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
-    max_loops_game = 500 # set loops for start_one_game (default 50, farming cycles)
+    max_loops_game = 500 # set loops for start_one_game (default 100, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
-    sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
+    sleep_btw_screens = 8 # set wait between loops for final_boss (default 8, in seconds)
     
     UseGeneratedData = False # Set True to use TouchManager generated data
     
@@ -980,7 +980,7 @@ class CaveEngine(QObject):
     def intro_lvl(self):
         if self.debug: print("Getting Start Items")
         self.wait(12) # inital wait for ability wheel to load
-        self.chooseBestAbility()
+        self.reactGamePopups()
         self.disableLogs = True
         self.swipe('n', 3)
         self.disableLogs = False
@@ -1103,7 +1103,7 @@ class CaveEngine(QObject):
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
             self.swipe('w', 2)
             i = 0
-            while i < self.max_wait:
+            while i <= self.max_wait:
                 self.wait(self.sleep_btw_screens)
                 if self.screen_connector.checkBoss3Died():
                     if self.debug: print("boss dead and door open #3")
@@ -1190,6 +1190,12 @@ class CaveEngine(QObject):
                 energy_check = True
                 while energy_check:
                     self.checkForAds()
+                    state = self.screen_connector.getFrameState()
+                    if self.debug: print("state: %s" % state)
+                    if state == 'menu_home':
+                        if self.debug: print("Go to next step")
+                    else:
+                        self.reactGamePopups()
                     print("Checking for Energy")
                     if self.screen_connector.checkFrame("least_5_energy"):    
                         energy_check = False
@@ -1249,7 +1255,10 @@ class CaveEngine(QObject):
                 self.start_date = datetime.now()
                 self.screen_connector.stopRequested = False
                 if self.currentLevel == 0:
-                    self.chooseCave()
+                    if state == 'in_game':
+                        self.play_cave()
+                    else:
+                        self.chooseCave()
                 else:
                     self.play_cave()
             except Exception as exc:
@@ -1401,7 +1410,7 @@ class CaveEngine(QObject):
             self.tap("continue_yes")
             self.wait(10)
             ui_changed = True
-
+        
     def maxFarmLoopRun(self):
         self.maxFarmLoopReached()
 
