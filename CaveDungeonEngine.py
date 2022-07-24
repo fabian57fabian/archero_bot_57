@@ -43,7 +43,7 @@ class CaveEngine(QObject):
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
     playtime = 50 # set loop time for letPlay (default 50, total loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
-    max_loops_game = 1 # set loops for start_one_game (default 100, farming cycles)
+    max_loops_game = 100 # set loops for start_one_game (default 100, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
     sleep_btw_screens = 8 # set wait between loops for final_boss (default 8, in seconds)
     
@@ -238,7 +238,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = False # set False to stop print debug messages in console
-        self.deadcheck = True # set True to check if dead, only works ~50% of time to revive.
+        self.deadcheck = False # set True to check if dead, only works ~50% of time to revive.
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
