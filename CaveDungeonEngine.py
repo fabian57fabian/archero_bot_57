@@ -1532,7 +1532,7 @@ class CaveEngine(QObject):
             self.gameWon.emit()
             self.pressCloseEndgame()
         elif state != 'endgame':
-            print("Exit_Endgame. Mabye you levled up; or got stuck?")
+            print("Exit_Endgame. You most likely got stuck; or leveled up?")
             self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
             self.wait(6) # wait for endgame loot screen to load
         self.pressCloseEndIfEndedFrame()
