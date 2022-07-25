@@ -238,7 +238,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = False # set True to show print debug messages in console
-        self.deadcheck = False # set True to check if dead, only works ~50% of time to revive.
+        self.deadcheck = True # set True to check if dead, only works ~50% of time to revive.
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -557,7 +557,6 @@ class CaveEngine(QObject):
         self.swipe('nw', 1.8)
         self.swipe('ne', 1)
         self.swipe('w', .7)
-        if self.deadcheck: self.checkIfDead()
         if self.currentDungeon == 10:
             self.swipe('s', .6)
             self.swipe('e', .35)
@@ -577,24 +576,16 @@ class CaveEngine(QObject):
                 self.swipe('ne', .4)
                 self.swipe('n', .4)
         if self.currentDungeon == 16:
-            self.swipe('se', .6)
-            self.swipe('e', .6)
+            self.swipe('se', .7)
+            self.swipe('e', .7)
+            self.swipe('nw', .5)
+            self.swipe('ne', .7)
+            self.swipe('w', .3)
+            self.swipe('s', .6)
+            self.swipe('sw', .2)
             self.swipe('nw', .6)
             self.swipe('ne', .6)
-            if self.currentLevel == 18:
-                self.swipe('w', .3)
-                self.swipe('s', .6)
-                self.swipe('nw', .4)
-                self.swipe('w', .6)
-                self.swipe('ne', .6)
-            else:
-                self.swipe('w', .3)
-                self.swipe('s', .5)
-                self.swipe('sw', .2)
-                self.swipe('nw', .6)
-                self.swipe('ne', .6)
             self.swipe('n', 1.5)
-        if self.deadcheck: self.checkIfDead()
         self.disableLogs = False
 
     def goTroughDungeon6(self):
@@ -610,7 +601,6 @@ class CaveEngine(QObject):
         self.swipe('n', 1.5)
         self.swipe('e', .3)
         self.swipe('n', 2)
-        if self.deadcheck: self.checkIfDead()
         self.disableLogs = False
 
     def goTroughDungeon3(self):
@@ -626,7 +616,6 @@ class CaveEngine(QObject):
         self.swipe('n', .5)
         self.swipe('e', 1)
         self.swipe('n', 1.5)
-        if self.deadcheck: self.checkIfDead()
         self.disableLogs = False
 
     def goTroughDungeon_old(self):
@@ -640,7 +629,6 @@ class CaveEngine(QObject):
         self.swipe('nw', 3)
         self.swipe('ne', 3)
         self.swipe('w', .7)
-        if self.deadcheck: self.checkIfDead()
         self.disableLogs = False
 
     def goTroughDungeon(self):
@@ -868,9 +856,6 @@ class CaveEngine(QObject):
                     if self.debug: print("Still playing but level not ended")
                 if self.debug: print("State Checks End")
 
-    def reactGamePopups2(self):
-        self.reactGamePopups()
-
     def reactGamePopups(self) -> int:
         self.wait(1)
         state = ""
@@ -1039,7 +1024,7 @@ class CaveEngine(QObject):
         self.swipe('ne', 2)
         self.swipe('nw', 1.25)
         i = 1
-        while i < self.max_wait:
+        while i <= self.sleep_btw_screens:
             if self.deadcheck: self.checkIfDead()
             self.swipe('e', 0.33)
             if self.deadcheck: self.checkIfDead()
@@ -1090,13 +1075,9 @@ class CaveEngine(QObject):
             if self.battle_pass_advanced:
                 self.tap("revive_ad")
                 self.wait(.5)
-                print("*You Revived Ad*")
-                self.log("** You Revived Ad**")
             else:
                 self.tap("revive_gems")
                 self.wait(.5)
-                print("*You Revived Gems*")
-                self.log("** You Revived Gems **")
         if self.debug: print("Completed Dead Checks")
 
     def boss_final(self):
@@ -1143,11 +1124,11 @@ class CaveEngine(QObject):
             i = 1
             while i <= self.sleep_btw_screens:
                 if self.deadcheck: self.checkIfDead()
-                self.swipe('e', 0.33)
+                self.swipe('e', 0.5)
                 if self.deadcheck: self.checkIfDead()
-                self.swipe('e', 0.33)
+                self.swipe('e', 0.5)
                 if self.deadcheck: self.checkIfDead()
-                self.swipe('w', 0.66)
+                self.swipe('w', 1)
                 i += 1
             self.disableLogs = False
             self.reactGamePopups()
@@ -1207,8 +1188,12 @@ class CaveEngine(QObject):
                     if self.debug: print("state: %s" % state)
                     if state == 'menu_home':
                         if self.debug: print("Go to next step")
-                    else:
-                        self.reactGamePopups2()
+                    elif state == 'endgame':
+                        self.pressCloseEndgame()
+                    elif state == 'in_game':
+                        break
+                    elif state != 'in_game':
+                        break
                     print("Checking for Energy")
                     if self.screen_connector.checkFrame("least_5_energy"):    
                         energy_check = False
@@ -1271,7 +1256,7 @@ class CaveEngine(QObject):
                     if state == 'in_game':
                         self.play_cave()
                     else:
-                        self.chooseCave()
+                        self.chooseCave()                        
                 else:
                     self.play_cave()
             except Exception as exc:
@@ -1332,7 +1317,7 @@ class CaveEngine(QObject):
         ui_changed = False
         print("Checking for new_season")
         if self.screen_connector.checkFrame("popup_new_season", frame):
-            print("New Season. Update BPAdv dropdown in GUI to False!")
+            print("New Season. Update BPAdv dropdown in GUI to False")
             self.tap("close_new_season")
             self.battle_pass_advanced = False # only works once manully set dropdown in GUI to False
             self.wait(4)
@@ -1520,7 +1505,7 @@ class CaveEngine(QObject):
 
     def _manage_exit_from_endgame(self): # for dungeons 3, 6, 10, 16
         if self.debug: print("manage_exit_from_endgame")
-        self.wait(10) # wait for endgame loot screen to load
+        self.wait(8) # wait for endgame loot screen to load
         state = self.screen_connector.getFrameState()
         if self.debug: print("state: %s" % state)
         if state == 'menu_home':
@@ -1534,7 +1519,7 @@ class CaveEngine(QObject):
         elif state != 'endgame':
             print("Exit_Endgame. You most likely got stuck; or leveled up?")
             self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
-            self.wait(6) # wait for endgame loot screen to load
+            self.wait(8) # wait for endgame loot screen to load
         self.pressCloseEndIfEndedFrame()
 
     def pressCloseEndIfEndedFrame(self):
@@ -1549,12 +1534,13 @@ class CaveEngine(QObject):
         if self.debug: print("Press_Close_End. Going back to main Menu")
         self.tap('close_end')
         self.currentLevel = 0
-        self.wait(6) # wait for go back to main menu
+        self.wait(8) # wait for go back to main menu
 
     def altEndgameClose(self):
         print("You most likely died; or possibly won out of cycle.")
         self.log("You died or won!")
         self.log("Either way, it's over!")
+        self.wait(8) # wait for endgame loot screen to load
         self.pressCloseEndgame()
         raise Exception('altendgame')
 
