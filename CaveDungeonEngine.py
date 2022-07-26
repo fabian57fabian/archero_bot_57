@@ -675,10 +675,10 @@ class CaveEngine(QObject):
                 if state == "in_game":
                     # added movement to increase kill enemy efficency for 10 level chapters
                     if self.currentDungeon == 7 or self.currentDungeon == 14:
-                        if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
                         if self.debug: print("Avoiding Boss")
                         self.log("Avoiding Boss")
                         self.disableLogs = True
+                        if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
                         self.swipe('sw', 1.5)
                         if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
                         self.swipe('se', 1)
@@ -699,20 +699,13 @@ class CaveEngine(QObject):
                         if self.debug: print("Doing patrol")
                         self.log("Doing Patrol")
                         self.disableLogs = True
+                        if self.deadcheck and self.currentLevel > 10: self.checkIfDead()
                         self.swipe('w', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
-                        self.swipe('e', 0.3)
-                        self.swipe('e', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
+                        if self.deadcheck and self.currentLevel > 10: self.checkIfDead()
+                        self.swipe('e', 0.6)
+                        if self.deadcheck and self.currentLevel > 10: self.checkIfDead()
                         self.swipe('w', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
-                        self.swipe('w', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
-                        self.swipe('e', 0.3)
-                        self.swipe('e', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
-                        self.swipe('w', 0.3)
-                        if self.deadcheck and self.currentLevel > 12: self.checkIfDead()
+                        if self.deadcheck and self.currentLevel > 10: self.checkIfDead()
                         self.disableLogs = False
                     # added random escape methods for 30, 50 level chapters
                     else:
@@ -952,7 +945,7 @@ class CaveEngine(QObject):
             self.disableLogs = False
             self.wait(1) # wait for ability apply
         except Exception as e:
-            print("Ability Exception. Unable to correctly choose best ability.")
+            print("Exception. Unable to correctly choose best ability.")
             self.log("Choosing 'Left Button'")
             self.disableLogs = True
             self.tap('ability_left')
@@ -1020,24 +1013,8 @@ class CaveEngine(QObject):
         if self.currentDungeon == 16 and self.currentLevel == 15:
             self.swipe('n', .4)
             self.swipe('w', .4)
-            if self.deadcheck: self.checkIfDead()
         self.swipe('ne', 2)
         self.swipe('nw', 1.25)
-        if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
-        i = 1
-        while i < self.max_wait:
-            if self.deadcheck:
-                if self.debug: print("Go to next step")
-            else:
-                self.wait(self.sleep_btw_screens)
-            self.swipe('e', 0.3)
-            if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
-            self.swipe('w', 0.6)
-            if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
-            self.swipe('e', 0.3)
-            if self.deadcheck and self.currentLevel > 5: self.checkIfDead()
-            if self.debug: print(i)
-            i += 1
         self.disableLogs = False
         self.letPlay(self.playtime, is_boss = True)
         self.reactGamePopups()
@@ -1128,19 +1105,20 @@ class CaveEngine(QObject):
             self.swipe('nw', 1.8)
             self.swipe('ne', 1.8)
             self.swipe('nw', 1)
-            if self.deadcheck: self.checkIfDead()
             i = 1
             while i < self.max_wait:
                 if self.deadcheck:
-                    if self.debug: print("Go to next step")
+                    self.checkIfDead()
+                    self.swipe('w', 0.5)
+                    self.checkIfDead()
+                    self.swipe('e', 1)
+                    self.checkIfDead()
+                    self.swipe('w', 0.5)
                 else:
+                    self.swipe('w', 0.5)
+                    self.swipe('e', 1)
+                    self.swipe('w', 0.5)
                     self.wait(self.sleep_btw_screens)
-                self.swipe('w', 0.5)
-                if self.deadcheck: self.checkIfDead()
-                self.swipe('e', 1)
-                if self.deadcheck: self.checkIfDead()
-                self.swipe('w', 0.5)
-                if self.deadcheck: self.checkIfDead()
                 i += 1
             self.disableLogs = False
             self.reactGamePopups()
@@ -1273,22 +1251,21 @@ class CaveEngine(QObject):
                     self.play_cave()
             except Exception as exc:
                 if exc.args[0] == "mainscreen":
-                    print("Main Menu Exception. Restarting game now.")
+                    print("Exception. Main Menu, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "crashdesktop":
-                    print("Crash Desktop Exception. Restarting game now.")
+                    print("Exception. Crash Desktop, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "altendgame":
-                    print("Alt Endgame Exception. Restarting game now.")
+                    print("Exception. Alt Endgame, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
-                    print("Unknown State. Trying Something.")
-                    print("Clicking Screen, possible new endgame?")
+                    print("Exception. Unknown State, trying Something.")
                     self.log("Unknown Screens... halp!")
                     self.tap('level_up_endgame')
                     self.wait(4) #waiting for magic
                 else:
-                    print("Got an unknown exception: %s" % exc)
+                    print("Exception. Unknown problem: %s" % exc)
                     self.log("Unknown Problem... halp!")
                     self.exitEngine()
             if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
@@ -1519,7 +1496,7 @@ class CaveEngine(QObject):
         if self.debug: print("manage_exit_from_endgame")
         self.wait(8) # wait for endgame loot screen to load
         state = self.screen_connector.getFrameState()
-        if self.debug: print("state: %s" % state)
+        print("state: %s" % state)
         if state == 'menu_home':
             print("Exit_Endgame. Home Menu Detected.")
             return
@@ -1552,6 +1529,8 @@ class CaveEngine(QObject):
         self.wait(8) # wait for go back to main menu
 
     def altEndgameClose(self):
+        state = self.screen_connector.getFrameState()
+        print("state: %s" % state)
         print("You most likely died; or possibly won out of cycle.")
         self.log("You died or won!")
         self.log("Either way, it's over!")
