@@ -238,7 +238,7 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = False # set True to show print debug messages in console
-        self.deadcheck = True # set True to check if dead, only works ~50% of time to revive.
+        self.deadcheck = False # set True to check if dead, works <50% of time to revive; costs gems unless BPAdv Sub
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -1028,12 +1028,15 @@ class CaveEngine(QObject):
             self.swipe('w', .4)
         self.swipe('ne', 2)
         self.swipe('nw', 1.25)
+        if self.deadcheck and self.currentLevel > 6: self.checkIfDead()
         i = 1
         while i <= self.sleep_btw_screens:
-            if self.deadcheck and self.currentLevel > 8: self.checkIfDead()
             self.swipe('e', 0.33)
-            if self.deadcheck and self.currentLevel > 8: self.checkIfDead()
-            self.swipe('w', 0.33)
+            if self.deadcheck and self.currentLevel > 6: self.checkIfDead()
+            self.swipe('w', 0.66)
+            if self.deadcheck and self.currentLevel > 6: self.checkIfDead()
+            self.swipe('e', 0.33)
+            if self.deadcheck and self.currentLevel > 6: self.checkIfDead()
             if self.debug: print(i)
             i += 1
         self.disableLogs = False
@@ -1123,17 +1126,18 @@ class CaveEngine(QObject):
             self.swipe('n', 0.2)
             self.swipe('n', 0.7)
             self.swipe('e', 1)
-            self.swipe('nw', 2)
-            self.swipe('ne', 2)
-            self.swipe('nw', 1.25)
+            self.swipe('nw', 1.8)
+            self.swipe('ne', 1.8)
+            self.swipe('nw', 1)
+            if self.deadcheck: self.checkIfDead()
             i = 1
             while i <= self.sleep_btw_screens:
-                if self.deadcheck: self.checkIfDead()
                 self.swipe('w', 0.5)
                 if self.deadcheck: self.checkIfDead()
                 self.swipe('e', 1)
                 if self.deadcheck: self.checkIfDead()
                 self.swipe('w', 0.5)
+                if self.deadcheck: self.checkIfDead()
                 i += 1
             self.disableLogs = False
             self.reactGamePopups()
