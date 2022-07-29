@@ -585,8 +585,8 @@ class CaveEngine(QObject):
             self.swipe('nw', .6)
             self.swipe('ne', .6)
             self.swipe('w', .3)
-            if self.currentLevel == 11 or self.currentLevel == 18:
-                self.swipe('w', .2)
+            if self.currentLevel == 11 or self.currentLevel == 13 or self.currentLevel == 18:
+                self.swipe('w', .25)
             self.swipe('n', 1.5)
         self.disableLogs = False
 
@@ -736,38 +736,38 @@ class CaveEngine(QObject):
                         if self.deadcheck:
                             if self.currentLevel > 10:
                                 self.checkIfDead()
-                                self.swipe('w', 0.4)
+                                self.swipe('w', 0.35)
                                 self.checkIfDead()
-                                self.swipe('e', 0.8)
+                                self.swipe('e', 0.7)
                                 self.checkIfDead()
-                                self.swipe('w', 0.8)
+                                self.swipe('w', 0.7)
                                 self.checkIfDead()
-                                self.swipe('e', 0.8)
+                                self.swipe('e', 0.7)
                                 self.checkIfDead()
-                                self.swipe('w', 0.4)
+                                self.swipe('w', 0.35)
                                 self.checkIfDead()
                             else:
                                 self.wait(2)
-                                self.swipe('w', 0.4)
+                                self.swipe('w', 0.35)
                                 self.wait(2)
-                                self.swipe('e', 0.8)
+                                self.swipe('e', 0.7)
                                 self.wait(2)
-                                self.swipe('w', 0.8)
+                                self.swipe('w', 0.7)
                                 self.wait(2)
-                                self.swipe('e', 0.8)
+                                self.swipe('e', 0.7)
                                 self.wait(2)
-                                self.swipe('w', 0.4)
+                                self.swipe('w', 0.35)
                         else:
                             self.wait(2)
-                            self.swipe('w', 0.4)
+                            self.swipe('w', 0.35)
                             self.wait(2)
-                            self.swipe('e', 0.8)
+                            self.swipe('e', 0.7)
                             self.wait(2)
-                            self.swipe('w', 0.8)
+                            self.swipe('w', 0.7)
                             self.wait(2)
-                            self.swipe('e', 0.8)
+                            self.swipe('e', 0.7)
                             self.wait(2)
-                            self.swipe('w', 0.4)
+                            self.swipe('w', 0.35)
                         self.disableLogs = False
                     # added random escape methods for 30, 50 level chapters
                     else:
