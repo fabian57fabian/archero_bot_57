@@ -927,7 +927,7 @@ class CaveEngine(QObject):
                     if self.deadcheck:
                         self.pressIfDead()
                     else:
-                        print("Turn on 'DeadCheck' to use gems to revive!)
+                        print("Turn on 'DeadCheck' to use gems to revive!")
                 else:
                     self.altEndgameClose()
             elif state == "ability_refresh":
