@@ -79,14 +79,19 @@
   "overdraft": "ability_10.png",
   "holy_touch": "ability_20.png",
   "dodge_master": "ability_90.png",
-  "extra_life": "ability_0.png",
   "slow_projectile": "ability_167.png",
   "shadow_clone": "ability_58.png",
   "summon_one_eyed_bat": "ability_118.png",
   "inspire": "ability_11.png",
-  "water_walker": "ability_0.png",
-  "through_the_wall": "ability_0.png",
   "giant": "ability_170.png",
   "dwarf": "ability_169.png",
-  "hermes_shoes": "ability_1.png"
+  "hermes_shoes": "ability_1.png",
+  "extra_life": "ability_0.png",
+  "water_walker": "ability_0.png",
+  "through_the_wall": "ability_0.png",
+  "fatal_excitement": "ability_12.png",
+  "enhanced_summon": "ability_0.png",
+  "angelic_blessing": "ability_0.png",
+  "dodge_burst": "ability_17.png",
+  "enhanced_summon": "ability_0.png"
 }

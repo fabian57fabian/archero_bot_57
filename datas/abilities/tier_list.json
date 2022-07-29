@@ -89,5 +89,10 @@
   "water_walker": 88,
   "through_the_wall": 89,
   "s_s_heart": 90,
+  "fatal_excitement": 91,
+  "enhanced_summon": 92,
+  "angelic_blessing": 93,
+  "dodge_burst": 94,
+  "enhanced_summon": 95,
   "unknown": 999999
 }
