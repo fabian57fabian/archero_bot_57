@@ -924,7 +924,10 @@ class CaveEngine(QObject):
                 if self.debug: print("React-Popup. Endgame Detected")
                 if state == "repeat_endgame_question":
                     print("state: %s" % state)
-                    if self.deadcheck: self.pressIfDead()
+                    if self.deadcheck:
+                        self.pressIfDead()
+                    else:
+                        print("Turn on 'DeadCheck' to use gems to revive!)
                 else:
                     self.altEndgameClose()
             elif state == "ability_refresh":
@@ -1127,9 +1130,11 @@ class CaveEngine(QObject):
     def pressIfDead(self):
         if self.battle_pass_advanced:
             self.tap("revive_ad")
+            print("You revived with Ad.")
             self.wait(.5)
         else:
             self.tap("revive_gems")
+            print("You revived with Gems.")
             self.wait(.5)
 
     def boss_final(self):
