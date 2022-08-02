@@ -42,7 +42,7 @@ class GameControllerWindow(QWidget):
         self.updateHealingStrategyChange(self.model.engine.healingStrategy)
         self.cBoxenergyStrategy = QComboBox()
         self.cBoxenergyStrategy.blockSignals(True)
-        self.cBoxenergyStrategy.addItems(['Do Not Buy','Buy 1 Time','Buy 4 Times'])
+        self.cBoxenergyStrategy.addItems(['Do Not Buy','Buy 1 Time','Buy 2 Times','Buy 3 Times','Buy 4 Times'])
         self.cBoxenergyStrategy.blockSignals(False)
         self.lblInfoEnergyStrategy = QLabel()
         self.updateEnergyStrategyChange(self.model.engine.energyStrategy)
@@ -96,6 +96,8 @@ class GameControllerWindow(QWidget):
     def updateEnergyStrategyChange(self, strat1: EnergyStrategy):
         index1 = 1 if strat1 == EnergyStrategy.AlwaysBuy else 0
         index1 = 2 if strat1 == EnergyStrategy.AlwaysBuy2 else index1
+        index1 = 3 if strat1 == EnergyStrategy.AlwaysBuy3 else index1
+        index1 = 4 if strat1 == EnergyStrategy.AlwaysBuy4 else index1
         curr1 = self.cBoxenergyStrategy.currentIndex
         if curr1 != index1:
             self.cBoxenergyStrategy.blockSignals(True)
@@ -128,6 +130,8 @@ class GameControllerWindow(QWidget):
     def onChangeEnergyStrategy(self, new_index1):
         strat1 = EnergyStrategy.AlwaysBuy if new_index1 == 1 else EnergyStrategy.AlwaysIgnore
         strat1 = EnergyStrategy.AlwaysBuy2 if new_index1 == 2 else strat1
+        strat1 = EnergyStrategy.AlwaysBuy3 if new_index1 == 3 else strat1
+        strat1 = EnergyStrategy.AlwaysBuy4 if new_index1 == 4 else strat1
         self.model.engine.changeEnergyStrategy(strat1)
 
     def onChangeVIPSub(self, new_index2):
