@@ -859,7 +859,7 @@ class CaveEngine(QObject):
                     if state == "endgame" or state == "repeat_endgame_question":
                         if self.debug: print("React-Popup. Endgame Detected")
                         if state == "repeat_endgame_question":
-                            print("state: %s" % state)
+                            print("Letplay state: %s" % state)
                             if self.deadcheck: self.pressIfDead()
                         else:
                             self.altEndgameClose()
@@ -923,7 +923,7 @@ class CaveEngine(QObject):
             if state == "endgame" or state == "repeat_endgame_question":
                 if self.debug: print("React-Popup. Endgame Detected")
                 if state == "repeat_endgame_question":
-                    print("state: %s" % state)
+                    print("Popups state: %s" % state)
                     if self.deadcheck:
                         self.pressIfDead()
                     else:
@@ -1251,7 +1251,7 @@ class CaveEngine(QObject):
                 self.swipe('s', 1)
                 self.swipe('w', 1.5)
                 self.swipe('ne', 2)
-            elif i > 4:
+            elif i > 5:
                 break
             self.swipe('n', 1.5)
             self.swipe('nw', 2)
@@ -1274,6 +1274,20 @@ class CaveEngine(QObject):
                 self.battle_pass_advanced = True
             else:
                 self.battle_pass_advanced = False
+            state = self.screen_connector.getFrameState()
+            print("Start state: %s" % state)
+            if state == "menu_talents" or state == "menu_events":
+                print("Changing to World Menu")
+                self.tap("menu_world_left")
+                self.wait(2)
+            elif state == "menu_equipment" or state == "menu_shop" or state == "menu_shop_heromode":
+                print("Changing to World Menu")
+                self.tap("menu_world_right")
+                self.wait(2)
+            elif state == "crash_desktop_open":
+                print("Opening Game Now")
+                self.tap("open_game")
+                self.wait(90)
             if self.currentLevel > 0:
                 if self.screen_connector.checkFrame('menu_home'):
                     if self.debug: print("Home Menu detected... setting to lvl 0 now.")
@@ -1403,19 +1417,7 @@ class CaveEngine(QObject):
         self.log("Checks are running")
         if self.debug: print("Start-Game. Checking screen...")
         state = self.screen_connector.getFrameState()
-        print("state: %s" % state)
-        if state == "menu_talents" or state == "menu_events":
-            print("Changing to World Menu")
-            self.tap("menu_world_left")
-            self.wait(3)
-        elif state == "menu_equipment" or state == "menu_shop" or state == "menu_shop_heromode":
-            print("Changing to World Menu")
-            self.tap("menu_world_right")
-            self.wait(3)
-        elif state == "crash_desktop_open":
-            print("Opening Game Now")
-            self.tap("open_game")
-            self.wait(90)
+        print("Ads state: %s" % state)
         ui_changed = False
         frame = self.screen_connector.getFrame()
         print("Checking for Announcement")
@@ -1618,12 +1620,17 @@ class CaveEngine(QObject):
         if self.debug: print("manage_exit_from_endgame")
         self.wait(8) # wait for endgame loot screen to load
         state = self.screen_connector.getFrameState()
-        print("state: %s" % state)
+        print("End state: %s" % state)
         if state == 'menu_home':
             print("Exit_Endgame. Home Menu Detected.")
             return
         elif state == 'in_game':
             print("Exit_Endgame. You are still in_game; you most likely got stuck!")
+            return
+        elif state == 'angel_heal':
+            print("Exit_Endgame. Maybe you got stuck; or unexpected screen?")
+            self.currentLevel = 2
+            self.wait(0.5) # wait for GUI load
             return
         elif state == 'endgame':
             print("Exit_Endgame. You won!")
@@ -1631,7 +1638,7 @@ class CaveEngine(QObject):
             self.gameWon.emit()
             self.pressCloseEndgame()
         elif state != 'endgame':
-            print("Exit_Endgame. Maybe you leveled up; or unknown screen?")
+            print("Exit_Endgame. Maybe you leveled up; or unexpected screen?")
             self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
             self.wait(8) # wait for endgame loot screen to load
         self.pressCloseEndIfEndedFrame()
@@ -1652,7 +1659,7 @@ class CaveEngine(QObject):
 
     def altEndgameClose(self):
         state = self.screen_connector.getFrameState()
-        print("state: %s" % state)
+        print("Alt state: %s" % state)
         print("You most likely died; or possibly won out of cycle.")
         self.log("You died or won!")
         self.log("Either way, it's over!")
