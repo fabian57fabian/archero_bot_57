@@ -16,6 +16,8 @@ class HealingStrategy(str, enum.Enum):
 class EnergyStrategy(str, enum.Enum):
     AlwaysBuy = "always_buy"
     AlwaysBuy2 = "always_buy2"
+    AlwaysBuy3 = "always_buy3"
+    AlwaysBuy4 = "always_buy4"
     AlwaysIgnore = "always_ignore"
 
 class VIPSub(str, enum.Enum):
@@ -1340,6 +1342,12 @@ class CaveEngine(QObject):
                             self.buy_energy = True
                             self.max_buy_energy = 1
                         elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
+                            self.buy_energy = True
+                            self.max_buy_energy = 2
+                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy3:
+                            self.buy_energy = True
+                            self.max_buy_energy = 3
+                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy4:
                             self.buy_energy = True
                             self.max_buy_energy = 4
                         else:
