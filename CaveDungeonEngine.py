@@ -249,7 +249,6 @@ class CaveEngine(QObject):
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
-        self.smartHealChoice = True
         self.screen_connector = GameScreenConnector()
         self.screen_connector.debug = False
         self.width, self.heigth = 1080, 1920 
@@ -986,10 +985,10 @@ class CaveEngine(QObject):
                     self.wait(2)
             elif state == "angel_heal":
                 if self.healingStrategy == HealingStrategy.SmartHeal:
-                    print("Popups. SmartHeal")
+                    if self.debug: print("Popups. SmartHeal")
                     self.tap('heal_right' if self.smartHealChoice else 'heal_left')
                 else:
-                    print("Popups. NormalHeal")
+                    if self.debug: print("Popups. NormalHeal")
                     self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
             elif state == "on_pause":
@@ -1067,12 +1066,12 @@ class CaveEngine(QObject):
     def heal_lvl(self):
         if self.debug: print("heal_lvl")
         if self.healingStrategy == HealingStrategy.SmartHeal:
-            print("Smart Heal Check")
+            if self.debug: print("Smart Heal Check")
             if self.screen_connector.checkFrame("smart_heal_hp_check"):
-                print("HP GREATER than 50%")
+                if self.debug: print("HP GREATER than 50%")
                 self.smartHealChoice = False
             else:
-                print("HP LESS than 50%")
+                if self.debug: print("HP LESS than 50%")
                 self.smartHealChoice = True
         self.log("Cenering Self")
         self.disableLogs = True
