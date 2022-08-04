@@ -36,7 +36,7 @@ class GameControllerWindow(QWidget):
         self.infoLabel = QLabel()
         self.cBoxhealStrategy = QComboBox()
         self.cBoxhealStrategy.blockSignals(True)
-        self.cBoxhealStrategy.addItems(['Always Power','Always Heal'])
+        self.cBoxhealStrategy.addItems(['Always Power','Always Heal','Smart Heal'])
         self.cBoxhealStrategy.blockSignals(False)
         self.lblInfoHealStrategy = QLabel()
         self.updateHealingStrategyChange(self.model.engine.healingStrategy)
@@ -87,6 +87,7 @@ class GameControllerWindow(QWidget):
 
     def updateHealingStrategyChange(self, strat: HealingStrategy):
         index = 1 if strat == HealingStrategy.AlwaysHeal else 0
+        index = 2 if strat == HealingStrategy.SmartHeal else index
         curr = self.cBoxhealStrategy.currentIndex
         if curr != index:
             self.cBoxhealStrategy.blockSignals(True)
@@ -125,6 +126,7 @@ class GameControllerWindow(QWidget):
 
     def onChangeHealStrategy(self, new_index):
         strat = HealingStrategy.AlwaysHeal if new_index == 1 else HealingStrategy.AlwaysPowerUp
+        strat = HealingStrategy.SmartHeal if new_index == 2 else strat
         self.model.engine.changeHealStrategy(strat)
 
     def onChangeEnergyStrategy(self, new_index1):
