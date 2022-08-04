@@ -12,6 +12,7 @@ import os
 class HealingStrategy(str, enum.Enum):
     AlwaysHeal = "always_heal"
     AlwaysPowerUp = "always_power"
+    SmartHeal = "smart_heal"
 
 class EnergyStrategy(str, enum.Enum):
     AlwaysBuy = "always_buy"
@@ -248,6 +249,7 @@ class CaveEngine(QObject):
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
+        self.smartHealChoice = True
         self.screen_connector = GameScreenConnector()
         self.screen_connector.debug = False
         self.width, self.heigth = 1080, 1920 
@@ -259,7 +261,7 @@ class CaveEngine(QObject):
         self.stopRequested = False
         self.currentDataFolder = ''
         self.dataFolders = {}
-        self.healingStrategy = HealingStrategy.AlwaysPowerUp
+        self.healingStrategy = HealingStrategy.SmartHeal
         self.energyStrategy = EnergyStrategy.AlwaysIgnore
         self.vipSub = VIPSub.FalseVIP
         self.bpadvSub = BattlepassAdvSub.FalseBPAdv
@@ -294,7 +296,7 @@ class CaveEngine(QObject):
         if self.debug: print("Loading Default Settings")
         new_sett = {
             "selected_dungeon": 3,
-            "healing_strategy": HealingStrategy.AlwaysHeal,
+            "healing_strategy": HealingStrategy.SmartHeal,
             "energy_strategy": EnergyStrategy.AlwaysIgnore,
             "vip_sub": VIPSub.FalseVIP,
             "bpadv_sub": BattlepassAdvSub.FalseBPAdv
@@ -481,8 +483,10 @@ class CaveEngine(QObject):
             self.exit_movement_dungeon6()
         elif self.currentDungeon == 7 or self.currentDungeon == 14:
             self.exit_movement_dungeon_7()
-        elif self.currentDungeon == 10 or self.currentDungeon == 16:
+        elif self.currentDungeon == 10:
             self.exit_movement_dungeon10()
+        elif self.currentDungeon == 16:
+            self.exit_movement_dungeon16()
         else:
             self.exit_movement_dungeon_old()
         self.log("Left Dungeon")
@@ -542,6 +546,13 @@ class CaveEngine(QObject):
         if self.debug: print("exit_dungeon_10")
         self.disableLogs = True
         self.swipe('e', 1.5)
+        self.swipe('nw', 3)
+        self.disableLogs = False
+
+    def exit_movement_dungeon16(self): 
+        if self.debug: print("exit_dungeon_16")
+        self.disableLogs = True
+        self.swipe('e', .6)
         self.swipe('nw', 3)
         self.disableLogs = False
    
@@ -974,7 +985,12 @@ class CaveEngine(QObject):
                     self.tap('wheel_back')
                     self.wait(2)
             elif state == "angel_heal":
-                self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
+                if self.healingStrategy == HealingStrategy.SmartHeal:
+                    print("Popups. SmartHeal")
+                    self.tap('heal_right' if self.smartHealChoice else 'heal_left')
+                else:
+                    print("Popups. NormalHeal")
+                    self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
             elif state == "on_pause":
                 self.tap('resume')
@@ -1050,6 +1066,14 @@ class CaveEngine(QObject):
 
     def heal_lvl(self):
         if self.debug: print("heal_lvl")
+        if self.healingStrategy == HealingStrategy.SmartHeal:
+            print("Smart Heal Check")
+            if self.screen_connector.checkFrame("smart_heal_hp_check"):
+                print("HP GREATER than 50%")
+                self.smartHealChoice = False
+            else:
+                print("HP LESS than 50%")
+                self.smartHealChoice = True
         self.log("Cenering Self")
         self.disableLogs = True
         self.swipe('s', 2)
