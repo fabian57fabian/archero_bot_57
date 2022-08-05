@@ -21,7 +21,7 @@ If you want, you can send me a beer here:
 
 ## Introduction 
 This is an archero bot that can work on a mobile smartphone connected with usb cable, but designed specificly for NOX emulator at 1080x1920 mobile resolution.
-It was originally built to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded: designed and tested speifically for dungeon caves 3, 6, and 10 (for both normal and hero modes). It can also do other levels 1-15, though not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels. If you plan to try the other levels beside 3, 6, or 10, results will vary depending on how OP your character is for that level.
+It was originally built to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded: designed and tested speifically for dungeon caves 3, 6, and 10 (for both normal and hero modes). It can also do other levels 1-16, though some not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels. If you plan to try the other levels beside 3, 6, or 10, results will vary depending on how OP your character is for that level.
 
 - Supported OS:
   - Windows
@@ -38,10 +38,18 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
   - 7 . **Barens of Shadow: tested, WORKING**
   - 10 . **Land of Doom: tested, WORKING**
   - 14 . **Frigid Tundra: tested, WORKING**
-  - 16 . **Archic Temple: tested, MOSTLY WORKING**
+  - 16 . **Archic Temple: tested, WORKING**
   - 1-15 . Other dungens: tested, works some (use at own peril)...
 
-- Tested resolutions
+- GUI Options Explained:
+  - #1: Click Icon, choose selected cave to run. If switching between 10, 20, 30, and 50-room dungeons, you must close and re-open the bot to load the correct GUI screen.
+  - #2: Choose Heal Strategy, Always Power (always chooses left), Always Heal (always chooses right), or Smart Heal (chooses left if above 50% HP and right if below 50% HP).
+  - #3: Choose Energy Strategy, Do Not Buy Energy or Buy 1, 2, 3, or 4 Energy (**buy energy uses gems**).
+  - #4: Do pay for Value Rewards or VIP Rewards Subscription?  If yes, choose True ( Automatically claims VALUE/VIP rewards daily for you). If you don't pay for a subscription choose False.
+  - #5: Do you pay for the "Battle Pass Advanced" Subscription? If yes, choose True ( Automatically claims Battle Pass Advanced rewards daily for you). If you don't pay for a subscription choose False. Does not work with a standard battle pass ONLY the advanced one!
+<img src="repo_images/gui_options.png">
+
+- Tested resolutions:
   - 1080x1920 is full working.
   - other resolutions are DEPRECATED. They were added to fit various smartphones but development became a nightmare.
 
