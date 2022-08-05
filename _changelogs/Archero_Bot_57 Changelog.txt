@@ -6,7 +6,25 @@ Things may be broke or known bugs:
 - StaticCoordsChecker gives format conversion error
 
 
-[v?] Updated: 20-Jul-2022 (afterwards, 12 commits to Adminzero Repository)
+[v?] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
+- Updated to NOX 7.0.3.2
+- Rolled back to Python 3.9.13 (the touch manager doesn't seem to be compatible with 3.10+)
+- Updated to Archero Version 4.1.0 (new abilitie, adjusted coords, new screens, etc.)
+	- Added choice 'Smart Heal' option to Healing Strategy
+	- Added buy '1, 2, 3 and 4' options to Energy Strategy
+	- Completed final tweaks on Dungeon 16 (as good as it gets)
+	- Updated Read ME file with GUI Dropdown Option Descriptions & an Image
+	- Adjusted dead-checks (still not working great)
+	- Optimized let-play (removed duplicated code)
+	- Dungeon_exit for several dungeons; more optimal in several cases
+	- End_game_exit for all levels; messages are more accurate now
+	- Alt_end_game exit for all levels: messages are more accurate now
+	- Detect Boss Field image and message; added for lvl 16 final boss
+	- Default loop cycles; corrected items used during testing
+	- Farming Complete Exit; fixed the error causing to crash instead of finish
+
+
+[v?] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
 - Included all updates made by Fabian57Fabian; up to 20-Jul-2022 (I think, sorry not to familiar with github merging and stuff)
 - Changed the 'wait' time on energy refill; to 60 minutes (60 works best for me)
 - Added/Changed a lot of stuff in the caveDungeonEngine related to the addition and troubleshooting of lvl 10 dungeons (7 & 14) to work; while having lvl 20 Dungeons (3, 6, 10) still work fine; lvl 16 works but needs minor tweaks still.
