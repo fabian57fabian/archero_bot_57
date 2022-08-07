@@ -47,6 +47,7 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
   - #3: Choose Energy Strategy, Do Not Buy Energy or Buy 1, 2, 3, or 4 Energy (**buy energy uses gems**).
   - #4: Do you pay for Value Rewards or VIP Rewards Subscription?  If yes, choose True ( Automatically claims VALUE/VIP rewards daily for you). If you don't pay for a subscription choose False.
   - #5: Do you pay for the "Battle Pass Advanced" Subscription? If yes, choose True ( Automatically claims Battle Pass Advanced rewards daily for you). If you don't pay for a subscription choose False. Does not work with a standard battle pass ONLY the advanced one!
+  - #6 Check If Dead, will try to revive you if you die in game. **Uses GEMS**, unless you pay for Battle Pass Advanced Sub. Slows down gameplay some and currently works <50% of the time.
 <img src="repo_images/gui_options.png">
 
 - Tested resolutions:
