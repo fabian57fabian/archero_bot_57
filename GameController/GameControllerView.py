@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QResizeEvent
 
-from CaveDungeonEngine import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub
+from CaveDungeonEngine import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub, ReviveIfDead
 from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -58,6 +58,12 @@ class GameControllerWindow(QWidget):
         self.cBoxbpadvSub.blockSignals(False)
         self.lblInfoBattlepassAdvSub = QLabel()
         self.updateBattlepassAdvSubChange(self.model.engine.bpadvSub)
+        self.cBoxreviveIfDead = QComboBox()
+        self.cBoxreviveIfDead.blockSignals(True)
+        self.cBoxreviveIfDead.addItems(['Revive False','Revive True'])
+        self.cBoxreviveIfDead.blockSignals(False)
+        self.lblInfoReviveIfDead = QLabel()
+        self.updateReviveIfDeadChange(self.model.engine.reviveIfDead)
         self.initConnectors()
 
     def initConnectors(self):
@@ -79,6 +85,8 @@ class GameControllerWindow(QWidget):
         self.cBoxvipSub.currentIndexChanged.connect(self.onChangeVIPSub)
         self.model.engine.bpadvSubChanged.connect(self.updateBattlepassAdvSubChange)
         self.cBoxbpadvSub.currentIndexChanged.connect(self.onChangeBattlepassAdvSub)
+        self.model.engine.reviveIfDeadChanged.connect(self.updateReviveIfDeadChange)
+        self.cBoxreviveIfDead.currentIndexChanged.connect(self.onChangeReviveIfDead)
         self.model.updatesAvailableEvent.connect(self.on_UpdatesAreAvailable)
 
     def on_UpdatesAreAvailable(self, mess:str):
@@ -121,6 +129,14 @@ class GameControllerWindow(QWidget):
             self.cBoxbpadvSub.setCurrentIndex(index3)
             self.cBoxbpadvSub.blockSignals(False)
 
+    def updateReviveIfDeadChange(self, strat4: ReviveIfDead):
+        index4 = 1 if strat4 == ReviveIfDead.TrueRevive else 0
+        curr4 = self.cBoxreviveIfDead.currentIndex
+        if curr4 != index4:
+            self.cBoxreviveIfDead.blockSignals(True)
+            self.cBoxreviveIfDead.setCurrentIndex(index4)
+            self.cBoxreviveIfDead.blockSignals(False)
+
     def onCurrentDungeonChanged(self, new_dungeon: int):
         self.infoLabel.setText("Current dungeon: {}".format(new_dungeon))
 
@@ -144,11 +160,15 @@ class GameControllerWindow(QWidget):
         strat3 = BattlepassAdvSub.TrueBPAdv if new_index3 == 1 else BattlepassAdvSub.FalseBPAdv
         self.model.engine.changeBattlepassAdvSub(strat3)
 
+    def onChangeReviveIfDead(self, new_index4):
+        strat4 = ReviveIfDead.TrueRevive if new_index4 == 1 else ReviveIfDead.FalseRevive
+        self.model.engine.changeReviveIfDead(strat4)
+
     def onLevelChanged(self, newLevel):
         self.currentLevelWidget.changeLevel(newLevel)
 
     def onGameWon(self):
-        self.infoLabel.setText("Finished 20 chapters. Win!")
+        self.infoLabel.setText("Finished all chapters. Win!")
 
     def onNoEnergyLeft(self):
         self.infoLabel.setText("No energy left. Waiting until refill to play again.")
@@ -204,13 +224,11 @@ class GameControllerWindow(QWidget):
         self.main_layout.setColumnStretch(1, 200)
         self.main_layout.setRowStretch(1, 200)
         self.setLayout(self.main_layout)
-
         self.main_layout.addWidget(self.dungeonSelector, 0, 0)
         lay_content = QVBoxLayout()
         self.toolbarOptions.addWidget(self.size_info_lbl)
         self.toolbarOptions.addWidget(self.lblConnectionStatus)
         self.toolbarOptions.addWidget(self.lblCheckConnectionStatus)
-
         self.lblInfoHealStrategy.setText('Healing Strategy:')
         self.toolbarOptions.addWidget(self.lblInfoHealStrategy)
         self.toolbarOptions.addWidget(self.cBoxhealStrategy)
@@ -223,8 +241,10 @@ class GameControllerWindow(QWidget):
         self.lblInfoBattlepassAdvSub.setText('BPAdv Subscription:')
         self.toolbarOptions.addWidget(self.lblInfoBattlepassAdvSub)
         self.toolbarOptions.addWidget(self.cBoxbpadvSub)
+        self.lblInfoReviveIfDead.setText('Revive If Dead:')
+        self.toolbarOptions.addWidget(self.lblInfoReviveIfDead)
+        self.toolbarOptions.addWidget(self.cBoxreviveIfDead)
         self.toolbarOptions.addWidget(self.lblUpdates)
-
         lay_content.addWidget(self.controlWidget)
         lay_content.addWidget(self.infoLabel)
         self.lblInfoHealStrategy.setStyleSheet("background-color: #6e6e6e; color: white")
@@ -235,6 +255,8 @@ class GameControllerWindow(QWidget):
         self.cBoxvipSub.setStyleSheet("background-color: #6e6e6e; color: white")
         self.lblInfoBattlepassAdvSub.setStyleSheet("background-color: #6e6e6e; color: white")
         self.cBoxbpadvSub.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.lblInfoReviveIfDead.setStyleSheet("background-color: #6e6e6e; color: white")
+        self.cBoxreviveIfDead.setStyleSheet("background-color: #6e6e6e; color: white")
         self.controlWidget.setStyleSheet("background-color: #6e6e6e")
         upd_str = "All updated."
         if self.model.updates_available:
