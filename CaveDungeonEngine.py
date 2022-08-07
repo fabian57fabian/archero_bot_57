@@ -29,6 +29,10 @@ class BattlepassAdvSub(str, enum.Enum):
     TrueBPAdv = "bpadv_true"
     FalseBPAdv = "bpadv_false"
 
+class ReviveIfDead(str, enum.Enum):
+    TrueRevive = "revive_true"
+    FalseRevive = "revive_false"
+
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
     addLog = pyqtSignal(str)
@@ -41,6 +45,7 @@ class CaveEngine(QObject):
     energyStrategyChanged = pyqtSignal(EnergyStrategy)
     vipSubChanged = pyqtSignal(VIPSub)
     bpadvSubChanged = pyqtSignal(BattlepassAdvSub)
+    reviveIfDeadChanged = pyqtSignal(ReviveIfDead)
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
@@ -241,7 +246,8 @@ class CaveEngine(QObject):
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = False # set True to show print debug messages in console
-        self.deadcheck = False # set True to check if dead, works <50% of time to revive; costs gems unless BPAdv Sub
+        self.deadcheck = False # controled by GUI dropdown, works <50% of time to revive; costs gems unless BPAdv Sub
+        self.smartHealChoice = False # controled by GUI dropdown, works >90% of the time
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
@@ -250,24 +256,25 @@ class CaveEngine(QObject):
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
         self.screen_connector = GameScreenConnector()
-        self.screen_connector.debug = False
+        self.screen_connector.debug = False # set true to see screen_connector degbug messages in console
         self.width, self.heigth = 1080, 1920 
         self.device_connector = UsbConnector()
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onConnectionStateChanged)
         self.buttons = {}
         self.movements = {}
-        self.disableLogs = False
-        self.stopRequested = False
+        self.disableLogs = False # do not change
+        self.stopRequested = False # do not change
         self.currentDataFolder = ''
         self.dataFolders = {}
         self.healingStrategy = HealingStrategy.SmartHeal
         self.energyStrategy = EnergyStrategy.AlwaysIgnore
         self.vipSub = VIPSub.FalseVIP
         self.bpadvSub = BattlepassAdvSub.FalseBPAdv
+        self.reviveIfDead = ReviveIfDead.FalseRevive
+        self.centerAfterCrossingDungeon = False # do not ghange
         self.current_settings = {}
         self.current_settings_path = 'current_settings.json'
         self.load_current_settings()
-        self.centerAfterCrossingDungeon = False
         if connectImmediately:
             self.initDeviceConnector()
 
@@ -298,7 +305,8 @@ class CaveEngine(QObject):
             "healing_strategy": HealingStrategy.SmartHeal,
             "energy_strategy": EnergyStrategy.AlwaysIgnore,
             "vip_sub": VIPSub.FalseVIP,
-            "bpadv_sub": BattlepassAdvSub.FalseBPAdv
+            "bpadv_sub": BattlepassAdvSub.FalseBPAdv,
+            "revive_ifdead": ReviveIfDead.FalseRevive
         }
         saveJsonData_oneIndent(self.current_settings_path, new_sett)
 
@@ -313,7 +321,7 @@ class CaveEngine(QObject):
             if self.debug: print("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
             self._create_default_current_settings()
             new_sett = loadJsonData(self.current_settings_path)
-        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett:
+        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett or "revive_ifdead" not in new_sett:
             if self.debug: print("Corrupted/errored current settings. ")
             if self.debug: print("Creating basic current settings...")
             self._create_default_current_settings()
@@ -324,6 +332,7 @@ class CaveEngine(QObject):
         self.energyStrategy = EnergyStrategy(self.current_settings["energy_strategy"])
         self.vipSub = VIPSub(self.current_settings["vip_sub"])
         self.bpadvSub = BattlepassAdvSub(self.current_settings["bpadv_sub"])
+        self.reviveIfDead = ReviveIfDead(self.current_settings["revive_ifdead"])
 
     def changeHealStrategy(self, strat: HealingStrategy):
         print("Loading Heal Strategy")
@@ -352,6 +361,13 @@ class CaveEngine(QObject):
         self.current_settings['bpadv_sub'] = self.bpadvSub
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.bpadvSubChanged.emit(strat3)
+
+    def changeReviveIfDead(self, strat4: ReviveIfDead):
+        print("Updating Revive Choice")
+        self.reviveIfDead = strat4
+        self.current_settings['revive_ifdead'] = self.reviveIfDead
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.reviveIfDeadChanged.emit(strat4)
         
     def changeChapter(self, new_chapter):
         print("Loading Selected Chapter")
@@ -587,20 +603,20 @@ class CaveEngine(QObject):
             if self.currentLevel == 11 or self.currentLevel == 18:
                 self.swipe('sw', .6)
                 self.swipe('nw', .8)
-            self.swipe('se', .7)
+            self.swipe('se', .65)
             self.swipe('e', .7)
-            self.swipe('nw', .5)
+            self.swipe('nw', .55)
             self.swipe('ne', .7)
             self.swipe('w', .3)
             self.swipe('s', .6)
-            self.swipe('sw', .2)
-            self.swipe('nw', .6)
-            self.swipe('ne', .6)
+            self.swipe('sw', .3)
+            self.swipe('nw', .7)
+            self.swipe('ne', .55)
             self.swipe('w', .3)
-            if self.currentLevel == 11 or self.currentLevel == 13 or self.currentLevel == 18:
+            if self.currentLevel == 11 or self.currentLevel == 13:
                 self.swipe('w', .25)
             self.swipe('n', 1.5)
-        self.disableLogs = False
+        self.disableLogs = False        
 
     def goTroughDungeon6(self):
         if self.debug: print("Going through dungeon (designed for #6)")
@@ -923,12 +939,12 @@ class CaveEngine(QObject):
                     if self.debug: print("State Checks End") 
 
     def reactGamePopups(self) -> int:
-        self.wait(1)
         state = ""
         i = 0
         while state != "in_game":
             if self.stopRequested:
                 exit()
+            self.wait(1)
             state = self.screen_connector.getFrameState()
             if self.debug: print("state: %s" % state)
             if self.debug: print("React-Popups. Checking screen...")
@@ -1071,7 +1087,7 @@ class CaveEngine(QObject):
                 if self.debug: print("HP GREATER than 50%")
                 self.smartHealChoice = False
             else:
-                if self.debug: print("HP LESS than 50%")
+                print("HP LESS than 50%")
                 self.smartHealChoice = True
         self.log("Cenering Self")
         self.disableLogs = True
@@ -1256,32 +1272,31 @@ class CaveEngine(QObject):
                 print("Trying now; escape plan A!")
                 self.log("Escape Plan A!")
                 self.swipe('s', .6)
-                self.swipe('e', .5)
+                self.swipe('e', .3)
                 self.swipe('ne', 1)
             elif i == 2:
                 print("Trying now; escape plan B!")
                 self.log("Escape Plan B!")
                 self.swipe('s', .6)
-                self.swipe('w', .5)
+                self.swipe('w', .3)
                 self.swipe('nw', 1)
             elif i == 3:
                 print("Trying now; escape plan C!")
                 self.log("Escape Plan C!")
-                self.swipe('s', 1)
-                self.swipe('e', 1.5)
+                self.swipe('s', .9)
+                self.swipe('e', .9)
                 self.swipe('nw', 2)
             elif i == 4:
                 print("Trying now; escape plan D!")
                 self.log("Escape Plan D!")
-                self.swipe('s', 1)
-                self.swipe('w', 1.5)
+                self.swipe('s', .9)
+                self.swipe('w', .9)
                 self.swipe('ne', 2)
             elif i > 5:
                 break
             self.swipe('n', 1.5)
-            self.swipe('nw', 2)
-            self.swipe('e', 1.5)
-            self.swipe('nw', 2)
+            self.swipe('nw', 1.5)
+            self.swipe('ne', 1.5)
             self.wait(2) # wait for room transition to complete
             state = self.screen_connector.getFrameState()
             self.disableLogs = False
@@ -1299,6 +1314,10 @@ class CaveEngine(QObject):
                 self.battle_pass_advanced = True
             else:
                 self.battle_pass_advanced = False
+            if self.reviveIfDead == ReviveIfDead.TrueRevive:
+                self.deadcheck = True
+            else:
+                self.deadcheck = False
             state = self.screen_connector.getFrameState()
             print("Start state: %s" % state)
             if state == "menu_talents" or state == "menu_events":
