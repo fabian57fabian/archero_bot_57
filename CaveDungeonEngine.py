@@ -567,7 +567,7 @@ class CaveEngine(QObject):
     def exit_movement_dungeon16(self): 
         if self.debug: print("exit_dungeon_16")
         self.disableLogs = True
-        self.swipe('e', .6)
+        self.swipe('e', 1.2)
         self.swipe('nw', 3)
         self.disableLogs = False
    
@@ -575,7 +575,7 @@ class CaveEngine(QObject):
         if self.currentDungeon == 10:
             if self.debug: print("Going through dungeon (designed for #10)")
             self.log("Crossing Dungeon 10")
-        if self.currentDungeon == 16:
+        elif self.currentDungeon == 16:
             if self.debug: print("Going through dungeon (designed for #16)")
             self.log("Crossing Dungeon 16")
         self.disableLogs = True
@@ -599,7 +599,7 @@ class CaveEngine(QObject):
                 self.swipe('s', .35)
                 self.swipe('ne', .4)
                 self.swipe('n', .4)
-        if self.currentDungeon == 16:
+        elif self.currentDungeon == 16:
             if self.currentLevel == 11 or self.currentLevel == 18:
                 self.swipe('sw', .6)
                 self.swipe('nw', .8)
@@ -613,8 +613,6 @@ class CaveEngine(QObject):
             self.swipe('nw', .7)
             self.swipe('ne', .55)
             self.swipe('w', .3)
-            if self.currentLevel == 11 or self.currentLevel == 13:
-                self.swipe('w', .25)
             self.swipe('n', 1.5)
         self.disableLogs = False        
 
@@ -1119,9 +1117,14 @@ class CaveEngine(QObject):
         self.swipe('n', 0.7)
         self.swipe('e', 1)
         self.swipe('nw', 2)
-        if self.currentDungeon == 16 and self.currentLevel == 15:
-            self.swipe('n', .4)
-            self.swipe('w', .4)
+        if self.currentDungeon == 16:
+            if self.currentLevel == 10:
+                self.reactGamePopups()
+                self.swipe('nw', 1.5)
+                self.swipe('ne', 1.5)
+            elif self.currentLevel == 15:
+                self.swipe('n', .4)
+                self.swipe('w', .4)
         self.swipe('ne', 2)
         self.swipe('nw', 1.25)
         self.disableLogs = False
