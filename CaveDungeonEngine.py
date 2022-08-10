@@ -894,7 +894,7 @@ class CaveEngine(QObject):
                         if self.debug: print("Cancel Abilty Refresh")
                         self.tap('close_ability_refresh')
                         self.wait(1)
-                    elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equipment" or state == "menu_shop" or state == "menu_shop_heromode":
+                    elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equip" or state == "menu_shop":
                         raise Exception('mainscreen')
                     elif state == "crash_desktop_open":
                         raise Exception('crashdesktop')
@@ -1015,7 +1015,7 @@ class CaveEngine(QObject):
                 self.wait(5)
                 self.tap("resume")
                 self.wait(2)
-            elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equipment" or state == "menu_shop" or state == "menu_shop_heromode":
+            elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equip" or state == "menu_shop":
                 raise Exception('mainscreen')
             elif state == "crash_desktop_open":
                 raise Exception('crashdesktop')
@@ -1329,7 +1329,7 @@ class CaveEngine(QObject):
                 print("Changing to World Menu")
                 self.tap("menu_world_left")
                 self.wait(2)
-            elif state == "menu_equipment" or state == "menu_shop" or state == "menu_shop_heromode":
+            elif state == "menu_equip" or state == "menu_shop":
                 print("Changing to World Menu")
                 self.tap("menu_world_right")
                 self.wait(2)
