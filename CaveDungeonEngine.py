@@ -888,6 +888,7 @@ class CaveEngine(QObject):
                             print("Letplay state: %s" % state)
                             if self.deadcheck: self.pressIfDead()
                         else:
+                            print("Sorry, you most likely died.")
                             self.altEndgameClose()
                     elif state == "ability_refresh":
                         if self.debug: print("Cancel Abilty Refresh")
@@ -955,6 +956,7 @@ class CaveEngine(QObject):
                     else:
                         print("Turn on 'DeadCheck' to use gems to revive!")
                 else:
+                    print("You most likely won out of cycle.")
                     self.altEndgameClose()
             elif state == "ability_refresh":
                 if self.debug: print("Cancel Abilty Refresh")
@@ -1377,6 +1379,7 @@ class CaveEngine(QObject):
                                 self.tap('get_ad_energy')
                                 self.disableLogs = False
                                 self.wait(6) # wait for load energy bar
+                                break
                             else:
                                 self.tap('close_energy_buy')
                                 self.disableLogs = False
@@ -1713,7 +1716,6 @@ class CaveEngine(QObject):
     def altEndgameClose(self):
         state = self.screen_connector.getFrameState()
         print("Alt state: %s" % state)
-        print("You most likely died; or possibly won out of cycle.")
         self.log("You died or won!")
         self.log("Either way, it's over!")
         self.pressCloseEndgame()
