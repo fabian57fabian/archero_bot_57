@@ -1309,7 +1309,6 @@ class CaveEngine(QObject):
                     
     def start_one_game(self):
         i = 0
-        energy_count = 1
         while i <= self.max_loops_game:
             if self.vipSub == VIPSub.TrueVIP:
                 self.vip_priv_rewards = True
@@ -1350,79 +1349,7 @@ class CaveEngine(QObject):
             if self.currentLevel > 0:
                 self.checkForAds()
             elif self.currentLevel == 0:
-                energy_check = True
-                while energy_check:
-                    self.checkForAds()
-                    state = self.screen_connector.getFrameState()
-                    if self.debug: print("state: %s" % state)
-                    if state == 'menu_home':
-                        if self.debug: print("Go to next step")
-                    elif state == 'endgame':
-                        self.pressCloseEndgame()
-                    elif state == 'in_game':
-                        break
-                    elif state != 'in_game':
-                        break
-                    print("Checking for Energy")
-                    if self.screen_connector.checkFrame("least_5_energy"):    
-                        energy_check = False
-                        print("Energy is Good")
-                    else:
-                        if self.battle_pass_advanced:
-                            print("BPAdv Free Energy Check")
-                            self.log("Free Energy Check")
-                            self.disableLogs = True
-                            self.tap('open_energy_buy')
-                            self.wait(8) # wait for load energy store
-                            if self.screen_connector.checkFrame("free_ad_energy"):
-                                print("xxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxx")
-                                self.tap('get_ad_energy')
-                                self.disableLogs = False
-                                self.wait(6) # wait for load energy bar
-                                break
-                            else:
-                                self.tap('close_energy_buy')
-                                self.disableLogs = False
-                                self.wait(4) # wait for close buy energy
-                        print("Energy Strategy Check")
-                        self.log("Energy Strategy Check")
-                        if self.energyStrategy == EnergyStrategy.AlwaysBuy:
-                            self.buy_energy = True
-                            self.max_buy_energy = 1
-                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
-                            self.buy_energy = True
-                            self.max_buy_energy = 2
-                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy3:
-                            self.buy_energy = True
-                            self.max_buy_energy = 3
-                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy4:
-                            self.buy_energy = True
-                            self.max_buy_energy = 4
-                        else:
-                            self.buy_energy = False
-                        state = self.screen_connector.getFrameState()
-                        if self.debug: print("state: %s" % state)
-                        if self.buy_energy and state == 'menu_home':
-                            if energy_count <= self.max_buy_energy:
-                                self.tap('open_energy_buy')
-                                self.wait(8) # wait for load energy store
-                                self.tap('buy_more_energy')
-                                self.wait(6) # wait for load energy bar
-                                print("xxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxx")
-                                print(energy_count)
-                                energy_count += 1
-                            else:
-                                print("Max energy buy reached, waiting for 60 minutes")
-                                self.log("No Energy")
-                                self.noEnergyLeft.emit()
-                                self.wait(3605) # wait for time to gain 5 energy
-                        elif state == 'in_game':
-                            break
-                        else:
-                            print("No energy, waiting for 60 minutes")
-                            self.log("No Energy")
-                            self.noEnergyLeft.emit()
-                            self.wait(3605) # wait for time to gain 5 energy        
+                self.checkForEnergy()
             if self.debug: print("Selected Dungeon is %d" % self.currentDungeon)
             print("New game. Starting from level %d" % self.currentLevel)
             try:
@@ -1466,6 +1393,123 @@ class CaveEngine(QObject):
             print("Max Loops Reached. Farming complete!")
             self.log("Farming complete!")
             self.exitEngine()
+
+    def checkForEnergy(self):
+        energy_count = 1
+        energy_check = True
+        while energy_check:
+            self.checkForAds()
+            state = self.screen_connector.getFrameState()
+            if self.debug: print("state: %s" % state)
+            if state == 'menu_home':
+                if self.debug: print("Going to next step")
+            elif state == 'endgame':
+                self.pressCloseEndgame()
+            elif state == 'in_game':
+                break
+            elif state != 'in_game':
+                break
+            print("Checking for Energy")
+            frame = self.screen_connector.getFrame()
+            if self.screen_connector.checkFrame("least_5_energy", frame):    
+                energy_check = False
+                print("Energy is Good")
+            else:
+                check_farm = True
+                check_energy = True
+                if self.battle_pass_advanced:
+                    print("BPAdv Free Energy Check")
+                    self.log("Free Energy Check")
+                    self.disableLogs = True
+                    self.tap('open_energy_buy')
+                    self.wait(8) # wait for load energy store
+                    if self.screen_connector.checkFrame("free_ad_energy"):
+                        print("xxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxx")
+                        self.tap('get_ad_energy')
+                        self.disableLogs = False
+                        self.wait(6) # wait for load energy bar
+                        check_farm = False
+                        check_energy = False
+                    else:
+                        self.tap('close_energy_buy')
+                        self.disableLogs = False
+                        self.wait(4) # wait for close buy energy        
+                if check_farm:
+                    print("Monster Farm Energy Check")
+                    self.log("Farm Energy Check")
+                    self.disableLogs = True
+                    self.tap('farm_open')
+                    self.wait(6) # wait for farm open
+                    frame = self.screen_connector.getFrame()
+                    if self.screen_connector.checkFrame("monster_farm_visit", frame) or self.screen_connector.checkFrame("monster_farm_visit_free", frame):
+                        print("xxxxxxxxxxxxxxxxxxx Monster Farm Energy xxxxxxxxxxxxxxxxxx")
+                        if self.screen_connector.checkFrame("monster_farm_visit_free", frame):
+                            self.tap('farm_visit')
+                            self.wait(4) # wait for farm load
+                        self.tap('farm_visit')
+                        self.wait(4) # wait for farm load
+                        self.tap('farm_energy_1')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_1')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_2')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_2')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_3')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_3')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_4')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_4')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_back')
+                        self.wait(4) # wait for farm back
+                        check_energy = False
+                    self.tap('farm_back')
+                    self.wait(6) # wait for menu_home
+                    self.disableLogs = False
+                if check_energy:
+                    print("Energy Strategy Check")
+                    self.log("Energy Strategy Check")
+                    if self.energyStrategy == EnergyStrategy.AlwaysBuy:
+                        self.buy_energy = True
+                        self.max_buy_energy = 1
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
+                        self.buy_energy = True
+                        self.max_buy_energy = 2
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy3:
+                        self.buy_energy = True
+                        self.max_buy_energy = 3
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy4:
+                        self.buy_energy = True
+                        self.max_buy_energy = 4
+                    else:
+                        self.buy_energy = False
+                    state = self.screen_connector.getFrameState()
+                    if self.debug: print("state: %s" % state)
+                    if self.buy_energy and state == 'menu_home':
+                        if energy_count <= self.max_buy_energy:
+                            self.tap('open_energy_buy')
+                            self.wait(8) # wait for load energy store
+                            self.tap('buy_more_energy')
+                            self.wait(6) # wait for load energy bar
+                            print("xxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxx")
+                            print(energy_count)
+                            energy_count += 1
+                        else:
+                            print("Max energy buy reached, waiting for 60 minutes")
+                            self.log("No Energy")
+                            self.noEnergyLeft.emit()
+                            self.wait(3605) # wait for time to gain 5 energy
+                    elif state == 'in_game':
+                        break
+                    else:
+                        print("No energy, waiting for 60 minutes")
+                        self.log("No Energy")
+                        self.noEnergyLeft.emit()
+                        self.wait(3605) # wait for time to gain 5 energy   
 
     def checkForAds(self):
         self.log("Checking conditions")
