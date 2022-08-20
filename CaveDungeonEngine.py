@@ -1410,8 +1410,7 @@ class CaveEngine(QObject):
             elif state != 'in_game':
                 break
             print("Checking for Energy")
-            frame = self.screen_connector.getFrame()
-            if self.screen_connector.checkFrame("least_5_energy", frame):    
+            if self.screen_connector.checkFrame("least_5_energy"):    
                 energy_check = False
                 print("Energy is Good")
             else:
