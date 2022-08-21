@@ -251,6 +251,7 @@ class CaveEngine(QObject):
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
+        self.energy_count = 1
         self.load_tier_list()
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
@@ -1395,7 +1396,6 @@ class CaveEngine(QObject):
             self.exitEngine()
 
     def checkForEnergy(self):
-        energy_count = 1
         energy_check = True
         while energy_check:
             self.checkForAds()
@@ -1489,14 +1489,14 @@ class CaveEngine(QObject):
                     state = self.screen_connector.getFrameState()
                     if self.debug: print("state: %s" % state)
                     if self.buy_energy and state == 'menu_home':
-                        if energy_count <= self.max_buy_energy:
+                        if self.energy_count <= self.max_buy_energy:
                             self.tap('open_energy_buy')
                             self.wait(8) # wait for load energy store
                             self.tap('buy_more_energy')
                             self.wait(6) # wait for load energy bar
                             print("xxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxx")
-                            print(energy_count)
-                            energy_count += 1
+                            print(self.energy_count)
+                            self.energy_count += 1
                         else:
                             print("Max energy buy reached, waiting for 60 minutes")
                             self.log("No Energy")
@@ -1527,9 +1527,17 @@ class CaveEngine(QObject):
             ui_changed = True
         frame = self.screen_connector.getFrame() if ui_changed else frame
         ui_changed = False
-        print("Checking for new_season")
+        print("Checking for Legendary_Challenge")
+        if self.screen_connector.checkFrame("legendary_challenge", frame):
+            print("Okay to new Legendary Challenge")
+            self.tap("close_legendary_challenge")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for New_Season")
         if self.screen_connector.checkFrame("popup_new_season", frame):
-            print("New Season. Update BPAdv dropdown in GUI to False")
+            print("Okay to New Season. Update BPAdv dropdown in GUI to False")
             self.tap("close_new_season")
             self.battle_pass_advanced = False # only works once manully set dropdown in GUI to False
             self.wait(4)
