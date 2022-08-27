@@ -54,7 +54,7 @@ class CaveEngine(QObject):
     max_loops_game = 100 # set loops for start_one_game (default 100, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
     sleep_btw_screens = 8 # set wait between loops for final_boss (default 8, in seconds)
-    
+
     UseGeneratedData = False # Set True to use TouchManager generated data
     
     data_pack = 'datas'
@@ -612,6 +612,9 @@ class CaveEngine(QObject):
             self.swipe('s', .6)
             self.swipe('sw', .3)
             self.swipe('nw', .7)
+            if self.currentLevel == 11 or self.currentLevel == 18:
+                self.swipe('ne', .25)
+                self.swipe('nw', .5)
             self.swipe('ne', .55)
             self.swipe('w', .3)
             self.swipe('n', 1.5)
@@ -1378,7 +1381,7 @@ class CaveEngine(QObject):
                     print("state: %s" % state)
                     print("Exception. Unknown State, trying Something.")
                     self.log("Unknown Screens... halp!")
-                    self.tap('level_up_endgame')
+                    #self.tap('level_up_endgame')
                     self.wait(4) #waiting for magic
                 else:
                     print("Exception. Unknown problem: %s" % exc)
@@ -1388,10 +1391,10 @@ class CaveEngine(QObject):
                 if self.debug: print("*** Saving Statistics - Game Finished ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
-            print(">>>>>>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<<<<<")
+            print(">>>>>>>>>>>>>>> Completed Farming Bot Loop <<<<<<<<<<<<<<<")
             print(i)
         if i > self.max_loops_game:
-            print("Max Loops Reached. Farming complete!")
+            print("Max Bot Loops Reached. Farming complete!")
             self.log("Farming complete!")
             self.exitEngine()
 
@@ -1462,6 +1465,31 @@ class CaveEngine(QObject):
                         self.tap('farm_energy_4')
                         self.wait(2) # wait for energy load
                         self.tap('farm_energy_4')
+                        self.wait(2) # wait for energy close
+                        i = 1
+                        while i < 3:
+                            frame = self.screen_connector.getFrame()
+                            if self.screen_connector.checkFrame("monster_farm_visit_again", frame):
+                                print("xxxxxxxxxxxxxxxx Monster Farm Energy Again xxxxxxxxxxxxxxx")
+                                self.tap('farm_visit_again')
+                                self.wait(4) # wait for farm load
+                                self.tap('farm_energy_1')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_1')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_2')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_2')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_3')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_3')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_4')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_4')
+                                self.wait(2) # wait for energy close
+                            i += 1
                         self.wait(2) # wait for energy close
                         self.tap('farm_back')
                         self.wait(4) # wait for farm back
