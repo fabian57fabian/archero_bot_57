@@ -572,13 +572,9 @@ class CaveEngine(QObject):
         self.swipe('nw', 3)
         self.disableLogs = False
    
-    def goTroughDungeon10(self): # Dungeon 10 and 16
-        if self.currentDungeon == 10:
-            if self.debug: print("Going through dungeon (designed for #10)")
-            self.log("Crossing Dungeon 10")
-        elif self.currentDungeon == 16:
-            if self.debug: print("Going through dungeon (designed for #16)")
-            self.log("Crossing Dungeon 16")
+    def goTroughDungeon10(self):
+        if self.debug: print("Going through dungeon (designed for #10)")
+        self.log("Crossing Dungeon 10")
         self.disableLogs = True
         self.swipe('n', .5)
         self.swipe('nw', 2.5)
@@ -586,39 +582,50 @@ class CaveEngine(QObject):
         self.swipe('nw', 1.8)
         self.swipe('ne', 1)
         self.swipe('w', .7)
-        if self.currentDungeon == 10:
-            self.swipe('s', .6)
-            self.swipe('e', .35)
+        self.swipe('s', .6)
+        self.swipe('e', .35)
+        self.swipe('ne', .4)
+        self.swipe('n', 2.5)
+        self.swipe('s', .3)
+        self.swipe('w', .35)
+        self.swipe('nw', .4)
+        self.swipe('n', 1)
+        if self.currentLevel == 18:
+            self.swipe('w', .3)
+            self.swipe('s', .35)
             self.swipe('ne', .4)
-            self.swipe('n', 2.5)
-            self.swipe('s', .3)
-            self.swipe('w', .35)
+            self.swipe('n', .4)
+        self.disableLogs = False
+
+    def goTroughDungeon16(self):
+        if self.debug: print("Going through dungeon (designed for #16)")
+        self.log("Crossing Dungeon 16")
+        self.disableLogs = True
+        self.swipe('n', .5)
+        self.swipe('nw', 2.5)
+        self.swipe('ne', 2.5)
+        self.swipe('nw', 1.8)
+        self.swipe('ne', 1)
+        self.swipe('w', .7)
+        if self.currentLevel == 11 or self.currentLevel == 18:
+            self.swipe('sw', .6)
+            self.swipe('nw', .8)
+        self.swipe('se', .65)
+        self.swipe('e', .7)
+        self.swipe('nw', .55)
+        self.swipe('ne', .7)
+        self.swipe('w', .3)
+        self.swipe('s', .6)
+        self.swipe('sw', .3)
+        self.swipe('nw', .7)
+        if self.currentLevel == 11 or self.currentLevel == 18:
+            self.swipe('e', .3)
+            self.swipe('n', .3)
             self.swipe('nw', .4)
-            self.swipe('n', 1)
-            if self.currentLevel == 18:
-                self.swipe('w', .3)
-                self.swipe('s', .35)
-                self.swipe('ne', .4)
-                self.swipe('n', .4)
-        elif self.currentDungeon == 16:
-            if self.currentLevel == 11 or self.currentLevel == 18:
-                self.swipe('sw', .6)
-                self.swipe('nw', .8)
-            self.swipe('se', .65)
-            self.swipe('e', .7)
-            self.swipe('nw', .55)
-            self.swipe('ne', .7)
-            self.swipe('w', .3)
-            self.swipe('s', .6)
-            self.swipe('sw', .3)
-            self.swipe('nw', .7)
-            if self.currentLevel == 11 or self.currentLevel == 18:
-                self.swipe('ne', .25)
-                self.swipe('nw', .5)
-            self.swipe('ne', .55)
-            self.swipe('w', .3)
-            self.swipe('n', 1.5)
-        self.disableLogs = False        
+        self.swipe('ne', .55)
+        self.swipe('w', .3)
+        self.swipe('n', 1.5)
+        self.disableLogs = False
 
     def goTroughDungeon6(self):
         if self.debug: print("Going through dungeon (designed for #6)")
@@ -668,8 +675,10 @@ class CaveEngine(QObject):
             self.goTroughDungeon3()
         elif self.currentDungeon == 6:
             self.goTroughDungeon6()
-        elif self.currentDungeon == 10 or self.currentDungeon == 16:
+        elif self.currentDungeon == 10:
             self.goTroughDungeon10()
+        elif self.currentDungeon == 16:
+            self.goTroughDungeon16()
         else:
             self.goTroughDungeon_old()
 
@@ -890,7 +899,13 @@ class CaveEngine(QObject):
                         if self.debug: print("React-Popup. Endgame Detected")
                         if state == "repeat_endgame_question":
                             print("Letplay state: %s" % state)
-                            if self.deadcheck: self.pressIfDead()
+                            if self.deadcheck or self.battle_pass_advanced:
+                                self.pressIfDead()
+                            else:
+                                print("Turn on 'DeadCheck' to use gems to revive!")
+                                self.wait(3)
+                                print("Sorry, you most likely died.")
+                                self.altEndgameClose()
                         else:
                             print("Sorry, you most likely died.")
                             self.altEndgameClose()
@@ -955,10 +970,13 @@ class CaveEngine(QObject):
                 if self.debug: print("React-Popup. Endgame Detected")
                 if state == "repeat_endgame_question":
                     print("Popups state: %s" % state)
-                    if self.deadcheck:
+                    if self.deadcheck or self.battle_pass_advanced: 
                         self.pressIfDead()
                     else:
                         print("Turn on 'DeadCheck' to use gems to revive!")
+                        self.wait(3)
+                        print("Sorry, you most likely died.")
+                        self.altEndgameClose()
                 else:
                     print("You most likely won out of cycle.")
                     self.altEndgameClose()
@@ -1229,6 +1247,9 @@ class CaveEngine(QObject):
             self.swipe('nw', 1)
             i = 1
             while i < self.max_wait:
+                self.disableLogs = False
+                self.log("Searching Dungeon")
+                self.disableLogs = True
                 if self.deadcheck:
                     self.checkIfDead()
                     self.swipe('w', 0.5)
