@@ -1,8 +1,7 @@
 import math
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
-    QFormLayout, QGridLayout
+from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, QFormLayout, QGridLayout
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, uic
@@ -40,8 +39,8 @@ class QDeskArea(QWidget):
                 levelState.SetState(PlayState.ToBePlayed)
 
     def logArrived(self, log: str):
-        if self.model.engine.currentLevel > self.model.engine.max_level:
-            print("QDeskArea... max_level > 20 might cause problems")
+        #if self.model.engine.currentLevel > self.model.engine.max_level:
+            #print("QDeskArea... max_level > 20 might cause problems")
         if self.model.engine.currentLevel <= self.model.engine.max_level:
             self.chapersState[self.model.engine.currentLevel].addLog(log)
 

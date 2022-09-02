@@ -21,7 +21,7 @@ If you want, you can send me a beer here:
 
 ## Introduction 
 This is an archero bot that can work on a mobile smartphone connected with usb cable, but designed specificly for NOX emulator at 1080x1920 mobile resolution.
-It was originally built to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded: designed and tested speifically for dungeon caves 3, 6, and 10 (for both normal and hero modes). It can also do other levels 1-15, though not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels. If you plan to try the other levels beside 3, 6, or 10, results will vary depending on how OP your character is for that level.
+It was originally built to continously start a game (dungeon 6: the cave), play it until end and loop until energy bar is below 5. Then wait for energy to restart. It has since been expanded: designed and tested speifically for dungeon caves 3, 6, and 10 (for both normal and hero modes). It can also do other levels 1-16, though some not very well (i.e. it will step on every spike and sawblade, and GUI level display boxes will not match up with actual levels. If you plan to try the other levels beside 3, 6, or 10, results will vary depending on how OP your character is for that level.
 
 - Supported OS:
   - Windows
@@ -35,14 +35,24 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
 - Supported dungeons (Normal and Boss Modes):
   - 3 . **Abandoned Dungeon: tested, WORKING**
   - 6 . **The Cave: tested, WORKING**
+  - 7 . **Barens of Shadow: tested, WORKING**
   - 10 . **Land of Doom: tested, WORKING**
-  - 1-15 . Other dungens: tested, mostly working...
+  - 14 . **Frigid Tundra: tested, WORKING**
+  - 16 . **Archic Temple: tested, WORKING**
+  - 1-15 . Other dungens: tested, works some (use at own peril)...
 
-- Tested resolutions
+- GUI Options Explained:
+  - #1: Click Icon, choose selected cave to run. If switching between 10, 20, 30, and 50-room dungeons, you must close and re-open the bot to load the correct GUI screen.
+  - #2: Choose Heal Strategy, Always Power (always chooses left), Always Heal (always chooses right), or Smart Heal (chooses left if above 50% HP and right if below 50% HP).
+  - #3: Choose Energy Strategy, Do Not Buy Energy or Buy 1, 2, 3, or 4 Energy (**buy energy uses gems**).
+  - #4: Do you pay for Value Rewards or VIP Rewards Subscription?  If yes, choose True ( Automatically claims VALUE/VIP rewards daily for you). If you don't pay for a subscription choose False.
+  - #5: Do you pay for the "Battle Pass Advanced" Subscription? If yes, choose True ( Automatically claims Battle Pass Advanced rewards daily for you). If you don't pay for a subscription choose False. Does not work with a standard battle pass ONLY the advanced one!
+  - #6 Check If Dead, will try to revive you if you die in game. **Uses GEMS**, unless you pay for Battle Pass Advanced Sub. Slows down gameplay some and currently works <50% of the time.
+<img src="repo_images/gui_options.png">
+
+- Tested resolutions:
   - 1080x1920 is full working.
-  - other resolutions are DEPRECATED. They were added to fit various smartphones but development became a nightmare.
-
-If you don't find your screen resolution and you want to contribue, follow these [instructions](wiki/ContributeWithScreens.md).
+  - other resolutions are DEPRECATED.
 
 ## Installation
 
@@ -56,39 +66,27 @@ Once cloned the repo and installed all necessary stuff, execute **GameController
 
 Wait for the interface to connect to the device. It will automatically try to connect to phone or to Nox emulator.
 
-Once connected, just manually open your app on phone/emulator and let it on the main menu screen with level 6 "the Cave" selected. If you have notifications or first game setuup, please manually do it before.
+Once connected, just manually open your app on phone/emulator and let it on the main menu screen with the correct level as you selected in GUI Options #1. If you have notifications or first game setup, please manually do it before.
 
 Now you can press the play button and it will start playing over and over again until no more energy is left.
 
-If somehow it screwes up, just press the stop button, manually put your archer in next room at bottom. do not press anything once entered a new room. Then select the room number you're in inside the GameController and press start again.
-If you are in the intro level, please go to level 1, select it and press play.
+If somehow it screwes up, just press the stop button, manually put your archer in next room at bottom. do not press anything once entered a new room. Then select the room number you're in inside the GameController and press start again. If you are in the intro level, please go to level 1, select it and press play.
 
-If you pause and want to start again, you have to manually go to the next room and select its number from GameController.
-This is needed because when pressing play, the bot will start thinking that you are at the start of the room in center position.
+If you pause and want to start again, you have to manually go to the next room and select its number from GameController GUI. This is needed because when pressing play, the bot will start thinking that you are at the start of the room in center position.
 
 - Equipment suggestion:
   - Try to use all **dodging equip** and life/atk gaining equipment
   - do **NOT** use **enlightement** book (yet)
 
-
 ### Game description
-Select your dungeon (e.g. **The Cave**) and run the executable GameController.py:
+If you start the bot when inside main game menu, the program will check your energy. If 5 or above, then starts a game and plays until he dies or reaches endgame. Once it ends, he goes to main menu and checks another time if it has energy.
 
-If you start the bot when inside main game menu, the program will check your energy. If 5 or above, then starts a game and plays until he dies or reaches endgame.
-
-Once it ends, he goes to main menu and checks another time if it has energy.
-This program is not perfect. If he somehow thinks to be on a different level but the game is ahead, please manually end the game, return to main menu and restart the game.
-
-Even if it will fail, no harm will be done (it will not exit and click randomly on your phone).
+This program is not perfect, but I have installed options which should allow it to continue playing and eventually correct itself (in most cases). Even if it does fail, no harm will be done (it should exit and should not click randomly on your phone).
 
 ## Coordinates Management
 ### Static coordinates check
 
-The bot takes screenshots over time and detecting what is currently on the screen is a requested operation before starting the bot.
-With this said you have to execute **check_static_coors.py** and checking that each row starts with **OK**.
-
-If some **NO_DETECTION** are found, don't start the bot.
-Other **MULTIPLE_DETECTIONS** are allowed.
+The bot takes screenshots over time and detecting what is currently on the screen is a requested operation before starting the bot. With this said you can execute **check_static_coors.py** and checking that each row starts with **OK**. Other **MULTIPLE_DETECTIONS** are allowed. If some **NO_DETECTION** are found, error might happen durring gameplay.
 
 ### Coordinates check
 If the program is clicking in wrong places, then use [TouchManager](TouchManager.py) script.
@@ -96,7 +94,6 @@ Create a folder with all your screenshots.
 Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc856576cb986093dd3b352cb54c774df84/checkCoordinates.py#L46) to screenshots path.
 launch TouchManager script and use the interface (for windows double-click on 'checkCoordinates.py.').
 Current version: basic_usage.
-
 
 ## How it works
 The package adb lets us use various android tools like:

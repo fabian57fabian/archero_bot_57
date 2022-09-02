@@ -6,6 +6,50 @@ Things may be broke or known bugs:
 - StaticCoordsChecker gives format conversion error
 
 
+[v?] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
+- Updated to NOX 7.0.3.2
+- Rolled back to Python 3.9.13 (the touch manager doesn't seem to be compatible with 3.10+)
+- Updated to Archero Version 4.1.0 (new abilitie, adjusted coords, new screens, etc.)
+	- Added choice 'Smart Heal' option to Healing Strategy
+	- Added buy '1, 2, 3 and 4' options to Energy Strategy
+	- Completed final tweaks on Dungeon 16 (as good as it gets)
+	- Updated Read ME file with GUI Dropdown Option Descriptions & an Image
+	- Adjusted dead-checks (still not working great)
+	- Optimized let-play (removed duplicated code)
+	- Dungeon_exit for several dungeons; more optimal in several cases
+	- End_game_exit for all levels; messages are more accurate now
+	- Alt_end_game exit for all levels: messages are more accurate now
+	- Detect Boss Field image and message; added for lvl 16 final boss
+	- Default loop cycles; corrected items used during testing
+	- Farming Complete Exit; fixed the error causing to crash instead of finish
+
+
+[v?] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
+- Included all updates made by Fabian57Fabian; up to 20-Jul-2022 (I think, sorry not to familiar with github merging and stuff)
+- Changed the 'wait' time on energy refill; to 60 minutes (60 works best for me)
+- Added/Changed a lot of stuff in the caveDungeonEngine related to the addition and troubleshooting of lvl 10 dungeons (7 & 14) to work; while having lvl 20 Dungeons (3, 6, 10) still work fine; lvl 16 works but needs minor tweaks still.
+- Updated GUI to changes for lvl 10, 20, 30, and 50 levels
+	*note GUI needs reboot; when changing between different lvl dungeons to take effect
+- Added screenshots for the Level 10 Dungeons (7 and 14) 
+	*note GUI needs reboot; when changing between different lvl dungeons to take effect
+- Fixed/Adjusted close_end coords for new Archero Version changes
+- Fixed/Adjsted game state endgame coords for new Ardhero Version changes
+- Fixed/Adjsted check 5 energy coords for new Ardhero Version changes
+- Added several new screens for recent Archero changes and new features
+- Added several new and updated some Abilites Images
+- Added some new abilities and updadted ability ordering slightly
+- Added Chapter 16 Image, and unlocked chapter 16
+- Updated Energy Buy Options from 0, 1, 2 to 0, 1, 4 times
+- Shortened some button coord names
+- Minor name changes for levels in QLevelViewer
+- Removed debug error message that was not revelant in QDeskArera
+- Added Minor Print Messages in GameContorllerView
+- Adjusted default playtimes and max game loops
+- Added some deadchecks to Revive with gems or Free if battlepassAdvanced purchased; 
+	* toggle on in True/False in config (no ingame change option at this time)
+- Fixed some Exception Loop/crash errors
+
+
 [V2] Updated: 20-Jul-2022
 - Optimized first frames check
 - Added user message whena  new version comes by

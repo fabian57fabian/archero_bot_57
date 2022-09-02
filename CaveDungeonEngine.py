@@ -12,10 +12,13 @@ import os
 class HealingStrategy(str, enum.Enum):
     AlwaysHeal = "always_heal"
     AlwaysPowerUp = "always_power"
+    SmartHeal = "smart_heal"
 
 class EnergyStrategy(str, enum.Enum):
     AlwaysBuy = "always_buy"
     AlwaysBuy2 = "always_buy2"
+    AlwaysBuy3 = "always_buy3"
+    AlwaysBuy4 = "always_buy4"
     AlwaysIgnore = "always_ignore"
 
 class VIPSub(str, enum.Enum):
@@ -25,6 +28,10 @@ class VIPSub(str, enum.Enum):
 class BattlepassAdvSub(str, enum.Enum):
     TrueBPAdv = "bpadv_true"
     FalseBPAdv = "bpadv_false"
+
+class ReviveIfDead(str, enum.Enum):
+    TrueRevive = "revive_true"
+    FalseRevive = "revive_false"
 
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
@@ -38,18 +45,17 @@ class CaveEngine(QObject):
     energyStrategyChanged = pyqtSignal(EnergyStrategy)
     vipSubChanged = pyqtSignal(VIPSub)
     bpadvSubChanged = pyqtSignal(BattlepassAdvSub)
+    reviveIfDeadChanged = pyqtSignal(ReviveIfDead)
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
-    playtime = 100 # set loop time for letPlay (default 100, total loops = playtime/self.check_seconds)
+    playtime = 50 # set loop time for letPlay (default 50, total loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
-    max_loops_game = 50 # set loops for start_one_game (default 50, farming cycles)
+    max_loops_game = 100 # set loops for start_one_game (default 100, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
-    sleep_btw_screens = 5 # set wait between loops for final_boss (default 5, in seconds)
-    max_buy_energy = 1 # set number of times to buy energy if self.buy_energy = True
-    
+    sleep_btw_screens = 8 # set wait between loops for final_boss (default 8, in seconds)
+
     UseGeneratedData = False # Set True to use TouchManager generated data
-    SkipEnergyCheck = False # Set True to not check for energy (not recommended)
     
     data_pack = 'datas'
     coords_path = 'coords'
@@ -66,7 +72,7 @@ class CaveEngine(QObject):
         "sw": "down-left",
     }
 
-    allowed_chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    allowed_chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
     chapters = {
         "1": "Verdant Prairie",
@@ -82,7 +88,7 @@ class CaveEngine(QObject):
         "11": "The Capital",
         "12": "Dungeon of Traps",
         "13": "Lava Land",
-        "14": "Eskimo Lands",
+        "14": "Frigid Tundra",
         "15": "Pharaoh's Chamber",
         "16": "Archaic Temple",
         "17": "Dragon Lair",
@@ -105,13 +111,13 @@ class CaveEngine(QObject):
         "34": "sakura Court"
     }
 
-    t_intro = 'intro'
-    t_normal = 'normal'
-    t_heal = 'heal'
-    t_boss = 'boss'
-    t_final_boss = 'final_boss'
+    t_intro = 'Intro'
+    t_normal = 'Normal'
+    t_heal = 'Heal'
+    t_boss = 'Boss'
+    t_final_boss = 'Final_B'
 
-    levels_type = {
+    levels_type = { # 20 levels pattern
         0: t_intro,
         1: t_normal,
         2: t_heal,
@@ -135,35 +141,141 @@ class CaveEngine(QObject):
         20: t_final_boss,
     }
 
+    levels_type1 = { # 50 levels pattern
+        0: t_intro,
+        1: t_normal,
+        2: t_normal,
+        3: t_normal,
+        4: t_normal,
+        5: t_heal,
+        6: t_normal,
+        7: t_normal,
+        8: t_normal,
+        9: t_normal,
+        10: t_boss,
+        11: t_normal,
+        12: t_normal,
+        13: t_normal,
+        14: t_normal,
+        15: t_heal,
+        16: t_normal,
+        17: t_normal,
+        18: t_normal,
+        19: t_normal,
+        20: t_boss,
+        21: t_normal,
+        22: t_normal,
+        23: t_normal,
+        24: t_normal,
+        25: t_heal,
+        26: t_normal,
+        27: t_normal,
+        28: t_normal,
+        29: t_normal,
+        30: t_boss,
+        31: t_normal,
+        32: t_normal,
+        33: t_normal,
+        34: t_normal,
+        35: t_heal,
+        36: t_normal,
+        37: t_normal,
+        38: t_normal,
+        39: t_normal,
+        40: t_boss,
+        41: t_normal,
+        42: t_normal,
+        43: t_normal,
+        44: t_normal,
+        45: t_heal,
+        46: t_normal,
+        47: t_normal,
+        48: t_normal,
+        49: t_normal,
+        50: t_final_boss,
+    }
+
+    levels_type2 = { # 30 levels pattern
+        0: t_intro,
+        1: t_normal,
+        2: t_normal,
+        3: t_normal,
+        4: t_normal,
+        5: t_heal,
+        6: t_normal,
+        7: t_normal,
+        8: t_normal,
+        9: t_normal,
+        10: t_boss,
+        11: t_normal,
+        12: t_normal,
+        13: t_normal,
+        14: t_normal,
+        15: t_heal,
+        16: t_normal,
+        17: t_normal,
+        18: t_normal,
+        19: t_normal,
+        20: t_boss,
+        21: t_normal,
+        22: t_normal,
+        23: t_normal,
+        24: t_normal,
+        25: t_heal,
+        26: t_normal,
+        27: t_normal,
+        28: t_normal,
+        29: t_normal,
+        30: t_final_boss,
+    }
+
+    levels_type3 = { # 10 levels pattern
+        0: t_intro,
+        1: t_boss,
+        2: t_boss,
+        3: t_boss,
+        4: t_boss,
+        5: t_boss,
+        6: t_boss,
+        7: t_boss,
+        8: t_boss,
+        9: t_boss,
+        10: t_final_boss,
+    }
+
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
-        self.debug = True # set False to stop print debug messages in console
+        self.debug = False # set True to show print debug messages in console
+        self.deadcheck = False # controled by GUI dropdown, works <50% of time to revive; costs gems unless BPAdv Sub
+        self.smartHealChoice = False # controled by GUI dropdown, works >90% of the time
         self.currentLevel = 0
         self.currentDungeon = 6 
         self.check_seconds = 5
+        self.energy_count = 1
         self.load_tier_list()
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
         self.screen_connector = GameScreenConnector()
-        self.screen_connector.debug = False
+        self.screen_connector.debug = False # set true to see screen_connector degbug messages in console
         self.width, self.heigth = 1080, 1920 
         self.device_connector = UsbConnector()
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onConnectionStateChanged)
         self.buttons = {}
         self.movements = {}
-        self.disableLogs = False
-        self.stopRequested = False
+        self.disableLogs = False # do not change
+        self.stopRequested = False # do not change
         self.currentDataFolder = ''
         self.dataFolders = {}
-        self.healingStrategy = HealingStrategy.AlwaysPowerUp
+        self.healingStrategy = HealingStrategy.SmartHeal
         self.energyStrategy = EnergyStrategy.AlwaysIgnore
         self.vipSub = VIPSub.FalseVIP
         self.bpadvSub = BattlepassAdvSub.FalseBPAdv
+        self.reviveIfDead = ReviveIfDead.FalseRevive
+        self.centerAfterCrossingDungeon = False # do not ghange
         self.current_settings = {}
         self.current_settings_path = 'current_settings.json'
         self.load_current_settings()
-        self.centerAfterCrossingDungeon = False
         if connectImmediately:
             self.initDeviceConnector()
 
@@ -191,10 +303,11 @@ class CaveEngine(QObject):
         if self.debug: print("Loading Default Settings")
         new_sett = {
             "selected_dungeon": 3,
-            "healing_strategy": HealingStrategy.AlwaysHeal,
+            "healing_strategy": HealingStrategy.SmartHeal,
             "energy_strategy": EnergyStrategy.AlwaysIgnore,
             "vip_sub": VIPSub.FalseVIP,
-            "bpadv_sub": BattlepassAdvSub.FalseBPAdv
+            "bpadv_sub": BattlepassAdvSub.FalseBPAdv,
+            "revive_ifdead": ReviveIfDead.FalseRevive
         }
         saveJsonData_oneIndent(self.current_settings_path, new_sett)
 
@@ -209,7 +322,7 @@ class CaveEngine(QObject):
             if self.debug: print("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
             self._create_default_current_settings()
             new_sett = loadJsonData(self.current_settings_path)
-        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett:
+        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett or "revive_ifdead" not in new_sett:
             if self.debug: print("Corrupted/errored current settings. ")
             if self.debug: print("Creating basic current settings...")
             self._create_default_current_settings()
@@ -220,37 +333,45 @@ class CaveEngine(QObject):
         self.energyStrategy = EnergyStrategy(self.current_settings["energy_strategy"])
         self.vipSub = VIPSub(self.current_settings["vip_sub"])
         self.bpadvSub = BattlepassAdvSub(self.current_settings["bpadv_sub"])
+        self.reviveIfDead = ReviveIfDead(self.current_settings["revive_ifdead"])
 
     def changeHealStrategy(self, strat: HealingStrategy):
-        if self.debug: print("Loading Heal Strategy")
+        print("Loading Heal Strategy")
         self.healingStrategy = strat
         self.current_settings['healing_strategy'] = self.healingStrategy
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.healingStrategyChanged.emit(strat)
 
     def changeEnergyStrategy(self, strat1: EnergyStrategy):
-        if self.debug: print("Loading Energy Strategy")
+        print("Loading Energy Strategy")
         self.energyStrategy = strat1
         self.current_settings['energy_strategy'] = self.energyStrategy
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.energyStrategyChanged.emit(strat1)
 
     def changeVIPSub(self, strat2: VIPSub):
-        if self.debug: print("Updating VIP Subscripton")
+        print("Updating VIP Subscripton")
         self.vipSub = strat2
         self.current_settings['vip_sub'] = self.vipSub
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.vipSubChanged.emit(strat2)
 
     def changeBattlepassAdvSub(self, strat3: BattlepassAdvSub):
-        if self.debug: print("Updating Battlepass Choice")
+        print("Updating Battlepass Choice")
         self.bpadvSub = strat3
         self.current_settings['bpadv_sub'] = self.bpadvSub
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
         self.bpadvSubChanged.emit(strat3)
+
+    def changeReviveIfDead(self, strat4: ReviveIfDead):
+        print("Updating Revive Choice")
+        self.reviveIfDead = strat4
+        self.current_settings['revive_ifdead'] = self.reviveIfDead
+        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.reviveIfDeadChanged.emit(strat4)
         
     def changeChapter(self, new_chapter):
-        if self.debug: print("Loading Selected Chapter")
+        print("Loading Selected Chapter")
         self.currentDungeon = new_chapter
         self.current_settings['selected_dungeon'] = str(self.currentDungeon)
         saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
@@ -288,7 +409,7 @@ class CaveEngine(QObject):
         if self.debug: print("Stop Requested")
         self.stopRequested = True
         self.screen_connector.stopRequested = True
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
             if self.debug: print("*** Saving Statistics - Game Stopped ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
@@ -370,44 +491,64 @@ class CaveEngine(QObject):
 
     def exit_dungeon_uncentered(self):
         if self.debug: print("exit_dungeon_uncentered")
-        self.reactGamePopups()
+        if self.screen_connector.getFrameState() != "in_game":
+            self.reactGamePopups()
         self.log("No Loot Left")
         self.log("Leaveing Dungeon")
-        if self.currentDungeon == 3:
+        if self.currentDungeon == 3 or self.currentDungeon == 6:
             self.exit_movement_dungeon6()
-        elif self.currentDungeon == 6:
-            self.exit_movement_dungeon6()
+        elif self.currentDungeon == 7 or self.currentDungeon == 14:
+            self.exit_movement_dungeon_7()
         elif self.currentDungeon == 10:
             self.exit_movement_dungeon10()
+        elif self.currentDungeon == 16:
+            self.exit_movement_dungeon16()
         else:
             self.exit_movement_dungeon_old()
+        self.log("Left Dungeon")
+        self.wait(0.5) # wait to load to GUI
         self.exit_dungeon_uncentered_simplified()
 
     def exit_dungeon_uncentered_simplified(self, do_second_check = True):
         if do_second_check:
             if self.debug: print("exit_dungeon_uncentered_simplified_check")
-            if self.screen_connector.getFrameState() != "in_game":
+            if self.screen_connector.getFrameState() == "endgame":
+                if self.debug: print("Endgame Detected and Return")
+                self.exit_dungeon_uncentered_simplified(do_second_check = False)
+                return
+            elif self.screen_connector.getFrameState() != "in_game":
+                if self.debug: print("NOT in_game Detected")
                 self.reactGamePopups()
                 self.exit_dungeon_uncentered_simplified(do_second_check = False)
-                if self.currentDungeon == 3:
+                if self.currentDungeon == 3 or self.currentDungeon == 6:
                     self.exit_movement_dungeon6()
-                elif self.currentDungeon == 6:
-                    self.exit_movement_dungeon6()
-                elif self.currentDungeon == 10:
+                elif self.currentDungeon == 7 or self.currentDungeon == 14:
+                    self.exit_movement_dungeon_7()
+                elif self.currentDungeon == 10 or self.currentDungeon == 16:
                     self.exit_movement_dungeon10()
                 else:
                     self.exit_movement_dungeon_old()
+                self.log("Left Dungeon Again")
+                self.wait(0.5) # wait to load to GUI
         if self.debug: print("exit_dungeon_uncentered_simplified")
-        self.log("Left Dungeon")
-        self.wait(1) # wait to load to GUI
-
+        
     def exit_movement_dungeon_old(self):
         if self.debug: print("exit_dungeon_old 'Improved'")
         self.disableLogs = True
+        #self.centerPlayer()
+        self.swipe('n', 3)
+        self.swipe('ne', .5)
+        self.swipe('nw', 3)
         self.swipe('ne', 3)
         self.swipe('nw', 3)
-        self.swipe('ne', 2)
-        self.swipe('nw', 1)
+        self.swipe('ne', 3)
+        self.swipe('w', .7)
+
+    def exit_movement_dungeon_7(self):
+        if self.debug: print("exit_dungeon_7")
+        self.disableLogs = True    
+        self.swipe('w', .7)
+        self.swipe('ne', 1.9)
         self.disableLogs = False
 
     def exit_movement_dungeon6(self):
@@ -417,10 +558,17 @@ class CaveEngine(QObject):
         self.swipe('ne', 3)
         self.disableLogs = False
 
-    def exit_movement_dungeon10(self):
+    def exit_movement_dungeon10(self): 
         if self.debug: print("exit_dungeon_10")
         self.disableLogs = True
-        self.swipe('e', 2)
+        self.swipe('e', 1.5)
+        self.swipe('nw', 3)
+        self.disableLogs = False
+
+    def exit_movement_dungeon16(self): 
+        if self.debug: print("exit_dungeon_16")
+        self.disableLogs = True
+        self.swipe('e', 1.2)
         self.swipe('nw', 3)
         self.disableLogs = False
    
@@ -430,29 +578,53 @@ class CaveEngine(QObject):
         self.disableLogs = True
         self.swipe('n', .5)
         self.swipe('nw', 2.5)
-        self.wait(2)
         self.swipe('ne', 2.5)
-        self.wait(2)
-        self.swipe('nw', 2)
-        self.wait(1)
+        self.swipe('nw', 1.8)
+        self.swipe('ne', 1)
+        self.swipe('w', .7)
         self.swipe('s', .6)
-        self.swipe('e', .4)
+        self.swipe('e', .35)
         self.swipe('ne', .4)
-        self.swipe('n', 3)
-        self.wait(1)
+        self.swipe('n', 2.5)
         self.swipe('s', .3)
-        self.swipe('w', .3)
-        self.swipe('nw', .3)
+        self.swipe('w', .35)
+        self.swipe('nw', .4)
         self.swipe('n', 1)
         if self.currentLevel == 18:
-            if self.debug: print("Adjusting lvl 18 Position")
-            self.disableLogs = False
-            self.log("Level 18 Argh!")
-            self.disableLogs = True
             self.swipe('w', .3)
-            self.swipe('s', .3)
-            self.swipe('ne', .3)
-            self.swipe('nw', 2)
+            self.swipe('s', .35)
+            self.swipe('ne', .4)
+            self.swipe('n', .4)
+        self.disableLogs = False
+
+    def goTroughDungeon16(self):
+        if self.debug: print("Going through dungeon (designed for #16)")
+        self.log("Crossing Dungeon 16")
+        self.disableLogs = True
+        self.swipe('n', .5)
+        self.swipe('nw', 2.5)
+        self.swipe('ne', 2.5)
+        self.swipe('nw', 1.8)
+        self.swipe('ne', 1)
+        self.swipe('w', .7)
+        if self.currentLevel == 11 or self.currentLevel == 18:
+            self.swipe('sw', .6)
+            self.swipe('nw', .8)
+        self.swipe('se', .65)
+        self.swipe('e', .7)
+        self.swipe('nw', .55)
+        self.swipe('ne', .7)
+        self.swipe('w', .3)
+        self.swipe('s', .6)
+        self.swipe('sw', .3)
+        self.swipe('nw', .7)
+        if self.currentLevel == 11 or self.currentLevel == 18:
+            self.swipe('e', .3)
+            self.swipe('n', .3)
+            self.swipe('nw', .4)
+        self.swipe('ne', .55)
+        self.swipe('w', .3)
+        self.swipe('n', 1.5)
         self.disableLogs = False
 
     def goTroughDungeon6(self):
@@ -462,13 +634,10 @@ class CaveEngine(QObject):
         self.swipe('n', 1.5)
         self.swipe('w', .3)
         self.swipe('n', .6)
-        self.wait(2)
         self.swipe('e', .6)
         self.swipe('n', .6)
-        self.wait(2)
         self.swipe('w', .6)
         self.swipe('n', 1.5)
-        self.wait(2)
         self.swipe('e', .3)
         self.swipe('n', 2)
         self.disableLogs = False
@@ -480,10 +649,8 @@ class CaveEngine(QObject):
         self.swipe('n', 1.5)
         self.swipe('w', .25)
         self.swipe('n', .5)
-        self.wait(1)
         self.swipe('e', .25)
         self.swipe('n', 2)
-        self.wait(1)
         self.swipe('w', 1)
         self.swipe('n', .5)
         self.swipe('e', 1)
@@ -494,25 +661,13 @@ class CaveEngine(QObject):
         if self.debug: print("Going through dungeon old 'Improved'")
         self.log("Crossing Dungeon (Improved)")
         self.disableLogs = True
-        self.swipe('n', .6)
-        self.swipe('nw', 2)
-        self.wait(1)
-        self.swipe('s', .6)
-        self.swipe('e', 1)
-        self.swipe('nw', 2)
-        self.wait(1)
-        self.swipe('s', .6)
-        self.swipe('w', 1)
-        self.swipe('ne', 2)
-        self.wait(1)
-        self.swipe('s', .4)
-        self.swipe('e', .3)
-        self.swipe('ne', 1)
-        self.wait(1)
-        self.swipe('s', .4)
-        self.swipe('w', .3)
-        self.swipe('nw', 1.5)
-        self.swipe('ne', 2.5)
+        self.swipe('n', 3)
+        self.swipe('ne', .5)
+        self.swipe('nw', 3)
+        self.swipe('ne', 3)
+        self.swipe('nw', 3)
+        self.swipe('ne', 3)
+        self.swipe('w', .7)
         self.disableLogs = False
 
     def goTroughDungeon(self):
@@ -522,14 +677,15 @@ class CaveEngine(QObject):
             self.goTroughDungeon6()
         elif self.currentDungeon == 10:
             self.goTroughDungeon10()
+        elif self.currentDungeon == 16:
+            self.goTroughDungeon16()
         else:
             self.goTroughDungeon_old()
-        if self.centerAfterCrossingDungeon: self.centerPlayer() # set True-False in '__init__'
 
     def centerPlayer(self): # still not working correctly always 540px to left.
         px, dir = self.screen_connector.getPlayerDecentering()
-        duration = 0.019 * abs(px) - 4.8
-        if px < self.screen_connector.door_width / 2.0:
+        duration = 0.001 * abs(px)- 5
+        if px < self.screen_connector.door_width:
             pass
         if dir == 'left':
             self.log("Centered Player <--")
@@ -543,102 +699,116 @@ class CaveEngine(QObject):
     def letPlay(self, _time: int, is_boss = False):
         check_exp_bar = not is_boss
         experience_bar_line = self.screen_connector.getLineExpBar()
-        frame = self.screen_connector.getFrame()
-        state = self.screen_connector.getFrameState(frame)
         recheck = False
         if self.debug: print("Let-Play. Auto playing...")
-        self.log("Searching the dungeon")
+        self.log("Searching Dungeon")
         for i in range(_time, 0, -1):
             if i % self.check_seconds == 0 or recheck:
-                experience_bar_line = self.screen_connector.getLineExpBar()
+                recheck = False                
                 frame = self.screen_connector.getFrame()
                 state = self.screen_connector.getFrameState(frame)
-                recheck = False
-                print("Loop Countdown / Kill Timer")
-                print(i)
+                if self.debug: print("Loop Countdown / Kill Timer")
+                if self.debug: print(i)
                 if self.debug: print("Let Play. Checking screen...")
-                if self.debug: print("state: %s" % state)
-                if state == "unknown":
-                    if self.debug: print("Unknown screen situation detected. Checking again...")
-                    if self.screen_connector.getFrameState() == "unknown":
-                        self.wait(5) # wait before double check
-                        if self.debug: print("Unknown screen situation detected. Checking again x2...")
-                        if self.screen_connector.getFrameState() == "unknown":
-                            raise Exception('unknown_screen_state')
+                if self.debug: print("state: %s" % state)                   
+                if state == "in_game":
+                    # added movement to increase kill enemy efficency for 10 level chapters
+                    if self.currentDungeon == 7 or self.currentDungeon == 14:
+                        if self.debug: print("Avoiding Boss")
+                        self.log("Avoiding Boss")
+                        self.disableLogs = True
+                        if self.deadcheck:
+                            if self.currentLevel > 5:
+                                self.checkIfDead()
+                                self.swipe('sw', 1.5)
+                                self.checkIfDead()
+                                self.swipe('se', 1)
+                                self.checkIfDead()
+                                self.swipe('e', 0.6)
+                                self.swipe('n', 0.5)
+                                self.checkIfDead()
+                                self.swipe('ne', 1.2)
+                                self.checkIfDead()
+                                self.swipe('w', 0.4)
+                                self.swipe('ne', 1)
+                                self.checkIfDead()
+                                self.swipe('w', 0.7)
+                                self.checkIfDead()
+                            else:
+                                self.wait(1)
+                                self.swipe('sw', 1.5)
+                                self.wait(1)
+                                self.swipe('se', 1)
+                                self.wait(1)
+                                self.swipe('e', 0.6)
+                                self.swipe('n', 0.5)
+                                self.wait(1)
+                                self.swipe('ne', 1.2)
+                                self.wait(1)
+                                self.swipe('w', 0.4)
+                                self.swipe('ne', 1)
+                                self.wait(1)
+                                self.swipe('w', 0.7)
+                                self.wait(1)  
                         else:
-                            recheck = True
-                            continue
-                    else:
-                        recheck = True
-                        continue
-                elif state == "endgame" or state == "repeat_endgame_question":
-                    if self.debug: print("Ley-Play. Endgame Detected")
-                    if state == "repeat_endgame_question":
-                        if self.debug: print("state = repeat_endgame_question")
-                    self.altEndgameClose()
-                elif state == "menu_home":
-                    raise Exception('mainscreen')
-                elif state == "select_ability":
-                    if self.debug: print("Level ended. New Abilities.")
-                    self.log("New Abilities")
-                    return
-                elif state == "fortune_wheel" :
-                    if self.debug: print("Level ended. Fortune Wheel.")
-                    self.log("Fortune Wheel")
-                    return
-                elif state == "devil_question":
-                    if self.debug: print("Level ended. Devil Arrived.")
-                    self.log("Devil Arrived")
-                    return
-                elif state == "mistery_vendor":
-                    if self.debug: print("Level ended. Mystery Vendor.")
-                    self.log("Mystery Vendor")
-                    return
-                elif state == "ad_ask":
-                    if self.debug: print("Level ended. Ad Ask.")
-                    self.log("Ad Ask")
-                    return
-                elif state == "angel_heal":
-                    if self.debug: print("Level ended. Angel Appeared.")
-                    self.log("Angel Arrived")
-                    return
-                elif check_exp_bar and self.screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
-                    if self.debug: print("Level ended. Experience gained!")
-                    self.log("Gained Experience")
-                    return
-                elif state == "in_game":
-                    # added movement to increase kill enemy efficency
-                    if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-                        if self.screen_connector.checkDoorsOpen(frame):
-                            if self.debug: print("Door is OPEN #1 <---------######")
-                            self.log("The Door is Open")
-                            return
-                        if self.screen_connector.checkDoorsOpen1(frame):
-                            if self.debug: print("Door is OPEN #2 <---------######")
-                            self.log("The Door is Open")
-                            return
-                        if self.screen_connector.checkDoorsOpen2(frame):
-                            if self.debug: print("Door is OPEN #3 <---------######")
-                            self.log("The Door is Open")
-                            return
+                            self.wait(1)
+                            self.swipe('sw', 1.5)
+                            self.wait(1)
+                            self.swipe('se', 1)
+                            self.wait(1)
+                            self.swipe('e', 0.6)
+                            self.swipe('n', 0.5)
+                            self.wait(1)
+                            self.swipe('ne', 1.2)
+                            self.wait(1)
+                            self.swipe('w', 0.4)
+                            self.swipe('ne', 1)
+                            self.wait(1)
+                            self.swipe('w', 0.7)
+                            self.wait(1)
+                        self.disableLogs = False
+                    # added movement to increase kill enemy efficency for 20 level chapters
+                    elif self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
+                        if self.debug: print("Doing patrol")
+                        self.log("Doing Patrol")
+                        self.disableLogs = True
+                        if self.deadcheck:
+                            if self.currentLevel > 10:
+                                self.checkIfDead()
+                                self.swipe('w', 0.35)
+                                self.checkIfDead()
+                                self.swipe('e', 0.7)
+                                self.checkIfDead()
+                                self.swipe('w', 0.7)
+                                self.checkIfDead()
+                                self.swipe('e', 0.7)
+                                self.checkIfDead()
+                                self.swipe('w', 0.35)
+                                self.checkIfDead()
+                            else:
+                                self.wait(2)
+                                self.swipe('w', 0.35)
+                                self.wait(2)
+                                self.swipe('e', 0.7)
+                                self.wait(2)
+                                self.swipe('w', 0.7)
+                                self.wait(2)
+                                self.swipe('e', 0.7)
+                                self.wait(2)
+                                self.swipe('w', 0.35)
                         else:
-                            if self.debug: print("Doing patrol")
-                            self.log("Doing Patrol")
-                            self.disableLogs = True
-                            self.swipe('w', 0.66)
                             self.wait(2)
-                            self.swipe('e', 0.33)
+                            self.swipe('w', 0.35)
                             self.wait(2)
-                            self.swipe('e', 0.33)
+                            self.swipe('e', 0.7)
                             self.wait(2)
-                            self.swipe('e', 0.33)
+                            self.swipe('w', 0.7)
                             self.wait(2)
-                            self.swipe('e', 0.33)
+                            self.swipe('e', 0.7)
                             self.wait(2)
-                            self.swipe('w', 0.66)
-                            self.disableLogs = False
-                            if self.debug: print("Still playing but level not ended")
-                    # added random escape methods for 10, 30, 50 level chapters
+                            self.swipe('w', 0.35)
+                        self.disableLogs = False
+                    # added random escape methods for 30, 50 level chapters
                     else:
                         if i > _time * .8:
                                 if self.debug: print("Let-Play. Time < 100%")
@@ -703,8 +873,88 @@ class CaveEngine(QObject):
                                 self.swipe('ne', 2)
                                 self.swipe('nw', 2)
                                 self.disableLogs = False
+                    if self.debug: print("Start. Exp & Door Checks")
+                    if check_exp_bar and self.screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
+                        if self.debug: print("Level ended. Experience gained!")
+                        self.log("Gained Experience")
+                        return
+                    elif self.screen_connector.checkDoorsOpen(frame):
+                        if self.debug: print("Door is OPEN #1 <---------######")
+                        self.log("Door 1 is Open")
+                        return
+                    elif self.screen_connector.checkDoorsOpen1(frame):
+                        if self.debug: print("Door is OPEN #2 <---------######")
+                        self.log("Door 2 is Open")
+                        return
+                    elif self.screen_connector.checkDoorsOpen2(frame):
+                        if self.debug: print("Door is OPEN #3 <---------######")
+                        self.log("Door 3 is Open")
+                        return
+                    else:
+                        if self.debug: print("Still playing but level not ended")
+                    if self.debug: print("End. Exp & Door Checks")
+                else:
+                    if self.debug: print("State Checks Start")                    
+                    if state == "endgame" or state == "repeat_endgame_question":
+                        if self.debug: print("React-Popup. Endgame Detected")
+                        if state == "repeat_endgame_question":
+                            print("Letplay state: %s" % state)
+                            if self.deadcheck or self.battle_pass_advanced:
+                                self.pressIfDead()
+                            else:
+                                print("Turn on 'DeadCheck' to use gems to revive!")
+                                self.wait(3)
+                                print("Sorry, you most likely died.")
+                                self.altEndgameClose()
                         else:
-                            if self.debug: print("Still playing but level not ended")
+                            print("Sorry, you most likely died.")
+                            self.altEndgameClose()
+                    elif state == "ability_refresh":
+                        if self.debug: print("Cancel Abilty Refresh")
+                        self.tap('close_ability_refresh')
+                        self.wait(1)
+                    elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equip" or state == "menu_shop":
+                        raise Exception('mainscreen')
+                    elif state == "crash_desktop_open":
+                        raise Exception('crashdesktop')
+                    elif state == "select_ability":
+                        if self.debug: print("Level ended. New Abilities.")
+                        self.log("New Abilities")
+                        return
+                    elif state == "fortune_wheel" :
+                        if self.debug: print("Level ended. Fortune Wheel.")
+                        self.log("Fortune Wheel")
+                        return
+                    elif state == "devil_question":
+                        if self.debug: print("Level ended. Devil Arrived.")
+                        self.log("Devil Arrived")
+                        return
+                    elif state == "mistery_vendor":
+                        if self.debug: print("Level ended. Mystery Vendor.")
+                        self.log("Mystery Vendor")
+                        return
+                    elif state == "ad_ask":
+                        if self.debug: print("Level ended. Ad Ask.")
+                        self.log("Ad Ask")
+                        return
+                    elif state == "angel_heal":
+                        if self.debug: print("Level ended. Angel Appeared.")
+                        self.log("Angel Arrived")
+                        return
+                    elif state == "unknown":
+                        if self.debug: print("Unknown screen situation detected. Checking again...")
+                        if self.screen_connector.getFrameState() == "unknown":
+                            self.wait(8) # wait before double check
+                            if self.debug: print("Unknown screen situation detected. Checking again x2...")
+                            if self.screen_connector.getFrameState() == "unknown":
+                                raise Exception('unknown_screen_state')
+                            else:
+                                recheck = True
+                                continue
+                        else:
+                            recheck = True
+                            continue
+                    if self.debug: print("State Checks End") 
 
     def reactGamePopups(self) -> int:
         state = ""
@@ -712,55 +962,72 @@ class CaveEngine(QObject):
         while state != "in_game":
             if self.stopRequested:
                 exit()
-            if i > self.max_loops_popup:
-                if self.debug: print("React-Popups. Max loops reached")
-                if self.debug: print("Trying something...")
-                self.wait(8) # wait for load endgame
-                self.tap('level_up_endgame')
-                return  
-            if self.debug: print("React-Popups. Checking screen...")
+            self.wait(1)
             state = self.screen_connector.getFrameState()
             if self.debug: print("state: %s" % state)
-            if state == "select_ability":
+            if self.debug: print("React-Popups. Checking screen...")
+            if state == "endgame" or state == "repeat_endgame_question":
+                if self.debug: print("React-Popup. Endgame Detected")
+                if state == "repeat_endgame_question":
+                    print("Popups state: %s" % state)
+                    if self.deadcheck or self.battle_pass_advanced: 
+                        self.pressIfDead()
+                    else:
+                        print("Turn on 'DeadCheck' to use gems to revive!")
+                        self.wait(3)
+                        print("Sorry, you most likely died.")
+                        self.altEndgameClose()
+                else:
+                    print("You most likely won out of cycle.")
+                    self.altEndgameClose()
+            elif state == "ability_refresh":
+                if self.debug: print("Cancel Abilty Refresh")
+                self.tap('close_ability_refresh')
+                self.wait(1)
+            elif state == "select_ability":
                 self.chooseBestAbility()
             elif state == "fortune_wheel":
-                self.tap('lucky_wheel_start')
+                self.tap('wheel_start')
                 self.wait(6)
             elif state == "devil_question":
-                self.tap('ability_daemon_reject')
+                self.tap('daemon_reject')
                 self.wait(2)
             elif state == "ad_ask":
-                #if self.battle_pass_advanced or self.battle_pass_rewards:
-                #    self.tap('lucky_wheel_start')
-                #    self.wait(6)
-                #else:
-                # No ads accepting due to possible later conflicts...
-                self.tap('spin_wheel_back')
-                self.wait(2)
+                if self.battle_pass_advanced:
+                    self.tap('wheel_start')
+                    self.wait(6)
+                else:
+                    self.tap('wheel_back')
+                    self.wait(2)
             elif state == "mistery_vendor":
                 if self.battle_pass_advanced:
                     if self.debug: print("Checking for Mystery Vendor Ad")
                     if self.screen_connector.checkFrame("mystery_vendor_ad"):
                         if self.debug: print("Collecting Free Stuff")
-                        self.tap('lucky_wheel_start')
+                        self.tap('wheel_start')
                         self.wait(6)
-                        self.tap('spin_wheel_back')
+                        self.tap('wheel_back')
                         self.wait(2)
                     else:
-                        self.tap('spin_wheel_back')
+                        self.tap('wheel_back')
                         self.wait(2)
                 else:
-                    self.tap('spin_wheel_back')
+                    self.tap('wheel_back')
                     self.wait(2)
             elif state == "special_gift_respin":
                 if self.battle_pass_advanced:
-                    self.tap('lucky_wheel_start')
+                    self.tap('wheel_start')
                     self.wait(6)
                 else:
-                    self.tap('spin_wheel_back')
+                    self.tap('wheel_back')
                     self.wait(2)
             elif state == "angel_heal":
-                self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
+                if self.healingStrategy == HealingStrategy.SmartHeal:
+                    if self.debug: print("Popups. SmartHeal")
+                    self.tap('heal_right' if self.smartHealChoice else 'heal_left')
+                else:
+                    if self.debug: print("Popups. NormalHeal")
+                    self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
             elif state == "on_pause":
                 self.tap('resume')
@@ -770,14 +1037,13 @@ class CaveEngine(QObject):
                 self.wait(5)
                 self.tap("resume")
                 self.wait(2)
-            elif state == "endgame" or state == "repeat_endgame_question":
-                if self.debug: print("React-Popup. Endgame Detected")
-                if state == "repeat_endgame_question":
-                    if self.debug: print("state = repeat_endgame_question")
-                self.altEndgameClose()
-            elif state == "menu_home":
-                return
-            #raise Exception('mainscreen')
+            elif state == "menu_home" or state == "menu_talents" or state == "menu_events" or state == "menu_equip" or state == "menu_shop":
+                raise Exception('mainscreen')
+            elif state == "crash_desktop_open":
+                raise Exception('crashdesktop')
+            if i > self.max_loops_popup:
+                print("React-Popups. Max loops reached")
+                raise Exception('unknown_screen_state')
             i += 1
         return i
 
@@ -804,7 +1070,7 @@ class CaveEngine(QObject):
             self.disableLogs = False
             self.wait(1) # wait for ability apply
         except Exception as e:
-            if self.debug: print("Unable to correctly choose best ability. Randomly choosing left")
+            print("Exception. Unable to correctly choose best ability.")
             self.log("Choosing 'Left Button'")
             self.disableLogs = True
             self.tap('ability_left')
@@ -814,118 +1080,154 @@ class CaveEngine(QObject):
     def intro_lvl(self):
         if self.debug: print("Getting Start Items")
         self.wait(10) # inital wait for ability wheel to load
-        self.chooseBestAbility()
+        self.reactGamePopups()
         self.disableLogs = True
         self.swipe('n', 3)
         self.disableLogs = False
-        self.tap('lucky_wheel_start')
-        self.wait(4)
+        self.reactGamePopups()
+        self.swipe('n',0.2)
         self.reactGamePopups()
         self.log("Leaving Start Room")
         self.disableLogs = True
         self.swipe('n', 2)
         self.disableLogs = False
         self.log("Entering Dungeon!")
-        self.wait(1) # for GUI log to load
+        self.wait(0.5) # for GUI log to load
 
     def normal_lvl(self):
         if self.debug: print("normal_lvl")
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            self.goTroughDungeon()
-            self.letPlay(self.playtime)
-            self.reactGamePopups()
-            self.exit_dungeon_uncentered()
-        else:
-            self.reactGamePopups() # for efficency on 20+ level chapters 
-            self.goTroughDungeon()
-            self.reactGamePopups() # for efficency on 20+ level chapters
-            self.letPlay(self.playtime)
-            self.exit_dungeon_uncentered()
+        self.goTroughDungeon()
+        self.letPlay(self.playtime)
+        self.reactGamePopups()
+        self.exit_dungeon_uncentered()
 
     def heal_lvl(self):
         if self.debug: print("heal_lvl")
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            self.log("Cenering Self")
-            self.disableLogs = True
-            self.swipe('s', 2)
-            self.swipe('e', 2)
-            self.swipe('w', .9)
-            self.disableLogs = False
-            self.log("Approaching Healer")
-            self.disableLogs = True
-            self.swipe('n', 1.5)
-            self.disableLogs = False
-            self.wait(1) # wait for angel load
-            self.reactGamePopups()
-            self.swipe('n', .65)
-            self.wait(1) # wait for mystery load
-            self.reactGamePopups()
-            if self.debug: print("Exiting Heal")
-            self.log("Leaving Healer")
-            self.disableLogs = True
-            self.swipe('e', 1)
-            self.swipe('nw', 2)
-            self.disableLogs = False
-            self.log("Left Dungeon")
-            self.wait(1)
-        else:
-            self.normal_lvl()
+        if self.healingStrategy == HealingStrategy.SmartHeal:
+            if self.debug: print("Smart Heal Check")
+            if self.screen_connector.checkFrame("smart_heal_hp_check"):
+                if self.debug: print("HP GREATER than 50%")
+                self.smartHealChoice = False
+            else:
+                print("HP LESS than 50%")
+                self.smartHealChoice = True
+        self.log("Cenering Self")
+        self.disableLogs = True
+        self.swipe('s', 2)
+        self.swipe('e', 2)
+        self.swipe('w', .9)
+        self.disableLogs = False
+        self.log("Approaching Healer")
+        self.disableLogs = True
+        self.swipe('n', 1.5)
+        self.disableLogs = False
+        self.reactGamePopups()
+        self.swipe('n', .65)
+        self.reactGamePopups()
+        if self.debug: print("Exiting Heal")
+        self.log("Leaving Healer")
+        self.disableLogs = True
+        self.swipe('e', 1)
+        self.swipe('nw', 2)
+        self.disableLogs = False
+        self.log("Left Dungeon")
+        self.wait(0.5) # for GUI log to load
 
     def boss_lvl(self):
         if self.debug: print("boss_lvl")
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            self.log("Attacking Boss")
+        self.log("Attacking Boss")
+        self.disableLogs = True
+        self.swipe('n', 0.2)
+        self.swipe('n', 0.7)
+        self.swipe('e', 1)
+        self.swipe('nw', 2)
+        if self.currentDungeon == 16:
+            if self.currentLevel == 10:
+                self.reactGamePopups()
+                self.swipe('nw', 1.5)
+                self.swipe('ne', 1.5)
+            elif self.currentLevel == 15:
+                self.swipe('n', .4)
+                self.swipe('w', .4)
+        self.swipe('ne', 2)
+        self.swipe('nw', 1.25)
+        self.disableLogs = False
+        self.letPlay(self.playtime, is_boss = True)
+        self.reactGamePopups()
+        if self.currentDungeon == 7 or self.currentDungeon == 14:
             self.disableLogs = True
-            self.swipe('n', 1.5)
-            self.wait(2)
-            self.swipe('e', .7)
-            self.wait(2)
-            self.swipe('nw', 2.5)
-            self.wait(2)
-            self.swipe('ne', 2.5)
-            self.wait(2)
-            self.swipe('w', .3)
-            self.swipe('nw', .7)
+            self.swipe('w', 0.7)
+            self.swipe('e', 0.8)
+            self.swipe('w', 0.6)
             self.disableLogs = False
-            self.letPlay(self.playtime, is_boss = True)
+            self.wait(2) # wait for popups to laod
             self.reactGamePopups()
-            self.log("Moving to Door")
-            self.disableLogs = True
-            self.swipe('s', .3)
-            self.swipe('w', 1.5)
-            self.swipe('n', 4)
-            self.swipe('e', 1)
-            self.disableLogs = False
-            self.exit_dungeon_uncentered()
+        self.log("Moving to Door")
+        self.disableLogs = True
+        self.swipe('s', .5)
+        self.swipe('w', .3)
+        self.swipe('nw', 2.5)
+        self.swipe('e', .4)
+        self.swipe('n', 1.5)
+        self.swipe('e', .65)
+        if self.currentDungeon == 7 or self.currentDungeon == 14:
+            self.swipe('s', 0.5)
+            self.swipe('e', 0.85)
+            self.swipe('ne', 0.75)
+            self.swipe('nw', 0.7)
+            self.swipe('w', 0.55)
+            self.wait(2) # wait for popups to laod
+            self.reactGamePopups()
+            if self.currentLevel == 5 or self.currentLevel == 6:
+                self.swipe('s', 0.3)
+                self.swipe('ne', 0.6)
+                self.swipe('nw', 0.6)
+            if self.currentLevel == 8 or self.currentLevel == 9:
+                self.swipe('s', 0.3)
+                self.swipe('w', 0.3)
+                self.swipe('nw', 0.6)
+        self.disableLogs = False
+        self.exit_dungeon_uncentered()
+
+    def checkIfDead(self):
+        if self.debug: print("Started Dead Check")
+        if self.screen_connector.checkFrame("you_died_ad"):
+            self.pressIfDead()
+        if self.debug: print("Completed Dead Checks")
+
+    def pressIfDead(self):
+        if self.battle_pass_advanced:
+            self.tap("revive_ad")
+            print("You revived with Ad.")
+            self.wait(.5)
         else:
-            self.normal_lvl()
+            self.tap("revive_gems")
+            print("You revived with Gems.")
+            self.wait(.5)
 
     def boss_final(self):
         if self.debug: print("boss_final")
+        self.log("Final Boss Appeared")
+        self.log("Attacking Final Boss")
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-            state = self.screen_connector.getFrameState()
-            self.log("Final Boss Appeared")
-            self.log("Attacking Boss")
             self.swipe('w', 2)
             i = 0
             while i < self.max_wait:
                 self.wait(self.sleep_btw_screens)
                 if self.screen_connector.checkBoss3Died():
                     if self.debug: print("boss dead and door open #3")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #1")
                     break
                 if self.screen_connector.checkBoss6Died():
                     if self.debug: print("boss dead and door open #6")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #2")
                     break
                 if self.screen_connector.checkBoss10Died():
                     if self.debug: print("boss dead and door open #10")
-                    self.log("Boss Dead")
+                    self.log("Boss Dead #3")
                     break
                 if self.debug: print(i)
                 i += 1
-            state = self.screen_connector.getFrameState()
-            if self.debug: print("state: %s" % state)
             self.reactGamePopups()
             self.log("No Loot Left")
             if self.debug: print("Exiting the Dungeon Final Boss")
@@ -935,21 +1237,104 @@ class CaveEngine(QObject):
             self.swipe('ne', 3)
             self.disableLogs = False
             self.log("Left Dungeon!")
-            self.wait(1) # for GUI log to load
-            return
         else:
-            self.normal_lvl()
-
+            self.disableLogs = True
+            self.swipe('n', 0.2)
+            self.swipe('n', 0.7)
+            self.swipe('e', 1)
+            self.swipe('nw', 1.8)
+            self.swipe('ne', 1.8)
+            self.swipe('nw', 1)
+            i = 1
+            while i < self.max_wait:
+                self.disableLogs = False
+                self.log("Searching Dungeon")
+                self.disableLogs = True
+                if self.deadcheck:
+                    self.checkIfDead()
+                    self.swipe('w', 0.5)
+                    self.checkIfDead()
+                    self.swipe('e', 1)
+                    self.checkIfDead()
+                    self.swipe('w', 0.5)
+                else:
+                    self.swipe('w', 0.5)
+                    self.swipe('e', 1)
+                    self.swipe('w', 0.5)
+                    self.wait(self.sleep_btw_screens)
+                i += 1
+            self.disableLogs = False
+            self.reactGamePopups()
+            self.log("Moving to Door")
+            self.disableLogs = True
+            self.swipe('s', .5)
+            self.swipe('w', .5)
+            self.swipe('nw', 3)
+            self.swipe('n', 2)
+            self.swipe('e', .85)
+            if self.currentDungeon == 7 or self.currentDungeon == 14:
+                self.swipe('s', 0.5)
+                self.swipe('e', 0.8)
+                self.swipe('ne', 0.5)
+                self.swipe('nw', 0.8)
+                self.reactGamePopups()
+            self.disableLogs = False
+            self.log("No Loot Left")
+            if self.debug: print("Exiting the Dungeon Final Boss")
+            self.log("Leaving Dungeon")
+            self.disableLogs = True
+            self.swipe('e', 1)
+            self.swipe('nw', 2.5)
+            self.disableLogs = False
+            self.log("Left Dungeon!")
+        i = 0
+        self.wait(8) # wait for endgame loot screen to load
+        state = self.screen_connector.getFrameState()
+        if state == "in_game":
+            print("Exception. Still in_game; let's try to escape")
+        elif state == "endgame":
+            return            
+        else:
+            print("state: %s" % state)
+        while state == "in_game":
+            self.disableLogs = True
+            if i == 1:
+                print("Trying now; escape plan A!")
+                self.log("Escape Plan A!")
+                self.swipe('s', .6)
+                self.swipe('e', .3)
+                self.swipe('ne', 1)
+            elif i == 2:
+                print("Trying now; escape plan B!")
+                self.log("Escape Plan B!")
+                self.swipe('s', .6)
+                self.swipe('w', .3)
+                self.swipe('nw', 1)
+            elif i == 3:
+                print("Trying now; escape plan C!")
+                self.log("Escape Plan C!")
+                self.swipe('s', .9)
+                self.swipe('e', .9)
+                self.swipe('nw', 2)
+            elif i == 4:
+                print("Trying now; escape plan D!")
+                self.log("Escape Plan D!")
+                self.swipe('s', .9)
+                self.swipe('w', .9)
+                self.swipe('ne', 2)
+            elif i > 5:
+                break
+            self.swipe('n', 1.5)
+            self.swipe('nw', 1.5)
+            self.swipe('ne', 1.5)
+            self.wait(2) # wait for room transition to complete
+            state = self.screen_connector.getFrameState()
+            self.disableLogs = False
+            i += 1
+                    
     def start_one_game(self):
         i = 0
-        energy_count = 1
         while i <= self.max_loops_game:
-            energy_check = True
-            self.start_date = datetime.now()
-            self.screen_connector.stopRequested = False
-            self.log("Checking conditions")
-            self.log("Please wait")
-            self.log("Checks are running")
             if self.vipSub == VIPSub.TrueVIP:
                 self.vip_priv_rewards = True
             else:
@@ -958,222 +1343,350 @@ class CaveEngine(QObject):
                 self.battle_pass_advanced = True
             else:
                 self.battle_pass_advanced = False
-            if self.debug: print("Start-Game. Checking screen...")
-            state = self.screen_connector.getFrameState()
-            while energy_check:
-                if self.debug: print("state: %s" % state)
-                if self.debug: print("Checking for Announcement")
-                ui_changed = False
-                frame = self.screen_connector.getFrame()
-                if self.screen_connector.checkFrame("game_announcement", frame):
-                    if self.debug: print("Closing Announcement")
-                    self.tap("close_announcement")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for new_season")
-                if self.screen_connector.checkFrame("popup_new_season", frame):
-                    if self.debug: print("Okay to New Season")
-                    self.tap("close_new_season")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for patrol_reward")
-                if self.screen_connector.checkFrame("popup_home_patrol", frame):
-                    if self.debug: print("Collecting time patrol")
-                    self.tap("collect_hero_patrol")
-                    self.wait(6)
-                    self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for patrol_close")
-                if self.screen_connector.checkFrame("btn_home_time_reward", frame):
-                    self.tap("close_hero_patrol")
-                    self.wait(4)
-                    ui_changed = True
-                if self.vip_priv_rewards:
-                    frame = self.screen_connector.getFrame() if ui_changed else frame
-                    ui_changed = False
-                    if self.debug: print("Checking for vip_reward_1")
-                    if self.screen_connector.checkFrame("popup_vip_rewards", frame):
-                        if self.debug: print("Collecting VIP-Privilege Rewards 1")
-                        self.log("VIP-Privilege Rewards 1")
-                        self.tap("collect_vip_rewards")
-                        self.wait(5)
-                        self.tap("close_vip_rewards")
-                        self.wait(4)
-                        ui_changed = True
-                    frame = self.screen_connector.getFrame() if ui_changed else frame
-                    ui_changed = False
-                    if self.debug: print("Checking for vip_reward_2")
-                    if self.screen_connector.checkFrame("popup_vip_rewards", frame):
-                        if self.debug: print("Collecting VIP-Privilege Rewards 2")
-                        self.log("VIP-Privilege Rewards 2")
-                        self.tap("collect_vip_rewards")
-                        self.wait(5)
-                        self.tap("close_vip_rewards")
-                        self.wait(4)
-                        ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for need_this")
-                if self.screen_connector.checkFrame("popup_need_this", frame):
-                    if self.debug: print("Rejecting Must Need Ad 0")
-                    self.tap("close_need_this")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for need_this_1")
-                if self.screen_connector.checkFrame("popup_need_this_1", frame):
-                    if self.debug: print("Rejecting Must Need Ad 1")
-                    self.tap("close_need_this")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for need_this_2")
-                if self.screen_connector.checkFrame("popup_need_this_2", frame):
-                    if self.debug: print("Rejecting Must Need Ad 2")
-                    self.tap("close_need_this_2")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for welcome_back")
-                if self.screen_connector.checkFrame("popup_welcome_back", frame):
-                    if self.debug: print("Rejecting Welcome Back Ad")
-                    self.tap("close_need_this")
-                    self.wait(4)
-                    ui_changed = True
-                frame = self.screen_connector.getFrame() if ui_changed else frame
-                ui_changed = False
-                if self.debug: print("Checking for time_prize")
-                if self.screen_connector.checkFrame("time_prize", frame):
-                    if self.debug: print("Collecting time prize")
-                    self.tap("collect_time_prize")
-                    self.wait(5)
-                    self.tap("resume")
-                    self.wait(2)
-                    ui_changed = True
-                if self.currentLevel > 0:
-                    state = self.screen_connector.getFrameState()
-                    if self.debug: print("state: %s" % state)
-                    if state != 'in_game':
-                        if self.debug: print("Something is not right...")
-                        self.reactGamePopups()
-                        state = self.screen_connector.getFrameState()
-                        if state == 'menu_home':
-                            if self.debug: print("Home Menu detected... setting to lvl 0 now.")
-                            self.log("Trying level 0 now")
-                            self.wait(1) # wait for logs to display
-                            self.currentLevel = 0 # allows to continue playing if at home_menu
-                    energy_check = False
-                if self.currentLevel == 0:
-                    if self.debug: print("Checking for energy")
-                    if self.screen_connector.checkFrame("least_5_energy"):    
-                        energy_check = False
-                    if self.battle_pass_advanced:
-                            self.tap('open_energy_buy')
-                            self.wait(4) # wait for load energy store
-                            if self.screen_connector.checkFrame("free_ad_energy"):
-                                if self.debug: print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-                                self.tap('get_ad_energy')
-                                self.wait(6) # wait for load energy bar
-                            else:
-                                self.tap('close_energy_buy')
-                                self.wait(6) # wait for close buy energy
-                    if (not self.SkipEnergyCheck) and not self.screen_connector.checkFrame("least_5_energy"):
-                        if self.energyStrategy == EnergyStrategy.AlwaysBuy:
-                            self.buy_energy = True
-                            self.max_buy_energy = 1
-                        elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
-                            self.buy_energy = True
-                            self.max_buy_energy = 2
-                        else:
-                            self.buy_energy = False
-                        state = self.screen_connector.getFrameState()
-                        if self.buy_energy and state == 'menu_home':
-                            if energy_count <= self.max_buy_energy:
-                                self.tap('open_energy_buy')
-                                self.wait(4) # wait for load energy store
-                                self.tap('buy_more_energy')
-                                self.wait(6) # wait for load energy bar
-                                if self.debug: print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-                                print(energy_count)
-                                energy_count += 1
-                            else:
-                                if self.debug: print("Max energy buy reached, waiting for 1 minute")
-                                self.log("No Energy")
-                                self.noEnergyLeft.emit()
-                                self.wait(60) # wait for time to gain 1 energy, then re-check
-                        else:
-                            if self.debug: print("No energy, waiting for 1 minute")
-                            self.log("No Energy")
-                            self.noEnergyLeft.emit()
-                            self.wait(60) # wait for time to gain 1 energy, then re-check
-            if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-                if self.debug: print("Selected Dungeon is 3/6/10")
-                if self.currentLevel >= 21:
-                    self.currentLevel = 1
-                else:
-                    self.stat_lvl_start = self.currentLevel
+            if self.reviveIfDead == ReviveIfDead.TrueRevive:
+                self.deadcheck = True
             else:
-                if self.debug: print("Selected Dungeon is *** NOT *** 3/6/10")
-                if not self.screen_connector.checkFrame('endgame'):
-                    self.currentLevel = 1 # allows to continue playing past 20+ levels
-                    self.stat_lvl_start = self.currentLevel
-                    if self.screen_connector.checkFrame('menu_home'):
-                        self.currentLevel = 0 # allows to start playing 20+ levels
-                        self.stat_lvl_start = self.currentLevel
-            self.wait(6) # for GUI logs to sync
-            print("New game. Starting from level %d" % self.currentLevel)
-            self.log("New Game Started")
-            try:
-                if self.currentLevel == 0:
-                    if self.debug: print("start_one_game level = 0")
-                    self.chooseCave()
+                self.deadcheck = False
+            state = self.screen_connector.getFrameState()
+            print("Start state: %s" % state)
+            if state == "menu_talents" or state == "menu_events":
+                print("Changing to World Menu")
+                self.tap("menu_world_left")
+                self.wait(2)
+            elif state == "menu_equip" or state == "menu_shop":
+                print("Changing to World Menu")
+                self.tap("menu_world_right")
+                self.wait(2)
+            elif state == "crash_desktop_open":
+                print("Opening Game Now")
+                self.tap("open_game")
+                self.wait(90)
+            if self.currentLevel > 0:
+                if self.screen_connector.checkFrame('menu_home'):
+                    if self.debug: print("Home Menu detected... setting to lvl 0 now.")
+                    self.currentLevel = 0 # allows to continue playing if at home_menu
+                elif self.currentLevel > self.max_level:
+                    self.currentLevel = 1 # allows to start playing 20+ levels
                 else:
-                    if self.debug: print("start_one_game level > 0")
+                    self.stat_lvl_start = self.currentLevel
+                self.wait(0.5) # for GUI logs to sync                     
+            self.levelChanged.emit(self.currentLevel)
+            if self.currentLevel > 0:
+                self.checkForAds()
+            elif self.currentLevel == 0:
+                self.checkForEnergy()
+            if self.debug: print("Selected Dungeon is %d" % self.currentDungeon)
+            print("New game. Starting from level %d" % self.currentLevel)
+            try:
+                self.start_date = datetime.now()
+                self.screen_connector.stopRequested = False
+                if self.currentLevel == 0:
+                    if state == 'in_game':
+                        self.play_cave()
+                    else:
+                        self.chooseCave()                        
+                else:
                     self.play_cave()
             except Exception as exc:
                 if exc.args[0] == "mainscreen":
-                    if self.debug: print("Main Menu. Restarting game now.")
+                    print("Exception. Main Menu, restarting game now.")
+                    self.log("Preparing to rest game")
+                elif exc.args[0] == "crashdesktop":
+                    print("Exception. Crash Desktop, restarting game now.")
+                    self.log("Preparing to rest game")
+                elif exc.args[0] == "altendgame":
+                    print("Exception. Alt Endgame, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
-                    if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
-                        if self.debug: print("Unknows screen state.  Trying a restart...")
-                        self.log("Unknown Screens... halp!")
-                        #self._exitEngine()
-                    else:
-                        if self.debug: print("Unknown State. Trying a game restart now.")
-                elif exc.args[0] == "farm_loop_max":
-                    if self.debug: print("Session End. Farming complete!")
-                    self.log("Farming complete!")
-                    self._exitEngine()
+                    state = self.screen_connector.getFrameState()
+                    print("state: %s" % state)
+                    print("Exception. Unknown State, trying Something.")
+                    self.log("Unknown Screens... halp!")
+                    #self.tap('level_up_endgame')
+                    self.wait(4) #waiting for magic
                 else:
-                    if self.debug: print("Got an unknown exception: %s" % exc)
+                    print("Exception. Unknown problem: %s" % exc)
                     self.log("Unknown Problem... halp!")
-                    self._exitEngine()
-            if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+                    self.exitEngine()
+            if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
                 if self.debug: print("*** Saving Statistics - Game Finished ***")
                 self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
-            print(">>>>>>>>>>>>>>>>>>>>>> Completed Farm Loop <<<<<<<<<<<<<<<<<<<<<<")
+            print(">>>>>>>>>>>>>>> Completed Farming Bot Loop <<<<<<<<<<<<<<<")
             print(i)
         if i > self.max_loops_game:
-            if self.debug: print("Max farming loops reached")
-            raise Exception('farm_loop_max')
-        
+            print("Max Bot Loops Reached. Farming complete!")
+            self.log("Farming complete!")
+            self.exitEngine()
+
+    def checkForEnergy(self):
+        energy_check = True
+        while energy_check:
+            self.checkForAds()
+            state = self.screen_connector.getFrameState()
+            if self.debug: print("state: %s" % state)
+            if state == 'menu_home':
+                if self.debug: print("Going to next step")
+            elif state == 'endgame':
+                self.pressCloseEndgame()
+            elif state == 'in_game':
+                break
+            elif state != 'in_game':
+                break
+            print("Checking for Energy")
+            if self.screen_connector.checkFrame("least_5_energy"):    
+                energy_check = False
+                print("Energy is Good")
+            else:
+                check_farm = True
+                check_energy = True
+                if self.battle_pass_advanced:
+                    print("BPAdv Free Energy Check")
+                    self.log("Free Energy Check")
+                    self.disableLogs = True
+                    self.tap('open_energy_buy')
+                    self.wait(8) # wait for load energy store
+                    if self.screen_connector.checkFrame("free_ad_energy"):
+                        print("xxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxx")
+                        self.tap('get_ad_energy')
+                        self.disableLogs = False
+                        self.wait(6) # wait for load energy bar
+                        check_farm = False
+                        check_energy = False
+                    else:
+                        self.tap('close_energy_buy')
+                        self.disableLogs = False
+                        self.wait(4) # wait for close buy energy        
+                if check_farm:
+                    print("Monster Farm Energy Check")
+                    self.log("Farm Energy Check")
+                    self.disableLogs = True
+                    self.tap('farm_open')
+                    self.wait(6) # wait for farm open
+                    frame = self.screen_connector.getFrame()
+                    if self.screen_connector.checkFrame("monster_farm_visit", frame) or self.screen_connector.checkFrame("monster_farm_visit_free", frame):
+                        print("xxxxxxxxxxxxxxxxxxx Monster Farm Energy xxxxxxxxxxxxxxxxxx")
+                        if self.screen_connector.checkFrame("monster_farm_visit_free", frame):
+                            self.tap('farm_visit')
+                            self.wait(4) # wait for farm load
+                        self.tap('farm_visit')
+                        self.wait(4) # wait for farm load
+                        self.tap('farm_energy_1')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_1')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_2')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_2')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_3')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_3')
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_energy_4')
+                        self.wait(2) # wait for energy load
+                        self.tap('farm_energy_4')
+                        self.wait(2) # wait for energy close
+                        i = 1
+                        while i < 3:
+                            frame = self.screen_connector.getFrame()
+                            if self.screen_connector.checkFrame("monster_farm_visit_again", frame):
+                                print("xxxxxxxxxxxxxxxx Monster Farm Energy Again xxxxxxxxxxxxxxx")
+                                self.tap('farm_visit_again')
+                                self.wait(4) # wait for farm load
+                                self.tap('farm_energy_1')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_1')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_2')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_2')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_3')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_3')
+                                self.wait(2) # wait for energy close
+                                self.tap('farm_energy_4')
+                                self.wait(2) # wait for energy load
+                                self.tap('farm_energy_4')
+                                self.wait(2) # wait for energy close
+                            i += 1
+                        self.wait(2) # wait for energy close
+                        self.tap('farm_back')
+                        self.wait(4) # wait for farm back
+                        check_energy = False
+                    self.tap('farm_back')
+                    self.wait(6) # wait for menu_home
+                    self.disableLogs = False
+                if check_energy:
+                    print("Energy Strategy Check")
+                    self.log("Energy Strategy Check")
+                    if self.energyStrategy == EnergyStrategy.AlwaysBuy:
+                        self.buy_energy = True
+                        self.max_buy_energy = 1
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
+                        self.buy_energy = True
+                        self.max_buy_energy = 2
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy3:
+                        self.buy_energy = True
+                        self.max_buy_energy = 3
+                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy4:
+                        self.buy_energy = True
+                        self.max_buy_energy = 4
+                    else:
+                        self.buy_energy = False
+                    state = self.screen_connector.getFrameState()
+                    if self.debug: print("state: %s" % state)
+                    if self.buy_energy and state == 'menu_home':
+                        if self.energy_count <= self.max_buy_energy:
+                            self.tap('open_energy_buy')
+                            self.wait(8) # wait for load energy store
+                            self.tap('buy_more_energy')
+                            self.wait(6) # wait for load energy bar
+                            print("xxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxx")
+                            print(self.energy_count)
+                            self.energy_count += 1
+                        else:
+                            print("Max energy buy reached, waiting for 60 minutes")
+                            self.log("No Energy")
+                            self.noEnergyLeft.emit()
+                            self.wait(3605) # wait for time to gain 5 energy
+                    elif state == 'in_game':
+                        break
+                    else:
+                        print("No energy, waiting for 60 minutes")
+                        self.log("No Energy")
+                        self.noEnergyLeft.emit()
+                        self.wait(3605) # wait for time to gain 5 energy   
+
+    def checkForAds(self):
+        self.log("Checking conditions")
+        self.log("Please wait")
+        self.log("Checks are running")
+        if self.debug: print("Start-Game. Checking screen...")
+        state = self.screen_connector.getFrameState()
+        print("Ads state: %s" % state)
+        ui_changed = False
+        frame = self.screen_connector.getFrame()
+        print("Checking for Announcement")
+        if self.screen_connector.checkFrame("game_announcement", frame):
+            print("Closing Announcement")
+            self.tap("close_announcement")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for Legendary_Challenge")
+        if self.screen_connector.checkFrame("legendary_challenge", frame):
+            print("Okay to new Legendary Challenge")
+            self.tap("close_legendary_challenge")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for New_Season")
+        if self.screen_connector.checkFrame("popup_new_season", frame):
+            print("Okay to New Season. Update BPAdv dropdown in GUI to False")
+            self.tap("close_new_season")
+            self.battle_pass_advanced = False # only works once manully set dropdown in GUI to False
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for patrol_reward")
+        if self.screen_connector.checkFrame("popup_home_patrol", frame):
+            print("Collecting time patrol")
+            self.tap("collect_hero_patrol")
+            self.wait(6)
+            self.tap("collect_hero_patrol")# click again somewhere to close popup with token things
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for patrol_close")
+        if self.screen_connector.checkFrame("btn_home_time_reward", frame):
+            print("Closing patrol_close")
+            self.tap("close_hero_patrol")
+            self.wait(4)
+            ui_changed = True
+        if self.vip_priv_rewards:
+            frame = self.screen_connector.getFrame() if ui_changed else frame
+            ui_changed = False
+            print("Checking for vip_reward_1")
+            if self.screen_connector.checkFrame("popup_vip_rewards", frame):
+                print("Collecting VIP-Privilege Rewards 1")
+                self.log("VIP-Privilege Rewards 1")
+                self.tap("collect_vip_rewards")
+                self.wait(6)
+                self.tap("close_vip_rewards")
+                self.wait(4)
+                ui_changed = True
+            frame = self.screen_connector.getFrame() if ui_changed else frame
+            ui_changed = False
+            print("Checking for vip_reward_2")
+            if self.screen_connector.checkFrame("popup_vip_rewards", frame):
+                print("Collecting VIP-Privilege Rewards 2")
+                self.log("VIP-Privilege Rewards 2")
+                self.tap("collect_vip_rewards")
+                self.wait(6)
+                self.tap("close_vip_rewards")
+                self.wait(4)
+                ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for need_this")
+        if self.screen_connector.checkFrame("popup_need_this", frame):
+            print("Rejecting Must Need Ad 0")
+            self.tap("close_need_this")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for need_this_1")
+        if self.screen_connector.checkFrame("popup_need_this_1", frame):
+            print("Rejecting Must Need Ad 1")
+            self.tap("close_need_this")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for need_this_2")
+        if self.screen_connector.checkFrame("popup_need_this_2", frame):
+            print("Rejecting Must Need Ad 2")
+            self.tap("close_need_this_2")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for welcome_back")
+        if self.screen_connector.checkFrame("popup_welcome_back", frame):
+            print("Rejecting Welcome Back Ad")
+            self.tap("close_need_this")
+            self.wait(4)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for time_prize")
+        if self.screen_connector.checkFrame("time_prize", frame):
+            print("Collecting time prize")
+            self.tap("collect_time_prize")
+            self.wait(5)
+            self.tap("resume")
+            self.wait(2)
+            ui_changed = True
+        frame = self.screen_connector.getFrame() if ui_changed else frame
+        ui_changed = False
+        print("Checking for Contine Game")
+        if self.screen_connector.checkFrame("crash_continue_yes", frame):
+            print("Resuming Previous Game")
+            self.tap("continue_yes")
+            self.wait(10)
+            ui_changed = True
+
     def chooseCave(self):
-        self.levelChanged.emit(self.currentLevel)
         if self.debug: print("Choosing Cave Start")
         self.log("Main Menu")
         self.tap('start')
-        self.wait(2) # wait for no_raid button to load
+        self.wait(6) # wait for no_raid button to load
         if self.debug: print("Checking for raid options")
         if not self.screen_connector.checkFrame("quick_raid_option"):
             if self.debug: print("No Quick Raid Option, win 5 times first")
@@ -1183,42 +1696,107 @@ class CaveEngine(QObject):
         self.play_cave()
 
     def play_cave(self):
-        if self.currentLevel < 0 or self.currentLevel > 20:
-            if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
+            if self.debug: print("Runing a 20 Level Dungeon")
+            if self.currentLevel < 0 or self.currentLevel > 20:
                 if self.debug: print("level out of range: %d" % self.currentLevel)
-                self._exitEngine()
-        while self.currentLevel <= self.max_level:
-            print("***********************************")
-            print("Level %d: %s" % (self.currentLevel, str(self.levels_type[self.currentLevel])))
-            print("***********************************")
-            if self.levels_type[self.currentLevel] == self.t_intro:
-                self.intro_lvl()
-            elif self.levels_type[self.currentLevel] == self.t_normal:
-                self.normal_lvl()
-            elif self.levels_type[self.currentLevel] == self.t_heal:
-                self.heal_lvl()
-            elif self.levels_type[self.currentLevel] == self.t_final_boss:
-                self.boss_final()
-            elif self.levels_type[self.currentLevel] == self.t_boss:
-                self.boss_lvl()
-            self.changeCurrentLevel(self.currentLevel + 1)
-        self._manage_exit_from_endgame()
+                self.exitEngine()                
+            self.max_level = 20
+            while self.currentLevel <= self.max_level:
+                if self.debug: print("***********************************")
+                print("Level %d: %s" % (self.currentLevel, str(self.levels_type[self.currentLevel])))
+                if self.debug: print("***********************************")
+                if self.levels_type[self.currentLevel] == self.t_intro:
+                    self.intro_lvl()
+                elif self.levels_type[self.currentLevel] == self.t_normal:
+                    self.normal_lvl()
+                elif self.levels_type[self.currentLevel] == self.t_heal:
+                    self.heal_lvl()
+                elif self.levels_type[self.currentLevel] == self.t_final_boss:
+                    self.boss_final()
+                elif self.levels_type[self.currentLevel] == self.t_boss:
+                    self.boss_lvl()
+                self.changeCurrentLevel(self.currentLevel + 1)
+            self._manage_exit_from_endgame()
+        elif self.currentDungeon == 1 or self.currentDungeon == 2 or self.currentDungeon == 4 or self.currentDungeon == 5 or self.currentDungeon == 8 or self.currentDungeon == 9 or self.currentDungeon == 11 or self.currentDungeon == 12 or self.currentDungeon == 13 or self.currentDungeon == 15:
+            if self.currentDungeon == 12 or self.currentDungeon == 15:
+                if self.debug: print("Runing a 30 Level Dungeon")
+                self.max_level = 30
+                while self.currentLevel <= self.max_level:
+                    if self.debug: print("***********************************")
+                    print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
+                    if self.debug: print("***********************************")
+                    if self.levels_type2[self.currentLevel] == self.t_intro:
+                        self.intro_lvl()
+                    elif self.levels_type2[self.currentLevel] == self.t_normal:
+                        self.normal_lvl()
+                    elif self.levels_type2[self.currentLevel] == self.t_heal:
+                        self.heal_lvl()
+                    elif self.levels_type2[self.currentLevel] == self.t_boss:
+                        self.boss_lvl()
+                    elif self.levels_type2[self.currentLevel] == self.t_final_boss:
+                        self.boss_final()
+                    self.changeCurrentLevel(self.currentLevel + 1)
+            else:
+                if self.debug: print("Runing a 50 Level Dungeon")
+                self.max_level = 50
+                while self.currentLevel <= self.max_level:
+                    if self.debug: print("***********************************")
+                    print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
+                    if self.debug: print("***********************************")
+                    if self.levels_type1[self.currentLevel] == self.t_intro:
+                        self.intro_lvl()
+                    elif self.levels_type1[self.currentLevel] == self.t_normal:
+                        self.normal_lvl()
+                    elif self.levels_type1[self.currentLevel] == self.t_heal:
+                        self.heal_lvl()
+                    elif self.levels_type1[self.currentLevel] == self.t_boss:
+                        self.boss_lvl()
+                    elif self.levels_type1[self.currentLevel] == self.t_final_boss:
+                        self.boss_final()
+                    self.changeCurrentLevel(self.currentLevel + 1)
+            self._manage_exit_from_endgame()
+        elif self.currentDungeon == 7 or self.currentDungeon == 14:
+            if self.debug: print("Runing a 10 Level Dungeon")
+            self.max_level = 10
+            while self.currentLevel <= self.max_level:
+                if self.debug: print("***********************************")
+                print("Level %d: %s" % (self.currentLevel, str(self.levels_type3[self.currentLevel])))
+                if self.debug: print("***********************************")
+                if self.levels_type3[self.currentLevel] == self.t_intro:
+                    self.intro_lvl()
+                elif self.levels_type3[self.currentLevel] == self.t_boss:
+                    self.boss_lvl()
+                elif self.levels_type3[self.currentLevel] == self.t_final_boss:
+                    self.boss_final()
+                self.changeCurrentLevel(self.currentLevel + 1)
+            self._manage_exit_from_endgame()
 
-    def _manage_exit_from_endgame(self): # for dungeons 3, 6, and 10
+    def _manage_exit_from_endgame(self):
         if self.debug: print("manage_exit_from_endgame")
         self.wait(8) # wait for endgame loot screen to load
         state = self.screen_connector.getFrameState()
-        if self.debug: print("state: %s" % state)
+        print("End state: %s" % state)
         if state == 'menu_home':
+            print("Exit_Endgame. Home Menu Detected.")
             return
-        if state != 'endgame':
-            self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
-            self.wait(4) # wait for endgame loot screen to load
-        if state == 'endgame':
-            if self.debug: print("Play-Cave. You won!")
+        elif state == 'in_game':
+            print("Exit_Endgame. You are still in_game; you most likely got stuck!")
+            return
+        elif state == 'angel_heal':
+            print("Exit_Endgame. Maybe you got stuck; or unexpected screen?")
+            self.currentLevel = 2
+            self.wait(0.5) # wait for GUI load
+            return
+        elif state == 'endgame':
+            print("Exit_Endgame. You won!")
             self.log("You won, Game over!")
             self.gameWon.emit()
             self.pressCloseEndgame()
+        elif state != 'endgame':
+            print("Exit_Endgame. Maybe you leveled up; or unexpected screen?")
+            self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
+            self.wait(8) # wait for endgame loot screen to load
         self.pressCloseEndIfEndedFrame()
 
     def pressCloseEndIfEndedFrame(self):
@@ -1226,25 +1804,26 @@ class CaveEngine(QObject):
         state = self.screen_connector.getFrameState()
         if self.debug: print("state: %s" % state)
         if state == 'endgame':
+            print("Exit_Endgame_2. You Won!")
             self.pressCloseEndgame()
-            self.wait(6) # wait for go back to main menu
 
     def pressCloseEndgame(self):
-        if self.debug: print("Going back to main Menu")
+        if self.debug: print("Press_Close_End. Going back to main Menu")
         self.tap('close_end')
         self.currentLevel = 0
-        self.wait(6) # wait for go back to main menu
+        self.wait(8) # wait for go back to main menu
 
     def altEndgameClose(self):
-        if self.debug: print("You died or you won! Either way, game over!")
+        state = self.screen_connector.getFrameState()
+        print("Alt state: %s" % state)
         self.log("You died or won!")
         self.log("Either way, it's over!")
-        self.wait(8) # wait for load endgame
-        self.tap('level_up_endgame')
+        self.pressCloseEndgame()
+        raise Exception('altendgame')
 
-    def _exitEngine(self):
+    def exitEngine(self):
         print ("Game Engine Closed")
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
+        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
             if self.debug: print("*** Saving Statistics - Game Killed ***")
             self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         exit(1)

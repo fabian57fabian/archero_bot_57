@@ -6,7 +6,7 @@ from GameController.GameControllerController import GameControllerController
 if __name__ == "__main__":
     import sys
 
-    print("**************** GAME STARTED ****************")
+    print("***************** BOT STARTED ****************")
     print("Stuff is loading, I promise it is. Please wait!")
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
