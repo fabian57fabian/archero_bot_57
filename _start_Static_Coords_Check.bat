@@ -1,3 +1,3 @@
 @echo off
-check_static_coords.py
+python.exe check_static_coords.py
 pause

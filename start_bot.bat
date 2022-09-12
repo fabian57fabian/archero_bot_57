@@ -1,3 +1,3 @@
 @echo off
-python GameController.py
+python.exe GameController.py
 pause
