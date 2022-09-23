@@ -1,3 +1,3 @@
 @echo off
-TouchManager.py
+python.exe TouchManager.py
 pause
