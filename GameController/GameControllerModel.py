@@ -65,10 +65,12 @@ class GameControllerModel(QObject):
         #if self.debug: print("GameContorllerModel_getLevelsNames_check")
         if self.engine.currentDungeon == 1 or self.engine.currentDungeon == 2 or self.engine.currentDungeon == 4 or self.engine.currentDungeon == 5 or self.engine.currentDungeon == 8 or self.engine.currentDungeon == 9 or self.engine.currentDungeon == 11 or self.engine.currentDungeon == 13:
             return self.engine.levels_type1
-        elif self.engine.currentDungeon == 12 or self.engine.currentDungeon == 15: 
+        elif self.engine.currentDungeon == 12 or self.engine.currentDungeon == 15 or self.engine.currentDungeon == 17: 
             return self.engine.levels_type2
         elif self.engine.currentDungeon == 7 or self.engine.currentDungeon == 14: 
             return self.engine.levels_type3
+        elif self.engine.currentDungeon == 18: 
+            return self.engine.levels_type4
         else:
             return self.engine.levels_type
 
@@ -125,6 +127,16 @@ class GameControllerModel(QObject):
     def _stopEngineUnsafe(self):
         try:
             if self.debug: print("Restarting game engine!")
+            self.engine.setPauseRequested()
+            self.waitForEngineEnd()
+            self.engine.setStartRequested()
+            self.workerThread = None
+        except Exception as e:
+            if self.debug: print("Trying to kill process resulted in: %s" % str(e))
+
+    def _stopEngineUnsafe2(self):
+        try:
+            if self.debug: print("Restarting game engine!")
             self.engine.setStopRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
@@ -159,7 +171,7 @@ class GameControllerModel(QObject):
     
     def stopDungeon(self):
             if self.debug: print("GUI Button *** STOP ***")
-            self.pauseDungeon()
+            self._stopEngineUnsafe2()
             self.setEngineState(EngineState.StopInvoked)
             self.setEngineState(EngineState.Ready)
             self.engine.changeCurrentLevel(0)

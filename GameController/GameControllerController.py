@@ -35,7 +35,7 @@ class GameControllerController(QObject):
     def playRequested(self):
         self.controllerStates['play'] = False
         self.controllerStates['pause'] = True
-        self.controllerStates['stop'] = True
+        self.controllerStates['stop'] = False
         self.controllerStates['prev'] = False
         self.controllerStates['next'] = False
         self.onChangeEnableStatesButtons.emit(self.controllerStates)
