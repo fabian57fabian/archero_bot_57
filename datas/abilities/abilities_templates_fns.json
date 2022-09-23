@@ -90,9 +90,12 @@
   "water_walker": "ability_0.png",
   "through_the_wall": "ability_0.png",
   "fatal_excitement": "ability_12.png",
-  "enhanced_summon": "ability_0.png",
   "angelic_blessing": "ability_0.png",
   "dodge_burst": "ability_17.png",
   "dodge_burst_aura": "ability_19.png",
-  "enhanced_summon": "ability_0.png"
+  "enhanced_summon": "ability_59.png",
+  "dodge_plus": "ability_194.png",
+  "summon_wolfhound": "ability_56.png",
+  "summon_skeleton": "ability_57.png",
+  "inherited_summon": "ability_117.png"
 }
