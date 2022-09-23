@@ -4,7 +4,7 @@ from requests import get
 class UpdatesManager:
     def __init__(self):
         self.request_url = "http://217.160.188.167:3000/api/archero_updates"
-        self.CURRENT_VERSION = "v4"
+        self.CURRENT_VERSION = "v5"
 
     def get_my_update_code(self):
         # better if have hash of last commit.

@@ -49,7 +49,7 @@ class CaveEngine(QObject):
     currentDungeonChanged = pyqtSignal(int)
     
     max_level = 20 # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
-    playtime = 50 # set loop time for letPlay (default 50, total loops = playtime/self.check_seconds)
+    playtime = 60 # set loop time for letPlay (default 60, total loops = playtime/self.check_seconds)
     max_loops_popup = 10 # set loops for reactGamePopups (default 10, times to check for popups)
     max_loops_game = 100 # set loops for start_one_game (default 100, farming cycles)
     max_wait = 5 # set loops for final_boss (default 5, increase sleep screens if need more time)
@@ -72,7 +72,7 @@ class CaveEngine(QObject):
         "sw": "down-left",
     }
 
-    allowed_chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    allowed_chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
     chapters = {
         "1": "Verdant Prairie",
@@ -141,6 +141,30 @@ class CaveEngine(QObject):
         20: t_final_boss,
     }
 
+    levels_type4 = { # 20 levels pattern-2; Dungeon 18
+        0: t_intro,
+        1: t_normal,
+        2: t_heal,
+        3: t_normal,
+        4: t_heal,
+        5: t_boss,
+        6: t_normal,
+        7: t_heal,
+        8: t_normal,
+        9: t_heal,
+        10: t_boss,
+        11: t_normal,
+        12: t_normal,
+        13: t_normal,
+        14: t_heal,
+        15: t_boss,
+        16: t_normal,
+        17: t_normal,
+        18: t_normal,
+        19: t_heal,
+        20: t_final_boss,
+    }
+    
     levels_type1 = { # 50 levels pattern
         0: t_intro,
         1: t_normal,
@@ -243,14 +267,26 @@ class CaveEngine(QObject):
         10: t_final_boss,
     }
 
+    '''
+    -------------------------------
+    Statistics Key:
+    startStatus -- 0 Unknown, 1 Normal, 2 Crash-Desktop
+    endStatus -- 0 Unknown, 1 Main-Screen, 2 Crash_Desktop, 3 Screen-Unknown,
+    4 Exception-Unknown, 5 Won-Game, 6 Exit-Engine, 7 You-Died, 8 Probably-Won,
+    9 Probably-Stuck, 10 Paused-Game
+    -------------------------------
+    '''
+
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
         self.debug = False # set True to show print debug messages in console
         self.deadcheck = False # controled by GUI dropdown, works <50% of time to revive; costs gems unless BPAdv Sub
         self.smartHealChoice = False # controled by GUI dropdown, works >90% of the time
         self.currentLevel = 0
+        self.startStatus = 0 # Status-Unknown
+        self.endStatus = 0 # Status-Unknown
         self.currentDungeon = 6 
-        self.check_seconds = 5
+        self.check_seconds = 6
         self.energy_count = 1
         self.load_tier_list()
         self.statisctics_manager = StatisticsManager()
@@ -405,13 +441,17 @@ class CaveEngine(QObject):
         self.buttons = loadJsonData(getCoordFilePath(self.buttons_filename, sizePath = self.currentDataFolder))
         self.movements = loadJsonData(getCoordFilePath(self.movements_filename, sizePath = self.currentDataFolder))
 
+    def setPauseRequested(self):
+        if self.debug: print("Pause Requested")
+        self.stopRequested = True
+        self.screen_connector.stopRequested = True
+        self.changeEndStatus(self.endStatus + 10) # Pause-Requested
+        self.runStatiscticsSave()
+
     def setStopRequested(self):
         if self.debug: print("Stop Requested")
         self.stopRequested = True
         self.screen_connector.stopRequested = True
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
-            if self.debug: print("*** Saving Statistics - Game Stopped ***")
-            self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
 
     def setStartRequested(self):
         if self.debug: print("Start Requested")
@@ -481,6 +521,12 @@ class CaveEngine(QObject):
         self.currentLevel = new_lvl
         self.levelChanged.emit(self.currentLevel)
 
+    def changeStartStatus(self, new_SS):
+        self.startStatus = new_SS
+
+    def changeEndStatus(self, new_ES):
+        self.endStatus = new_ES
+
     def quick_test_functions(self):
         pass
 
@@ -503,6 +549,8 @@ class CaveEngine(QObject):
             self.exit_movement_dungeon10()
         elif self.currentDungeon == 16:
             self.exit_movement_dungeon16()
+        elif self.currentDungeon == 18:
+            self.exit_movement_dungeon18()
         else:
             self.exit_movement_dungeon_old()
         self.log("Left Dungeon")
@@ -571,7 +619,34 @@ class CaveEngine(QObject):
         self.swipe('e', 1.2)
         self.swipe('nw', 3)
         self.disableLogs = False
+
+    def exit_movement_dungeon18(self): 
+        if self.debug: print("exit_dungeon_18")
+        self.disableLogs = True
+        if self.currentLevel == 11 or self.currentLevel == 12 or self.currentLevel == 13:
+            self.swipe('w', 1)
+            self.swipe('ne', 3)
+        else:
+            self.swipe('e', 1)
+            self.swipe('nw', 3)
+        self.disableLogs = False
    
+    def goTroughDungeon18(self):
+        if self.debug: print("Going through dungeon (designed for #18)")
+        self.log("Crossing Dungeon 18")
+        self.disableLogs = True
+        self.swipe('n', 2)
+        self.swipe('nw', 2)
+        self.swipe('ne', 3)
+        self.swipe('nw', 2)
+        self.swipe('e', .7)
+        if self.currentLevel == 6:
+            self.swipe('w', .4)
+        elif self.currentLevel == 11 or self.currentLevel == 12 or self.currentLevel == 13:
+            self.swipe('n', 2)
+            self.swipe('nw', .5)
+        self.disableLogs = False
+
     def goTroughDungeon10(self):
         if self.debug: print("Going through dungeon (designed for #10)")
         self.log("Crossing Dungeon 10")
@@ -618,7 +693,11 @@ class CaveEngine(QObject):
         self.swipe('s', .6)
         self.swipe('sw', .3)
         self.swipe('nw', .7)
-        if self.currentLevel == 11 or self.currentLevel == 18:
+        if self.currentLevel == 6:
+            self.swipe('s', .4)
+            self.swipe('e', .5)
+            self.swipe('nw', .6)
+        elif self.currentLevel == 11 or self.currentLevel == 18:
             self.swipe('e', .3)
             self.swipe('n', .3)
             self.swipe('nw', .4)
@@ -679,6 +758,8 @@ class CaveEngine(QObject):
             self.goTroughDungeon10()
         elif self.currentDungeon == 16:
             self.goTroughDungeon16()
+        elif self.currentDungeon == 18:
+            self.goTroughDungeon18()
         else:
             self.goTroughDungeon_old()
 
@@ -768,7 +849,7 @@ class CaveEngine(QObject):
                             self.wait(1)
                         self.disableLogs = False
                     # added movement to increase kill enemy efficency for 20 level chapters
-                    elif self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
+                    elif self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16 or self.currentDungeon == 18:
                         if self.debug: print("Doing patrol")
                         self.log("Doing Patrol")
                         self.disableLogs = True
@@ -783,7 +864,7 @@ class CaveEngine(QObject):
                                 self.checkIfDead()
                                 self.swipe('e', 0.7)
                                 self.checkIfDead()
-                                self.swipe('w', 0.35)
+                                self.swipe('w', 0.37)
                                 self.checkIfDead()
                             else:
                                 self.wait(2)
@@ -795,7 +876,7 @@ class CaveEngine(QObject):
                                 self.wait(2)
                                 self.swipe('e', 0.7)
                                 self.wait(2)
-                                self.swipe('w', 0.35)
+                                self.swipe('w', 0.37)
                         else:
                             self.wait(2)
                             self.swipe('w', 0.35)
@@ -806,7 +887,7 @@ class CaveEngine(QObject):
                             self.wait(2)
                             self.swipe('e', 0.7)
                             self.wait(2)
-                            self.swipe('w', 0.35)
+                            self.swipe('w', 0.37)
                         self.disableLogs = False
                     # added random escape methods for 30, 50 level chapters
                     else:
@@ -891,11 +972,17 @@ class CaveEngine(QObject):
                         self.log("Door 3 is Open")
                         return
                     else:
+                        if i <= _time * .75:
+                            self.disableLogs = True
+                            if self.debug: print("Moving closer to door")
+                            self.swipe('n', .1)
+                            self.disableLogs = False
                         if self.debug: print("Still playing but level not ended")
                     if self.debug: print("End. Exp & Door Checks")
                 else:
                     if self.debug: print("State Checks Start")                    
                     if state == "endgame" or state == "repeat_endgame_question":
+                        self.changeEndStatus(self.endStatus + 7) # You-Died
                         if self.debug: print("React-Popup. Endgame Detected")
                         if state == "repeat_endgame_question":
                             print("Letplay state: %s" % state)
@@ -969,6 +1056,7 @@ class CaveEngine(QObject):
             if state == "endgame" or state == "repeat_endgame_question":
                 if self.debug: print("React-Popup. Endgame Detected")
                 if state == "repeat_endgame_question":
+                    self.changeEndStatus(self.endStatus + 7) # You-Died
                     print("Popups state: %s" % state)
                     if self.deadcheck or self.battle_pass_advanced: 
                         self.pressIfDead()
@@ -978,6 +1066,7 @@ class CaveEngine(QObject):
                         print("Sorry, you most likely died.")
                         self.altEndgameClose()
                 else:
+                    self.changeEndStatus(self.endStatus + 8) # Probably-Won
                     print("You most likely won out of cycle.")
                     self.altEndgameClose()
             elif state == "ability_refresh":
@@ -1248,7 +1337,7 @@ class CaveEngine(QObject):
             i = 1
             while i < self.max_wait:
                 self.disableLogs = False
-                self.log("Searching Dungeon")
+                self.log("Avoiding Boss")
                 self.disableLogs = True
                 if self.deadcheck:
                     self.checkIfDead()
@@ -1298,6 +1387,10 @@ class CaveEngine(QObject):
             print("state: %s" % state)
         while state == "in_game":
             self.disableLogs = True
+            if self.deadcheck:
+                self.checkIfDead()
+            else:
+                self.wait(self.sleep_btw_screens)
             if i == 1:
                 print("Trying now; escape plan A!")
                 self.log("Escape Plan A!")
@@ -1323,6 +1416,7 @@ class CaveEngine(QObject):
                 self.swipe('w', .9)
                 self.swipe('ne', 2)
             elif i > 5:
+                self.wait(10) # wait for extra boss killing
                 break
             self.swipe('n', 1.5)
             self.swipe('nw', 1.5)
@@ -1347,8 +1441,14 @@ class CaveEngine(QObject):
                 self.deadcheck = True
             else:
                 self.deadcheck = False
+            self.startStatus = 1 # Normal-Start
+            self.endStatus = 0
             state = self.screen_connector.getFrameState()
             print("Start state: %s" % state)
+            if state == "game_not_responding":
+                print("Closing Game to Restart")
+                self.tap("game_not_respond_ok")
+                self.wait(10)
             if state == "menu_talents" or state == "menu_events":
                 print("Changing to World Menu")
                 self.tap("menu_world_left")
@@ -1357,19 +1457,26 @@ class CaveEngine(QObject):
                 print("Changing to World Menu")
                 self.tap("menu_world_right")
                 self.wait(2)
+            elif state == "monster_farm_home":
+                print("Change to World Menu")
+                self.tap("farm_back")
+                self.wait(6)
             elif state == "crash_desktop_open":
+                self.changeStartStatus(self.startStatus + 1) # Crash-Desktop
                 print("Opening Game Now")
                 self.tap("open_game")
                 self.wait(90)
+            if state == "crash_load_screen":
+                print("Not Loaded Yet, waiting 60 more")
+                self.wait(60)
             if self.currentLevel > 0:
                 if self.screen_connector.checkFrame('menu_home'):
                     if self.debug: print("Home Menu detected... setting to lvl 0 now.")
                     self.currentLevel = 0 # allows to continue playing if at home_menu
                 elif self.currentLevel > self.max_level:
                     self.currentLevel = 1 # allows to start playing 20+ levels
-                else:
-                    self.stat_lvl_start = self.currentLevel
                 self.wait(0.5) # for GUI logs to sync                     
+            self.stat_lvl_start = self.currentLevel
             self.levelChanged.emit(self.currentLevel)
             if self.currentLevel > 0:
                 self.checkForAds()
@@ -1389,28 +1496,32 @@ class CaveEngine(QObject):
                     self.play_cave()
             except Exception as exc:
                 if exc.args[0] == "mainscreen":
+                    self.changeEndStatus(self.endStatus + 1) # Main-Screen
+                    self.runStatiscticsSave()
                     print("Exception. Main Menu, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "crashdesktop":
+                    self.changeEndStatus(self.endStatus + 2) # Crash-Desktop
+                    self.runStatiscticsSave()
                     print("Exception. Crash Desktop, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "altendgame":
                     print("Exception. Alt Endgame, restarting game now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
+                    self.changeEndStatus(self.endStatus + 3) # Screen-Unknown
+                    self.runStatiscticsSave()
                     state = self.screen_connector.getFrameState()
                     print("state: %s" % state)
-                    print("Exception. Unknown State, trying Something.")
-                    self.log("Unknown Screens... halp!")
-                    #self.tap('level_up_endgame')
+                    print("Exception. Unknown State, restarting game now.")
+                    self.log("Preparing to rest game")
                     self.wait(4) #waiting for magic
                 else:
+                    self.changeEndStatus(self.endStatus + 4) # Exception-Unknown
+                    self.runStatiscticsSave()
                     print("Exception. Unknown problem: %s" % exc)
                     self.log("Unknown Problem... halp!")
                     self.exitEngine()
-            if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
-                if self.debug: print("*** Saving Statistics - Game Finished ***")
-                self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)      
             i += 1
             print(">>>>>>>>>>>>>>> Completed Farming Bot Loop <<<<<<<<<<<<<<<")
             print(i)
@@ -1418,6 +1529,10 @@ class CaveEngine(QObject):
             print("Max Bot Loops Reached. Farming complete!")
             self.log("Farming complete!")
             self.exitEngine()
+
+    def runStatiscticsSave(self):
+        if self.debug: print("*** Saving Game Statistics ***")
+        self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel, self.currentDungeon, self.startStatus, self.endStatus)
 
     def checkForEnergy(self):
         energy_check = True
@@ -1718,8 +1833,45 @@ class CaveEngine(QObject):
                     self.boss_lvl()
                 self.changeCurrentLevel(self.currentLevel + 1)
             self._manage_exit_from_endgame()
-        elif self.currentDungeon == 1 or self.currentDungeon == 2 or self.currentDungeon == 4 or self.currentDungeon == 5 or self.currentDungeon == 8 or self.currentDungeon == 9 or self.currentDungeon == 11 or self.currentDungeon == 12 or self.currentDungeon == 13 or self.currentDungeon == 15:
-            if self.currentDungeon == 12 or self.currentDungeon == 15:
+        elif self.currentDungeon == 18:
+            if self.debug: print("Runing a 20 Level Dungeon")
+            if self.currentLevel < 0 or self.currentLevel > 20:
+                if self.debug: print("level out of range: %d" % self.currentLevel)
+                self.exitEngine()                
+            self.max_level = 20
+            while self.currentLevel <= self.max_level:
+                if self.debug: print("***********************************")
+                print("Level %d: %s" % (self.currentLevel, str(self.levels_type4[self.currentLevel])))
+                if self.debug: print("***********************************")
+                if self.levels_type4[self.currentLevel] == self.t_intro:
+                    self.intro_lvl()
+                elif self.levels_type4[self.currentLevel] == self.t_normal:
+                    self.normal_lvl()
+                elif self.levels_type4[self.currentLevel] == self.t_heal:
+                    self.heal_lvl()
+                elif self.levels_type4[self.currentLevel] == self.t_final_boss:
+                    self.boss_final()
+                elif self.levels_type4[self.currentLevel] == self.t_boss:
+                    self.boss_lvl()
+                self.changeCurrentLevel(self.currentLevel + 1)
+            self._manage_exit_from_endgame()
+        elif self.currentDungeon == 7 or self.currentDungeon == 14:
+            if self.debug: print("Runing a 10 Level Dungeon")
+            self.max_level = 10
+            while self.currentLevel <= self.max_level:
+                if self.debug: print("***********************************")
+                print("Level %d: %s" % (self.currentLevel, str(self.levels_type3[self.currentLevel])))
+                if self.debug: print("***********************************")
+                if self.levels_type3[self.currentLevel] == self.t_intro:
+                    self.intro_lvl()
+                elif self.levels_type3[self.currentLevel] == self.t_boss:
+                    self.boss_lvl()
+                elif self.levels_type3[self.currentLevel] == self.t_final_boss:
+                    self.boss_final()
+                self.changeCurrentLevel(self.currentLevel + 1)
+            self._manage_exit_from_endgame()
+        elif self.currentDungeon == 1 or self.currentDungeon == 2 or self.currentDungeon == 4 or self.currentDungeon == 5 or self.currentDungeon == 8 or self.currentDungeon == 9 or self.currentDungeon == 11 or self.currentDungeon == 12 or self.currentDungeon == 13 or self.currentDungeon == 15 or self.currentDungeon == 17:
+            if self.currentDungeon == 12 or self.currentDungeon == 15 or self.currentDungeon == 17:
                 if self.debug: print("Runing a 30 Level Dungeon")
                 self.max_level = 30
                 while self.currentLevel <= self.max_level:
@@ -1737,63 +1889,59 @@ class CaveEngine(QObject):
                     elif self.levels_type2[self.currentLevel] == self.t_final_boss:
                         self.boss_final()
                     self.changeCurrentLevel(self.currentLevel + 1)
-            else:
-                if self.debug: print("Runing a 50 Level Dungeon")
-                self.max_level = 50
-                while self.currentLevel <= self.max_level:
-                    if self.debug: print("***********************************")
-                    print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
-                    if self.debug: print("***********************************")
-                    if self.levels_type1[self.currentLevel] == self.t_intro:
-                        self.intro_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_normal:
-                        self.normal_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_heal:
-                        self.heal_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_boss:
-                        self.boss_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_final_boss:
-                        self.boss_final()
-                    self.changeCurrentLevel(self.currentLevel + 1)
-            self._manage_exit_from_endgame()
-        elif self.currentDungeon == 7 or self.currentDungeon == 14:
-            if self.debug: print("Runing a 10 Level Dungeon")
-            self.max_level = 10
+                self._manage_exit_from_endgame()
+        else:
+            if self.debug: print("Runing a 50 Level Dungeon")
+            self.max_level = 50
             while self.currentLevel <= self.max_level:
                 if self.debug: print("***********************************")
-                print("Level %d: %s" % (self.currentLevel, str(self.levels_type3[self.currentLevel])))
+                print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
                 if self.debug: print("***********************************")
-                if self.levels_type3[self.currentLevel] == self.t_intro:
+                if self.levels_type1[self.currentLevel] == self.t_intro:
                     self.intro_lvl()
-                elif self.levels_type3[self.currentLevel] == self.t_boss:
+                elif self.levels_type1[self.currentLevel] == self.t_normal:
+                    self.normal_lvl()
+                elif self.levels_type1[self.currentLevel] == self.t_heal:
+                    self.heal_lvl()
+                elif self.levels_type1[self.currentLevel] == self.t_boss:
                     self.boss_lvl()
-                elif self.levels_type3[self.currentLevel] == self.t_final_boss:
+                elif self.levels_type1[self.currentLevel] == self.t_final_boss:
                     self.boss_final()
                 self.changeCurrentLevel(self.currentLevel + 1)
             self._manage_exit_from_endgame()
-
+            
     def _manage_exit_from_endgame(self):
         if self.debug: print("manage_exit_from_endgame")
         self.wait(8) # wait for endgame loot screen to load
         state = self.screen_connector.getFrameState()
         print("End state: %s" % state)
         if state == 'menu_home':
+            self.changeEndStatus(self.endStatus + 1) # Main Screen
+            self.runStatiscticsSave()
             print("Exit_Endgame. Home Menu Detected.")
             return
         elif state == 'in_game':
+            self.changeEndStatus(self.endStatus + 9) # Probably Stuck
+            self.runStatiscticsSave()
             print("Exit_Endgame. You are still in_game; you most likely got stuck!")
             return
         elif state == 'angel_heal':
+            self.changeEndStatus(self.endStatus + 9) # Probably Stuck
+            self.runStatiscticsSave()
             print("Exit_Endgame. Maybe you got stuck; or unexpected screen?")
             self.currentLevel = 2
             self.wait(0.5) # wait for GUI load
             return
         elif state == 'endgame':
+            self.changeEndStatus(self.endStatus + 5) # Won Game
+            self.runStatiscticsSave()
             print("Exit_Endgame. You won!")
             self.log("You won, Game over!")
             self.gameWon.emit()
             self.pressCloseEndgame()
         elif state != 'endgame':
+            self.changeEndStatus(self.endStatus + 9) # Probably Stuck
+            self.runStatiscticsSave()
             print("Exit_Endgame. Maybe you leveled up; or unexpected screen?")
             self.tap('level_up_endgame') # maybe you leveled up trying to get endgame
             self.wait(8) # wait for endgame loot screen to load
@@ -1804,6 +1952,8 @@ class CaveEngine(QObject):
         state = self.screen_connector.getFrameState()
         if self.debug: print("state: %s" % state)
         if state == 'endgame':
+            self.changeEndStatus(self.endStatus + 5) # Won Game
+            self.runStatiscticsSave()
             print("Exit_Endgame_2. You Won!")
             self.pressCloseEndgame()
 
@@ -1814,6 +1964,7 @@ class CaveEngine(QObject):
         self.wait(8) # wait for go back to main menu
 
     def altEndgameClose(self):
+        self.runStatiscticsSave()
         state = self.screen_connector.getFrameState()
         print("Alt state: %s" % state)
         self.log("You died or won!")
@@ -1822,8 +1973,7 @@ class CaveEngine(QObject):
         raise Exception('altendgame')
 
     def exitEngine(self):
+        self.changeEndStatus(self.endStatus + 6) # Exit-Engine
+        self.runStatiscticsSave()
         print ("Game Engine Closed")
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
-            if self.debug: print("*** Saving Statistics - Game Killed ***")
-            self.statisctics_manager.saveOneGame(self.start_date, self.stat_lvl_start, self.currentLevel)
         exit(1)
