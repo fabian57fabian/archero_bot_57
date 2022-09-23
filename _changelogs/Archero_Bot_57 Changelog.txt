@@ -6,7 +6,33 @@ Things may be broke or known bugs:
 - StaticCoordsChecker gives format conversion error
 
 
-[v?] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
+[v5] Updated: 23-Sep-2022 (to Adminzero Forked Repository)
+- Updated NOX 7.0.3.5
+- Unlocked Chapters 17, 18
+- Uploaded Chapter Icons 17, 18
+- Updated Levels for 18
+- Updated GUI Load 18 (ContorlerModel)
+- Uploaded 5 new images (wolfhound, skelly, dodgeplus, enh-summon, inherited_summon)
+- Updated abalites x2 files (templates, and pic-to-name file)
+- Fixed statistics save points (save all now, not just lvl 20)
+- Updated statistics manager .psy file in main folder
+- Adjusted pause/stop fuction for stastics stoping duplicates (controllerModel)
+- Adjsuted pause/stop buttons (contorllerController)
+- Added the "Dungeon, S_status, E_status" columns to the stastics file for logging
+- update/clear the stastics.csv file in data folder
+- Added Farm Screen check on start
+- Added Start/End status to statistics caveengine
+- Added Statistics Key to caveengine
+- New Game Not Responding Screen
+- New Game Not Respond Ok button
+- added Check in the ADs for not responding reset
+- added crash_load_wait check (need to see if screens uploaded already)
+- Added python.exe call to .bat files
+- Cleared current settings and Stastics files
+- Updated version to v5
+
+
+[v4] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
 - Updated to NOX 7.0.3.2
 - Rolled back to Python 3.9.13 (the touch manager doesn't seem to be compatible with 3.10+)
 - Updated to Archero Version 4.1.0 (new abilitie, adjusted coords, new screens, etc.)
@@ -24,7 +50,7 @@ Things may be broke or known bugs:
 	- Farming Complete Exit; fixed the error causing to crash instead of finish
 
 
-[v?] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
+[v3] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
 - Included all updates made by Fabian57Fabian; up to 20-Jul-2022 (I think, sorry not to familiar with github merging and stuff)
 - Changed the 'wait' time on energy refill; to 60 minutes (60 works best for me)
 - Added/Changed a lot of stuff in the caveDungeonEngine related to the addition and troubleshooting of lvl 10 dungeons (7 & 14) to work; while having lvl 20 Dungeons (3, 6, 10) still work fine; lvl 16 works but needs minor tweaks still.
