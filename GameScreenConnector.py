@@ -25,7 +25,7 @@ class GameScreenConnector:
         # Line coordinates: x1,y1,x2,y2
         self.hor_lines = {}
         self.stopRequested = False
-        self.abilities_treshold = 1
+        self.abilities_treshold = 5
         self.abilities_templates = {}
         self.abilities_unknown_fld = "abilities_unknown"
         if not os.path.exists(self.abilities_unknown_fld): os.mkdir(self.abilities_unknown_fld)
