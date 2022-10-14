@@ -46,7 +46,7 @@ class QLevelViewer(QWidget):
         else:
             for i, v in self.model.getLevelsNames().items():
                 if i == newlevel:
-                    self.level_name = v
+                    self.level_name = v.value
                     break
         self.lblName.setText(self.level_name)
         self.lblNumber.setText(str(newlevel))

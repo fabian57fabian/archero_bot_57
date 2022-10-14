@@ -46,7 +46,8 @@ class QDungeonSelector(QWidget):
         chapters = []
         selected_ch = 0
         chapter_index_curr = 0
-        for ch_num, name in self.model.engine.chapters.items():
+        chapters_raw = [(k, v.name) for k, v in self.model.engine.chapters_info.items()]
+        for ch_num, name in chapters_raw:
             if int(ch_num) in self.model.engine.allowed_chapters:
                 ch_view_name = "{}. {}".format(ch_num, name)
                 chapters.append(ch_view_name)

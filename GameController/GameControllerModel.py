@@ -62,15 +62,14 @@ class GameControllerModel(QObject):
             QMessageBox.information(None, "Updates available", "A new update is available.\n Update it from https://github.com/fabian57fabian/archero_bot_57")
 
     def getLevelsNames(self):
-        #if self.debug: print("GameContorllerModel_getLevelsNames_check")
-        if self.engine.currentDungeon == 1 or self.engine.currentDungeon == 2 or self.engine.currentDungeon == 4 or self.engine.currentDungeon == 5 or self.engine.currentDungeon == 8 or self.engine.currentDungeon == 9 or self.engine.currentDungeon == 11 or self.engine.currentDungeon == 13:
-            return self.engine.levels_type1
-        elif self.engine.currentDungeon == 12 or self.engine.currentDungeon == 15: 
-            return self.engine.levels_type2
-        elif self.engine.currentDungeon == 7 or self.engine.currentDungeon == 14: 
-            return self.engine.levels_type3
-        else:
-            return self.engine.levels_type
+        if str(self.engine.currentDungeon) not in self.engine.chapters_info.keys():
+            print("ERROR: current dungeon is not in chapters_info! ")
+            return {}
+        # Get level type (T50, T20, ....)
+        lvl_TXX = self.engine.chapters_info[str(self.engine.currentDungeon)]
+        # Get levels with DungeonLevelType
+        levels_type = self.engine.levels_info[lvl_TXX.type]
+        return levels_type
 
     def load_icons(self):
         icons_dts = {}
@@ -80,9 +79,6 @@ class GameControllerModel(QObject):
         icons_dts['next'] = "End.png"
         icons_dts['stop'] = "Stop.png"
         return icons_dts
-
-    def getChapters(self) -> list:
-        return self.chapters
 
     def getChapterImagePath(self, ch_number: int) -> str:
         path = os.path.join(self.ch_images_path, "ch" + str(ch_number) + self.ch_image_ext)

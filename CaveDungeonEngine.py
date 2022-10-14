@@ -6,6 +6,7 @@ from UsbConnector import UsbConnector
 from GameScreenConnector import GameScreenConnector
 from StatisticsManager import StatisticsManager
 from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, getCoordFilePath
+from GameChapters import ChapterInfo, ChapterLevelType, DungeonLevelType, BuildChapters, BuildLevelsTypes, MaxLevelFromType
 import enum
 import os
 
@@ -74,174 +75,12 @@ class CaveEngine(QObject):
 
     allowed_chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
-    chapters = {
-        "1": "Verdant Prairie",
-        "2": "Storm Desert",
-        "3": "Abandoned Dungeon",
-        "4": "Crystal Mines",
-        "5": "Lost Castle",
-        "6": "Cave of Bones",
-        "7": "Barens of Shadow",
-        "8": "Silent Expanse",
-        "9": "Frozen Pinnacle",
-        "10": "Land of Doom",
-        "11": "The Capital",
-        "12": "Dungeon of Traps",
-        "13": "Lava Land",
-        "14": "Frigid Tundra",
-        "15": "Pharaoh's Chamber",
-        "16": "Archaic Temple",
-        "17": "Dragon Lair",
-        "18": "Escape Chamber",
-        "19": "devil's Tavern",
-        "20": "Palace of Light",
-        "21": "Nightmare Land",
-        "22": "Tranquil Forest",
-        "23": "Underwater Ruins",
-        "24": "Silent Wilderness",
-        "25": "Death Bar",
-        "26": "Land of the Dead",
-        "27": "Sky Castle",
-        "28": "Sandy Town",
-        "29": "dark forest",
-        "30": "Shattered Abyss",
-        "31": "Underwater City",
-        "32": "Evil Castle",
-        "33": "Aeon Temple",
-        "34": "sakura Court"
-    }
+    ''' dictionary of strings (chapter number), each one is a ChapterInfo '''
+    chapters_info = BuildChapters()
 
-    t_intro = 'Intro'
-    t_normal = 'Normal'
-    t_heal = 'Heal'
-    t_boss = 'Boss'
-    t_final_boss = 'Final_B'
+    ''' dictionary of ChapterLevelType, each one is a dictionary of int num -> DungeonLevelType '''
+    levels_info = BuildLevelsTypes()
 
-    levels_type = { # 20 levels pattern
-        0: t_intro,
-        1: t_normal,
-        2: t_heal,
-        3: t_normal,
-        4: t_heal,
-        5: t_boss,
-        6: t_normal,
-        7: t_heal,
-        8: t_normal,
-        9: t_heal,
-        10: t_boss,
-        11: t_normal,
-        12: t_heal,
-        13: t_normal,
-        14: t_heal,
-        15: t_boss,
-        16: t_normal,
-        17: t_heal,
-        18: t_normal,
-        19: t_heal,
-        20: t_final_boss,
-    }
-
-    levels_type1 = { # 50 levels pattern
-        0: t_intro,
-        1: t_normal,
-        2: t_normal,
-        3: t_normal,
-        4: t_normal,
-        5: t_heal,
-        6: t_normal,
-        7: t_normal,
-        8: t_normal,
-        9: t_normal,
-        10: t_boss,
-        11: t_normal,
-        12: t_normal,
-        13: t_normal,
-        14: t_normal,
-        15: t_heal,
-        16: t_normal,
-        17: t_normal,
-        18: t_normal,
-        19: t_normal,
-        20: t_boss,
-        21: t_normal,
-        22: t_normal,
-        23: t_normal,
-        24: t_normal,
-        25: t_heal,
-        26: t_normal,
-        27: t_normal,
-        28: t_normal,
-        29: t_normal,
-        30: t_boss,
-        31: t_normal,
-        32: t_normal,
-        33: t_normal,
-        34: t_normal,
-        35: t_heal,
-        36: t_normal,
-        37: t_normal,
-        38: t_normal,
-        39: t_normal,
-        40: t_boss,
-        41: t_normal,
-        42: t_normal,
-        43: t_normal,
-        44: t_normal,
-        45: t_heal,
-        46: t_normal,
-        47: t_normal,
-        48: t_normal,
-        49: t_normal,
-        50: t_final_boss,
-    }
-
-    levels_type2 = { # 30 levels pattern
-        0: t_intro,
-        1: t_normal,
-        2: t_normal,
-        3: t_normal,
-        4: t_normal,
-        5: t_heal,
-        6: t_normal,
-        7: t_normal,
-        8: t_normal,
-        9: t_normal,
-        10: t_boss,
-        11: t_normal,
-        12: t_normal,
-        13: t_normal,
-        14: t_normal,
-        15: t_heal,
-        16: t_normal,
-        17: t_normal,
-        18: t_normal,
-        19: t_normal,
-        20: t_boss,
-        21: t_normal,
-        22: t_normal,
-        23: t_normal,
-        24: t_normal,
-        25: t_heal,
-        26: t_normal,
-        27: t_normal,
-        28: t_normal,
-        29: t_normal,
-        30: t_final_boss,
-    }
-
-    levels_type3 = { # 10 levels pattern
-        0: t_intro,
-        1: t_boss,
-        2: t_boss,
-        3: t_boss,
-        4: t_boss,
-        5: t_boss,
-        6: t_boss,
-        7: t_boss,
-        8: t_boss,
-        9: t_boss,
-        10: t_final_boss,
-    }
 
     def __init__(self, connectImmediately: bool = False):
         super(QObject, self).__init__()
@@ -1382,11 +1221,11 @@ class CaveEngine(QObject):
                 self.screen_connector.stopRequested = False
                 if self.currentLevel == 0:
                     if state == 'in_game':
-                        self.play_cave()
+                        self.play_one_game()
                     else:
                         self.chooseCave()                        
                 else:
-                    self.play_cave()
+                    self.play_one_game()
             except Exception as exc:
                 if exc.args[0] == "mainscreen":
                     print("Exception. Main Menu, restarting game now.")
@@ -1693,82 +1532,34 @@ class CaveEngine(QObject):
         else:
             if self.debug: print("Normal raid button detected")
             self.tap('start_no_raid')
-        self.play_cave()
+        self.play_one_game()
 
-    def play_cave(self):
-        if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16:
-            if self.debug: print("Runing a 20 Level Dungeon")
-            if self.currentLevel < 0 or self.currentLevel > 20:
+    def play_one_game(self):
+        # Get level type (T50, T20, ....)
+        lvl_TXX = self.chapters_info[str(self.currentDungeon)]
+        # Get levels with DungeonLevelType\\
+        levels_type = self.levels_info[lvl_TXX.type]
+        max_lvl = MaxLevelFromType(lvl_TXX.type)
+        if True:
+            if self.debug: print("Runing a {} Level Dungeon".format(max_lvl))
+            if self.currentLevel < 0 or self.currentLevel > max_lvl:
                 if self.debug: print("level out of range: %d" % self.currentLevel)
                 self.exitEngine()                
-            self.max_level = 20
+            self.max_level = max_lvl
             while self.currentLevel <= self.max_level:
                 if self.debug: print("***********************************")
-                print("Level %d: %s" % (self.currentLevel, str(self.levels_type[self.currentLevel])))
+                print("Level %d: %s" % (self.currentLevel, str(levels_type[self.currentLevel].name)))
                 if self.debug: print("***********************************")
-                if self.levels_type[self.currentLevel] == self.t_intro:
+                if levels_type[self.currentLevel] == DungeonLevelType.Intro:
                     self.intro_lvl()
-                elif self.levels_type[self.currentLevel] == self.t_normal:
+                elif levels_type[self.currentLevel] == DungeonLevelType.Normal:
                     self.normal_lvl()
-                elif self.levels_type[self.currentLevel] == self.t_heal:
+                elif levels_type[self.currentLevel] == DungeonLevelType.Heal:
                     self.heal_lvl()
-                elif self.levels_type[self.currentLevel] == self.t_final_boss:
+                elif levels_type[self.currentLevel] == DungeonLevelType.FinalBoss:
                     self.boss_final()
-                elif self.levels_type[self.currentLevel] == self.t_boss:
+                elif levels_type[self.currentLevel] == DungeonLevelType.Boss:
                     self.boss_lvl()
-                self.changeCurrentLevel(self.currentLevel + 1)
-            self._manage_exit_from_endgame()
-        elif self.currentDungeon == 1 or self.currentDungeon == 2 or self.currentDungeon == 4 or self.currentDungeon == 5 or self.currentDungeon == 8 or self.currentDungeon == 9 or self.currentDungeon == 11 or self.currentDungeon == 12 or self.currentDungeon == 13 or self.currentDungeon == 15:
-            if self.currentDungeon == 12 or self.currentDungeon == 15:
-                if self.debug: print("Runing a 30 Level Dungeon")
-                self.max_level = 30
-                while self.currentLevel <= self.max_level:
-                    if self.debug: print("***********************************")
-                    print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
-                    if self.debug: print("***********************************")
-                    if self.levels_type2[self.currentLevel] == self.t_intro:
-                        self.intro_lvl()
-                    elif self.levels_type2[self.currentLevel] == self.t_normal:
-                        self.normal_lvl()
-                    elif self.levels_type2[self.currentLevel] == self.t_heal:
-                        self.heal_lvl()
-                    elif self.levels_type2[self.currentLevel] == self.t_boss:
-                        self.boss_lvl()
-                    elif self.levels_type2[self.currentLevel] == self.t_final_boss:
-                        self.boss_final()
-                    self.changeCurrentLevel(self.currentLevel + 1)
-            else:
-                if self.debug: print("Runing a 50 Level Dungeon")
-                self.max_level = 50
-                while self.currentLevel <= self.max_level:
-                    if self.debug: print("***********************************")
-                    print("Level %d: %s" % (self.currentLevel, str(self.levels_type2[self.currentLevel])))
-                    if self.debug: print("***********************************")
-                    if self.levels_type1[self.currentLevel] == self.t_intro:
-                        self.intro_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_normal:
-                        self.normal_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_heal:
-                        self.heal_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_boss:
-                        self.boss_lvl()
-                    elif self.levels_type1[self.currentLevel] == self.t_final_boss:
-                        self.boss_final()
-                    self.changeCurrentLevel(self.currentLevel + 1)
-            self._manage_exit_from_endgame()
-        elif self.currentDungeon == 7 or self.currentDungeon == 14:
-            if self.debug: print("Runing a 10 Level Dungeon")
-            self.max_level = 10
-            while self.currentLevel <= self.max_level:
-                if self.debug: print("***********************************")
-                print("Level %d: %s" % (self.currentLevel, str(self.levels_type3[self.currentLevel])))
-                if self.debug: print("***********************************")
-                if self.levels_type3[self.currentLevel] == self.t_intro:
-                    self.intro_lvl()
-                elif self.levels_type3[self.currentLevel] == self.t_boss:
-                    self.boss_lvl()
-                elif self.levels_type3[self.currentLevel] == self.t_final_boss:
-                    self.boss_final()
                 self.changeCurrentLevel(self.currentLevel + 1)
             self._manage_exit_from_endgame()
 
