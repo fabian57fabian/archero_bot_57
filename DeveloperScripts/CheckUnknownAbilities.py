@@ -37,20 +37,17 @@ def test_diff(fn1, folder, plot=False, thresh=1.0, debug=True):
         plt.title("Distances from " + fn1)
         plt.show()
 
-
 def check_all():
     fld = "..\\datas\\abilities\\abilities_templates"
     fld_unknown = "..\\abilities_unknown"
-    for file in os.listdir(fld_unknown):
+    for files in os.listdir(fld_unknown):
         fn = os.path.join(fld_unknown, file)
-        test_diff(fn, fld, plot=False, thresh=4, debug=False)
-
+        test_diff(fn, fld, plot=True, thresh=4, debug=False)
 
 def check_one():
     fld = "..\\datas\\abilities\\abilities_templates"
     fn = "..\\abilities_unknown\\unknown_ability_12.png"
     test_diff(fn, fld, plot=True, thresh=4, debug=False)
-
 
 if __name__ == '__main__':
     #check_one()
