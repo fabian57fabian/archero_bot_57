@@ -39,6 +39,7 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
   - 10 . **Land of Doom: tested, WORKING**
   - 14 . **Frigid Tundra: tested, WORKING**
   - 16 . **Archic Temple: tested, WORKING**
+  - 18 . **Escape Chamber: tested, WORKING**
   - 1-15 . Other dungens: tested, works some (use at own peril)...
 
 - GUI Options Explained:

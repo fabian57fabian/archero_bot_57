@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     print("***************** BOT STARTED ****************")
     print("Stuff is loading, I promise it is. Please wait!")
+    print("")
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     MainWindow.setWindowTitle("Game Controller")
