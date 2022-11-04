@@ -99,6 +99,8 @@ class CaveEngine(QObject):
         self.currentLevel = 0
         self.startStatus = 0 # Status-Unknown
         self.endStatus = 0 # Status-Unknown
+        self.unknownStatus = 0 # Count of Unknown State Detections Default = 0
+        self.restartStatus = False # Extra movement neede upon level crash
         self.currentDungeon = 6 
         self.check_seconds = 6
         self.energy_count = 1
@@ -462,9 +464,14 @@ class CaveEngine(QObject):
         self.disableLogs = True
         self.swipe('n', 2)
         self.swipe('nw', 2.2)
-        self.swipe('s', .3)
-        self.swipe('e', .5)
-        self.swipe('n', .3)
+        if self.currentLevel == 16:
+            self.swipe('s', .5)
+            self.swipe('e', .5)
+            self.swipe('n', .5)
+        else:
+            self.swipe('s', .3)
+            self.swipe('e', .5)
+            self.swipe('n', .3)
         self.swipe('ne', 1.8)
         self.swipe('s', .3)
         self.swipe('w', .5)
@@ -1010,6 +1017,12 @@ class CaveEngine(QObject):
             self.disableLogs = False
             self.wait(1) # wait for ability apply
 
+    def crash_level_restart(self):
+        if self.restartStatus:
+            self.swipe('n', .45)
+            self.wait(2)
+            self.restartStatus = False
+
     def intro_lvl(self):
         if self.debug: print("Getting Start Items")
         self.wait(10) # inital wait for ability wheel to load
@@ -1029,6 +1042,7 @@ class CaveEngine(QObject):
 
     def normal_lvl(self):
         if self.debug: print("normal_lvl")
+        self.crash_level_restart()
         self.goTroughDungeon()
         self.letPlay(self.playtime)
         self.reactGamePopups()
@@ -1061,13 +1075,15 @@ class CaveEngine(QObject):
         self.log("Leaving Healer")
         self.disableLogs = True
         self.swipe('e', 1)
-        self.swipe('nw', 2)
+        self.swipe('n', .25)
+        self.swipe('nw', 2.5)
         self.disableLogs = False
         self.log("Left Dungeon")
         self.wait(0.5) # for GUI log to load
 
     def boss_lvl(self):
         if self.debug: print("boss_lvl")
+        self.crash_level_restart()
         self.log("Attacking Boss")
         self.disableLogs = True
         self.swipe('n', 0.2)
@@ -1140,6 +1156,7 @@ class CaveEngine(QObject):
 
     def boss_final(self):
         if self.debug: print("boss_final")
+        self.crash_level_restart()
         self.log("Final Boss Appeared")
         self.log("Attacking Final Boss")
         if self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10:
@@ -1238,34 +1255,51 @@ class CaveEngine(QObject):
             if i == 1:
                 print("Trying now; escape plan A!")
                 self.log("Escape Plan A!")
+                self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('e', .3)
                 self.swipe('ne', 1)
             elif i == 2:
                 print("Trying now; escape plan B!")
                 self.log("Escape Plan B!")
+                self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('w', .3)
                 self.swipe('nw', 1)
+                self.wait(8) # wait killing mobs/boss
             elif i == 3:
                 print("Trying now; escape plan C!")
                 self.log("Escape Plan C!")
+                self.swipe('n', 1.5)
                 self.swipe('s', .9)
-                self.swipe('e', .9)
+                self.swipe('e', .6)
                 self.swipe('nw', 2)
+                self.wait(10) # wait killing mobs/boss
             elif i == 4:
                 print("Trying now; escape plan D!")
                 self.log("Escape Plan D!")
+                self.swipe('n', 1.5)
                 self.swipe('s', .9)
-                self.swipe('w', .9)
+                self.swipe('w', .6)
                 self.swipe('ne', 2)
-            elif i > 5:
-                self.wait(10) # wait for extra boss killing
+                self.wait(10) # wait killing mobs/boss
+            elif i == 5:
+                print("YOLO; escape plan E!")
+                self.log("Escape Plan E!")
+                self.swipe('n', 1.66)
+                self.swipe('s', .66)
+                self.swipe('w', .66)
+                self.swipe('n', .66)
+                self.swipe('ne', .66)
+                self.swipe('s', .66)
+                self.swipe('e', .66)
+                self.swipe('n', .66)
+                self.swipe('nw', .66)
+                self.swipe('ne', 1.66)
+                self.swipe('nw', 1.66)
+                self.wait(10) # wait killing mobs/boss
+            elif i > 6:
                 break
-            self.swipe('n', 1.5)
-            self.swipe('nw', 1.5)
-            self.swipe('ne', 1.5)
-            self.wait(2) # wait for room transition to complete
             state = self.screen_connector.getFrameState()
             if state == "angel_heal":
                 if self.healingStrategy == HealingStrategy.SmartHeal:
@@ -1275,13 +1309,27 @@ class CaveEngine(QObject):
                     if self.debug: print("Popups. NormalHeal")
                     self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
-                self.swipe('n', 1)
-                self.swipe('e', .8)
-                self.swipe('nw', 1.2)
+                self.swipe('n', .65)
+                self.swipe('e', .9)
+                self.swipe('n', .25)
+                self.swipe('nw', 1.8)
+                self.wait(2) # wait for room transition to complete
+                state = self.screen_connector.getFrameState()
+            self.swipe('n', 1.5)
+            self.swipe('nw', 1.5)
+            self.swipe('s', .3)
+            self.swipe('e', .5)
+            self.swipe('n', .3)
+            self.swipe('ne', 1.5)
+            self.swipe('s', .3)
+            self.swipe('w', .5)
+            self.swipe('n', 1.5)
+            self.wait(2) # wait for room transition to complete
             self.disableLogs = False
             i += 1
                     
     def start_one_game(self):
+        self.unknownStatus = 0
         i = 0
         while i <= self.max_loops_game:
             if self.vipSub == VIPSub.TrueVIP:
@@ -1298,12 +1346,19 @@ class CaveEngine(QObject):
                 self.deadcheck = False
             self.startStatus = 1 # Normal-Start
             self.endStatus = 0
+            if self.unknownStatus > 3:
+                print("UknownStatus Loop Count: %s" % self.unknownStatus)
+                self.tap("open_game")
+                self.wait(0.5)  
+                self.tap("farm_back")
+                self.unknownStatus = 0
+                self.wait(5)            
             state = self.screen_connector.getFrameState()
             print("Start state: %s" % state)
             if state == "game_not_responding":
                 print("Closing Game to Restart")
                 self.tap("game_not_respond_ok")
-                self.wait(10)
+                self.wait(10)            
             if state == "menu_talents" or state == "menu_events":
                 print("Changing to World Menu")
                 self.tap("menu_world_left")
@@ -1316,12 +1371,17 @@ class CaveEngine(QObject):
                 print("Change to World Menu")
                 self.tap("farm_back")
                 self.wait(6)
+            elif state == "menu_expedition":
+                print("Change to World Menu")
+                self.tap("farm_back")
+                self.wait(6)
             elif state == "crash_desktop_open":
                 self.changeStartStatus(self.startStatus + 1) # Crash-Desktop
+                self.restartStatus = True
                 print("Opening Game Now")
                 self.tap("open_game")
                 self.wait(90)
-            if state == "crash_load_screen":
+            if state == "crash_load_screen_1" or state == "crash_load_screen_2":
                 print("Not Loaded Yet, waiting 60 more")
                 self.wait(60)
             if self.currentLevel > 0:
@@ -1371,6 +1431,7 @@ class CaveEngine(QObject):
                     print("Exception. Unknown State, restarting game now.")
                     self.log("Preparing to rest game")
                     self.wait(4) #waiting for magic
+                    self.unknownStatus += 1
                 else:
                     self.changeEndStatus(self.endStatus + 4) # Exception-Unknown
                     self.runStatiscticsSave()
