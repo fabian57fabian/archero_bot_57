@@ -6,11 +6,22 @@ Things may be broke or known bugs:
 - StaticCoordsChecker gives format conversion error
 
 
-[v5] Updated: 10-Oct-2022 (to Adminzero Forked Repository)
+[v5] Updated: (to Adminzero Forked Repository)
+4-Nov-2022
+- Updated to Archero v4.4.2
+- Updated to Nox v7.0.3.8
+- Updated to Android OS v5.3.4.3
+- Level 20 AI tweaks
+- Added 5-row endgame screenshot and Coord checks
+- Updated crash_load_screen screenshot (x2) and Coord checks
+- Added menu_expedition screenshot and Coord checks
+- Adjusted final_boss exit strategies
+- Added angel_heal check to final_boss exit
+- Adjusted ability tier_list to bot strengths
+- Added crash_level_restart function
+- Added 'unknown' counter and attempted fix action
+30-Oct-2022
 - Included all Faibians changes from 13-Oct-23
-- Updated to Archero v4.4.1
-- Updated to Nox v7.0.3.7
-- Updated to Android OS v5.3.2.9
 - Unlocked Chapters 17, 18, 19, 20
 - Uploaded Chapter Icons 17, 18, 19, 20
 - Created AI for Levels 18 and 20
