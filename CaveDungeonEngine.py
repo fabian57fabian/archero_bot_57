@@ -634,6 +634,8 @@ class CaveEngine(QObject):
         recheck = False
         if self.debug: print("Let-Play. Auto playing...")
         self.log("Searching Dungeon")
+        if self.deadcheck or self.battle_pass_advanced:
+            self.pressIfDead()
         for i in range(_time, 0, -1):
             if i % self.check_seconds == 0 or recheck:
                 recheck = False                
@@ -649,23 +651,25 @@ class CaveEngine(QObject):
                         if self.debug: print("Avoiding Boss")
                         self.log("Avoiding Boss")
                         self.disableLogs = True
-                        if self.deadcheck:
-                            if self.currentLevel > 5:
-                                self.checkIfDead()
+                        if self.deadcheck or self.battle_pass_advanced:
+                            if self.currentLevel > 3:
+                                self.pressIfDead()
                                 self.swipe('sw', 1.5)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('se', 1)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('e', 0.6)
+                                self.pressIfDead()
                                 self.swipe('n', 0.5)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('ne', 1.2)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('w', 0.4)
+                                self.pressIfDead()
                                 self.swipe('ne', 1)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('w', 0.7)
-                                self.checkIfDead()
+                                self.pressIfDead()
                             else:
                                 self.wait(1)
                                 self.swipe('sw', 1.5)
@@ -704,19 +708,19 @@ class CaveEngine(QObject):
                         if self.debug: print("Doing patrol")
                         self.log("Doing Patrol")
                         self.disableLogs = True
-                        if self.deadcheck:
-                            if self.currentLevel > 10:
-                                self.checkIfDead()
+                        if self.deadcheck or self.battle_pass_advanced:
+                            if self.currentLevel > 4:
+                                self.pressIfDead()
                                 self.swipe('w', 0.35) 
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('e', 0.7)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('w', 0.7)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('e', 0.7)
-                                self.checkIfDead()
+                                self.pressIfDead()
                                 self.swipe('w', 0.37)
-                                self.checkIfDead()
+                                self.pressIfDead()
                             else:
                                 self.wait(2)
                                 self.swipe('w', 0.35)
@@ -1010,7 +1014,7 @@ class CaveEngine(QObject):
             self.disableLogs = False
             self.wait(1) # wait for ability apply
         except Exception as e:
-            print("Exception. Unable to correctly choose best ability.")
+            print("Exception. Unable to choose best ability.")
             self.log("Choosing 'Left Button'")
             self.disableLogs = True
             self.tap('ability_left')
@@ -1148,11 +1152,11 @@ class CaveEngine(QObject):
         if self.battle_pass_advanced:
             self.tap("revive_ad")
             print("You revived with Ad.")
-            self.wait(.5)
+            self.wait(2)
         else:
             self.tap("revive_gems")
             print("You revived with Gems.")
-            self.wait(.5)
+            self.wait(2)
 
     def boss_final(self):
         if self.debug: print("boss_final")
@@ -1176,6 +1180,8 @@ class CaveEngine(QObject):
                     if self.debug: print("boss dead and door open #10")
                     self.log("Boss Dead #3")
                     break
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 if self.debug: print(i)
                 i += 1
             self.reactGamePopups()
@@ -1201,11 +1207,11 @@ class CaveEngine(QObject):
                 self.log("Avoiding Boss")
                 self.disableLogs = True
                 if self.deadcheck:
-                    self.checkIfDead()
+                    self.pressIfDead()
                     self.swipe('w', 0.5)
-                    self.checkIfDead()
+                    self.pressIfDead()
                     self.swipe('e', 1)
-                    self.checkIfDead()
+                    self.pressIfDead()
                     self.swipe('w', 0.5)
                 else:
                     self.swipe('w', 0.5)
@@ -1249,12 +1255,14 @@ class CaveEngine(QObject):
         while state == "in_game":
             self.disableLogs = True
             if self.deadcheck:
-                self.checkIfDead()
+                self.pressIfDead()
             else:
                 self.wait(self.sleep_btw_screens)
             if i == 1:
                 print("Trying now; escape plan A!")
                 self.log("Escape Plan A!")
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('e', .3)
@@ -1262,6 +1270,8 @@ class CaveEngine(QObject):
             elif i == 2:
                 print("Trying now; escape plan B!")
                 self.log("Escape Plan B!")
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('w', .3)
@@ -1270,6 +1280,8 @@ class CaveEngine(QObject):
             elif i == 3:
                 print("Trying now; escape plan C!")
                 self.log("Escape Plan C!")
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .9)
                 self.swipe('e', .6)
@@ -1278,6 +1290,8 @@ class CaveEngine(QObject):
             elif i == 4:
                 print("Trying now; escape plan D!")
                 self.log("Escape Plan D!")
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .9)
                 self.swipe('w', .6)
@@ -1286,6 +1300,8 @@ class CaveEngine(QObject):
             elif i == 5:
                 print("YOLO; escape plan E!")
                 self.log("Escape Plan E!")
+                if self.deadcheck or self.battle_pass_advanced:
+                    self.pressIfDead()
                 self.swipe('n', 1.66)
                 self.swipe('s', .66)
                 self.swipe('w', .66)
@@ -1413,22 +1429,22 @@ class CaveEngine(QObject):
                 if exc.args[0] == "mainscreen":
                     self.changeEndStatus(self.endStatus + 1) # Main-Screen
                     self.runStatiscticsSave()
-                    print("Exception. Main Menu, restarting game now.")
+                    print("Exception. Main Menu, restarting now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "crashdesktop":
                     self.changeEndStatus(self.endStatus + 2) # Crash-Desktop
                     self.runStatiscticsSave()
-                    print("Exception. Crash Desktop, restarting game now.")
+                    print("Exception. Crash Desktop, restarting now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "altendgame":
-                    print("Exception. Alt Endgame, restarting game now.")
+                    print("Exception. Alt Endgame, restarting now.")
                     self.log("Preparing to rest game")
                 elif exc.args[0] == "unknown_screen_state":
                     self.changeEndStatus(self.endStatus + 3) # Screen-Unknown
                     self.runStatiscticsSave()
                     state = self.screen_connector.getFrameState()
                     print("state: %s" % state)
-                    print("Exception. Unknown State, restarting game now.")
+                    print("Exception. Unknown State, restarting now.")
                     self.log("Preparing to rest game")
                     self.wait(4) #waiting for magic
                     self.unknownStatus += 1
@@ -1439,7 +1455,7 @@ class CaveEngine(QObject):
                     self.log("Unknown Problem... halp!")
                     self.exitEngine()
             i += 1
-            print(">>>>>>>>>>>>>>> Completed Farming Bot Loop <<<<<<<<<<<<<<<")
+            print(">>>>>>>>>>> Completed Farming Bot Loop <<<<<<<<<<<")
             print(i)
         if i > self.max_loops_game:
             print("Max Bot Loops Reached. Farming complete!")
@@ -1478,7 +1494,7 @@ class CaveEngine(QObject):
                     self.tap('open_energy_buy')
                     self.wait(8) # wait for load energy store
                     if self.screen_connector.checkFrame("free_ad_energy"):
-                        print("xxxxxxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxxxxxx")
+                        print("xxxxxxxxxxxxxxxxx Free Ad Energy xxxxxxxxxxxxxxxxx")
                         self.tap('get_ad_energy')
                         self.disableLogs = False
                         self.wait(6) # wait for load energy bar
@@ -1496,7 +1512,7 @@ class CaveEngine(QObject):
                     self.wait(6) # wait for farm open
                     frame = self.screen_connector.getFrame()
                     if self.screen_connector.checkFrame("monster_farm_visit", frame) or self.screen_connector.checkFrame("monster_farm_visit_free", frame):
-                        print("xxxxxxxxxxxxxxxxxxx Monster Farm Energy xxxxxxxxxxxxxxxxxx")
+                        print("xxxxxxxxxxxxxxx Monster Farm Energy xxxxxxxxxxxxxx")
                         if self.screen_connector.checkFrame("monster_farm_visit_free", frame):
                             self.tap('farm_visit')
                             self.wait(4) # wait for farm load
@@ -1522,7 +1538,7 @@ class CaveEngine(QObject):
                         while i < 3:
                             frame = self.screen_connector.getFrame()
                             if self.screen_connector.checkFrame("monster_farm_visit_again", frame):
-                                print("xxxxxxxxxxxxxxxx Monster Farm Energy Again xxxxxxxxxxxxxxx")
+                                print("xxxxxxxxxxxx Monster Farm Energy Again xxxxxxxxxxx")
                                 self.tap('farm_visit_again')
                                 self.wait(4) # wait for farm load
                                 self.tap('farm_energy_1')
@@ -1574,7 +1590,7 @@ class CaveEngine(QObject):
                             self.wait(8) # wait for load energy store
                             self.tap('buy_more_energy')
                             self.wait(6) # wait for load energy bar
-                            print("xxxxxxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxxxxxxx")
+                            print("xxxxxxxxxxxxxxxxxx Bought Energy xxxxxxxxxxxxxxxxx")
                             print(self.energy_count)
                             self.energy_count += 1
                         else:
