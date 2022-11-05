@@ -635,7 +635,7 @@ class CaveEngine(QObject):
         if self.debug: print("Let-Play. Auto playing...")
         self.log("Searching Dungeon")
         if self.deadcheck or self.battle_pass_advanced:
-            self.pressIfDead()
+            self.checkIfDead()
         for i in range(_time, 0, -1):
             if i % self.check_seconds == 0 or recheck:
                 recheck = False                
@@ -653,23 +653,23 @@ class CaveEngine(QObject):
                         self.disableLogs = True
                         if self.deadcheck or self.battle_pass_advanced:
                             if self.currentLevel > 3:
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('sw', 1.5)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('se', 1)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('e', 0.6)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('n', 0.5)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('ne', 1.2)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('w', 0.4)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('ne', 1)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('w', 0.7)
-                                self.pressIfDead()
+                                self.checkIfDead()
                             else:
                                 self.wait(1)
                                 self.swipe('sw', 1.5)
@@ -710,17 +710,17 @@ class CaveEngine(QObject):
                         self.disableLogs = True
                         if self.deadcheck or self.battle_pass_advanced:
                             if self.currentLevel > 4:
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('w', 0.35) 
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('e', 0.7)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('w', 0.7)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('e', 0.7)
-                                self.pressIfDead()
+                                self.checkIfDead()
                                 self.swipe('w', 0.37)
-                                self.pressIfDead()
+                                self.checkIfDead()
                             else:
                                 self.wait(2)
                                 self.swipe('w', 0.35)
@@ -1152,11 +1152,11 @@ class CaveEngine(QObject):
         if self.battle_pass_advanced:
             self.tap("revive_ad")
             print("You revived with Ad.")
-            self.wait(2)
+            self.wait(.5)
         else:
             self.tap("revive_gems")
             print("You revived with Gems.")
-            self.wait(2)
+            self.wait(.5)
 
     def boss_final(self):
         if self.debug: print("boss_final")
@@ -1181,7 +1181,7 @@ class CaveEngine(QObject):
                     self.log("Boss Dead #3")
                     break
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 if self.debug: print(i)
                 i += 1
             self.reactGamePopups()
@@ -1207,11 +1207,11 @@ class CaveEngine(QObject):
                 self.log("Avoiding Boss")
                 self.disableLogs = True
                 if self.deadcheck:
-                    self.pressIfDead()
+                    self.checkIfDead()
                     self.swipe('w', 0.5)
-                    self.pressIfDead()
+                    self.checkIfDead()
                     self.swipe('e', 1)
-                    self.pressIfDead()
+                    self.checkIfDead()
                     self.swipe('w', 0.5)
                 else:
                     self.swipe('w', 0.5)
@@ -1255,14 +1255,14 @@ class CaveEngine(QObject):
         while state == "in_game":
             self.disableLogs = True
             if self.deadcheck:
-                self.pressIfDead()
+                self.checkIfDead()
             else:
                 self.wait(self.sleep_btw_screens)
             if i == 1:
                 print("Trying now; escape plan A!")
                 self.log("Escape Plan A!")
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('e', .3)
@@ -1271,7 +1271,7 @@ class CaveEngine(QObject):
                 print("Trying now; escape plan B!")
                 self.log("Escape Plan B!")
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .6)
                 self.swipe('w', .3)
@@ -1281,7 +1281,7 @@ class CaveEngine(QObject):
                 print("Trying now; escape plan C!")
                 self.log("Escape Plan C!")
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .9)
                 self.swipe('e', .6)
@@ -1291,7 +1291,7 @@ class CaveEngine(QObject):
                 print("Trying now; escape plan D!")
                 self.log("Escape Plan D!")
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 self.swipe('n', 1.5)
                 self.swipe('s', .9)
                 self.swipe('w', .6)
@@ -1301,7 +1301,7 @@ class CaveEngine(QObject):
                 print("YOLO; escape plan E!")
                 self.log("Escape Plan E!")
                 if self.deadcheck or self.battle_pass_advanced:
-                    self.pressIfDead()
+                    self.checkIfDead()
                 self.swipe('n', 1.66)
                 self.swipe('s', .66)
                 self.swipe('w', .66)
