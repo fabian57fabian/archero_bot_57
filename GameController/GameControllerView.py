@@ -192,7 +192,7 @@ class GameControllerWindow(QWidget):
             print(">>>>>>>> ########################## <<<<<<<<")
             print(">>>>>>>>  Remember to Open Archero  <<<<<<<<")
             print(">>>>>>>> ########################## <<<<<<<<")
-            print("***************** BOT READY ****************") 
+            print("******************** BOT READY *******************") 
             self.infoLabel.setText("Device found! Engine is ready")
             self.lblConnectionStatus.setText("Connected")
             self.lblConnectionStatus.setStyleSheet("color: white")
