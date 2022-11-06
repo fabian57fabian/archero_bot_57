@@ -121,6 +121,16 @@ class GameControllerModel(QObject):
     def _stopEngineUnsafe(self):
         try:
             if self.debug: print("Restarting game engine!")
+            self.engine.setPauseRequested()
+            self.waitForEngineEnd()
+            self.engine.setStartRequested()
+            self.workerThread = None
+        except Exception as e:
+            if self.debug: print("Trying to kill process resulted in: %s" % str(e))
+
+    def _stopEngineUnsafe2(self):
+        try:
+            if self.debug: print("Restarting game engine!")
             self.engine.setStopRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
@@ -155,7 +165,7 @@ class GameControllerModel(QObject):
     
     def stopDungeon(self):
             if self.debug: print("GUI Button *** STOP ***")
-            self.pauseDungeon()
+            self._stopEngineUnsafe2()
             self.setEngineState(EngineState.StopInvoked)
             self.setEngineState(EngineState.Ready)
             self.engine.changeCurrentLevel(0)

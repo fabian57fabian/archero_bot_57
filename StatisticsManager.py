@@ -17,12 +17,12 @@ class StatisticsManager(object):
             self._write(self.getHeader())
 
     def getHeader(self):
-        return ["Time start", "Time end", "Level start", "Level End", "duration", ]
+        return ["Time Start", "Time End", "Level Start", "Level End", "Duration", "Dungeon", "Status Start", "Status End", ]
 
-    def saveOneGame(self, start_date, lvl_start, lvl_end):
+    def saveOneGame(self, start_date, lvl_start, lvl_end, dungeon, status_start, status_end):
         end_date = datetime.now()
         self._write([start_date.strftime(self.dateFormat), end_date.strftime(self.dateFormat), lvl_start, lvl_end,
-                     (end_date - start_date).total_seconds()])
+                     (end_date - start_date).total_seconds(), dungeon, status_start, status_end])
 
     def _write(self, data: list):
         try:
@@ -48,7 +48,8 @@ class StatisticsManager(object):
                         datetime.strptime(row[header[1]], self.dateFormat),
                         int(row[header[2]]),
                         int(row[header[3]]),
-                        float(row[header[4]])
+                        float(row[header[4]]),
+                        int(row[header[5]]),
                     ]
                     datas.append(line)
             return datas

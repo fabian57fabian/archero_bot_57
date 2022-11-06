@@ -6,6 +6,7 @@ class ChapterLevelType(enum.Enum):
     T40 = "pattern_40"
     T30 = "pattern_30"
     T20 = "pattern_20"
+    T21 = "pattern_21" # Ch18 is a special snowflake
     T10 = "pattern_10"
 
 
@@ -42,8 +43,8 @@ def BuildChapters() ->dict:
         "15": ChapterInfo("Pharaoh's Chamber", ChapterLevelType.T30),
         "16": ChapterInfo("Archaic Temple", ChapterLevelType.T20),
         "17": ChapterInfo("Dragon Lair", ChapterLevelType.T30),
-        "18": ChapterInfo("Escape Chamber", ChapterLevelType.T20),
-        "19": ChapterInfo("devil's Tavern", ChapterLevelType.T50),
+        "18": ChapterInfo("Escape Chamber", ChapterLevelType.T21),
+        "19": ChapterInfo("Devil's Tavern", ChapterLevelType.T50),
         "20": ChapterInfo("Palace of Light", ChapterLevelType.T20),
         "21": ChapterInfo("Nightmare Land", ChapterLevelType.T10),
         "22": ChapterInfo("Tranquil Forest", ChapterLevelType.T30),
@@ -205,6 +206,30 @@ def BuildLevelsTypes() -> dict:
         30: DungeonLevelType.FinalBoss,
     }
 
+    levels_type_21 = { # 20 levels pattern-2; Ch18 is a special snowflake
+        0: DungeonLevelType.Intro,
+        1: DungeonLevelType.Normal,
+        2: DungeonLevelType.Heal,
+        3: DungeonLevelType.Normal,
+        4: DungeonLevelType.Heal,
+        5: DungeonLevelType.Boss,
+        6: DungeonLevelType.Normal,
+        7: DungeonLevelType.Heal,
+        8: DungeonLevelType.Normal,
+        9: DungeonLevelType.Heal,
+        10: DungeonLevelType.Boss,
+        11: DungeonLevelType.Normal,
+        12: DungeonLevelType.Normal,
+        13: DungeonLevelType.Normal,
+        14: DungeonLevelType.Heal,
+        15: DungeonLevelType.Boss,
+        16: DungeonLevelType.Normal,
+        17: DungeonLevelType.Normal,
+        18: DungeonLevelType.Normal,
+        19: DungeonLevelType.Heal,
+        20: DungeonLevelType.FinalBoss,
+    }
+
     levels_type_20 = { # 20 levels pattern
         0: DungeonLevelType.Intro,
         1: DungeonLevelType.Normal,
@@ -247,6 +272,7 @@ def BuildLevelsTypes() -> dict:
         ChapterLevelType.T50: levels_type_50,
         ChapterLevelType.T40: levels_type_40,
         ChapterLevelType.T30: levels_type_30,
+        ChapterLevelType.T21: levels_type_21,
         ChapterLevelType.T20: levels_type_20,
         ChapterLevelType.T10: levels_type_10,
     }
@@ -259,6 +285,8 @@ def MaxLevelFromType(ch_lvl_tp:ChapterLevelType) -> int:
         return 40
     elif ch_lvl_tp == ChapterLevelType.T30:
         return 30
+    elif ch_lvl_tp == ChapterLevelType.T21:
+        return 20
     elif ch_lvl_tp == ChapterLevelType.T20:
         return 20
     elif ch_lvl_tp == ChapterLevelType.T10:

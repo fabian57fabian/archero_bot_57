@@ -2,11 +2,56 @@ Archero_Bot_57 Change Log:
 
 Things may be broke or known bugs:
 - centerPlayer; don't seem to center correctly (centering the player was done in previous exit_dungeon. now is kind of deprecated)
-- TouchManager still not loading; giving interger errors (maybe last python 10 version is not going well with PyQt5)
+- TouchManager still not loading for python verstion 3.10+ (works with 3.9.13)
 - StaticCoordsChecker gives format conversion error
 
 
-[v?] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
+[v5] Updated: (to Adminzero Forked Repository)
+4-Nov-2022
+- Updated to Archero v4.4.2
+- Updated to Nox v7.0.3.8
+- Updated to Android OS v5.3.4.3
+- Level 20 AI tweaks
+- Added 5-row endgame screenshot and Coord checks
+- Updated crash_load_screen screenshot (x2) and Coord checks
+- Added menu_expedition screenshot and Coord checks
+- Adjusted final_boss exit strategies
+- Added angel_heal check to final_boss exit
+- Adjusted ability tier_list to bot strengths
+- Added crash_level_restart function
+- Added 'unknown' counter and attempted fix action
+30-Oct-2022
+- Included all Faibians changes from 13-Oct-23
+- Unlocked Chapters 17, 18, 19, 20
+- Uploaded Chapter Icons 17, 18, 19, 20
+- Created AI for Levels 18 and 20
+- Added Chapter lvl_Type_21 (Ch18 is a special snowflake)
+- Updated GUI for lvl_Type_21 (ContorlerModel)
+- Added 24-hour energy count reset to VIP-Rewards Function 
+- Added Farm Screen Energy Check on start
+- Separated ads checks and Energy checks to separate functions
+- Updated Legendary Challenge Coords for Check
+- Fixed coords error for shop_menu checks
+- Updated some Ability picture resolutions
+- Uploaded new Ability images (wolfhound, skelly, dodgeplus, enh-summon, inherited_summon, angelic blessing, overheal, swordpic1, swordpic2)
+- Updated the abilities files (template_fns, and tier_list)
+- Fixed statistics save points (save all now, not just level 20)
+- Updated statistics manager .psy file in the main folder
+- Adjusted pause/stop function for statistics; stoping duplicate reports (controllerModel)
+- Adjusted pause/stop buttons that display in the GUI (contorllerController)
+- Added the "Dungeon, S_status, E_status" columns to the statistics file for logging
+- Updated/cleared the stastics.csv file in the data folder
+- Added Start/End status to statistics caveengine
+- Added Statistics Key to caveengine
+- Added Game Not Responding Screen
+- Added Game Not Respond Ok button
+- Added Check in the ADs for not responding to reset
+- Added crash_load_wait check (need to see if screens uploaded already)
+- Added python.exe call to .bat files
+- Updated update manager version to v5
+
+
+[v4] Updated: 04-Aug-2022 (to Adminzero Forked Repository)
 - Updated to NOX 7.0.3.2
 - Rolled back to Python 3.9.13 (the touch manager doesn't seem to be compatible with 3.10+)
 - Updated to Archero Version 4.1.0 (new abilitie, adjusted coords, new screens, etc.)
@@ -24,7 +69,7 @@ Things may be broke or known bugs:
 	- Farming Complete Exit; fixed the error causing to crash instead of finish
 
 
-[v?] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
+[v3] Updated: 20-Jul-2022 (afterwards, to Adminzero Forked Repository)
 - Included all updates made by Fabian57Fabian; up to 20-Jul-2022 (I think, sorry not to familiar with github merging and stuff)
 - Changed the 'wait' time on energy refill; to 60 minutes (60 works best for me)
 - Added/Changed a lot of stuff in the caveDungeonEngine related to the addition and troubleshooting of lvl 10 dungeons (7 & 14) to work; while having lvl 20 Dungeons (3, 6, 10) still work fine; lvl 16 works but needs minor tweaks still.

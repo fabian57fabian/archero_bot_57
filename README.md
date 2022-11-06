@@ -39,13 +39,15 @@ It was originally built to continously start a game (dungeon 6: the cave), play 
   - 10 . **Land of Doom: tested, WORKING**
   - 14 . **Frigid Tundra: tested, WORKING**
   - 16 . **Archic Temple: tested, WORKING**
+  - 18 . **Escape Chamber: tested, WORKING**
+  - 20 . **Palace of Light: tested, WORKING**
   - 1-15 . Other dungens: tested, works some (use at own peril)...
 
 - GUI Options Explained:
   - #1: Click Icon, choose selected cave to run. If switching between 10, 20, 30, and 50-room dungeons, you must close and re-open the bot to load the correct GUI screen.
   - #2: Choose Heal Strategy, Always Power (always chooses left), Always Heal (always chooses right), or Smart Heal (chooses left if above 50% HP and right if below 50% HP).
-  - #3: Choose Energy Strategy, Do Not Buy Energy or Buy 1, 2, 3, or 4 Energy (**buy energy uses gems**).
-  - #4: Do you pay for Value Rewards or VIP Rewards Subscription?  If yes, choose True ( Automatically claims VALUE/VIP rewards daily for you). If you don't pay for a subscription choose False.
+  - #3: Choose Energy Strategy, Do Not Buy Energy or Buy 1, 2, 3, or 4 Energy (**buy energy uses gems**)
+  - #4: Do you pay for Value Rewards or VIP Rewards Subscription?  If yes, choose True ( Automatically claims VALUE/VIP rewards daily for you). If you don't pay for a subscription choose False. If VIP=True and BuyEnergy>0, the energy count will restart every 24 hours allowing continuous buying of extra energy daily. 
   - #5: Do you pay for the "Battle Pass Advanced" Subscription? If yes, choose True ( Automatically claims Battle Pass Advanced rewards daily for you). If you don't pay for a subscription choose False. Does not work with a standard battle pass ONLY the advanced one!
   - #6 Check If Dead, will try to revive you if you die in game. **Uses GEMS**, unless you pay for Battle Pass Advanced Sub. Slows down gameplay some and currently works <50% of the time.
 <img src="repo_images/gui_options.png">
