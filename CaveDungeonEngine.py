@@ -159,7 +159,8 @@ class CaveEngine(QObject):
             "energy_strategy": EnergyStrategy.AlwaysIgnore,
             "vip_sub": VIPSub.FalseVIP,
             "bpadv_sub": BattlepassAdvSub.FalseBPAdv,
-            "revive_ifdead": ReviveIfDead.FalseRevive
+            "revive_ifdead": ReviveIfDead.FalseRevive,
+            "threshold_abilities": 5
         }
         saveJsonData_oneIndent(self.current_settings_path, new_sett)
 
@@ -174,7 +175,7 @@ class CaveEngine(QObject):
             if self.debug: print("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
             self._create_default_current_settings()
             new_sett = loadJsonData(self.current_settings_path)
-        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett or "revive_ifdead" not in new_sett:
+        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett or "revive_ifdead" not in new_sett or "threshold_abilities" not in new_sett:
             if self.debug: print("Corrupted/errored current settings. ")
             if self.debug: print("Creating basic current settings...")
             self._create_default_current_settings()
@@ -186,6 +187,10 @@ class CaveEngine(QObject):
         self.vipSub = VIPSub(self.current_settings["vip_sub"])
         self.bpadvSub = BattlepassAdvSub(self.current_settings["bpadv_sub"])
         self.reviveIfDead = ReviveIfDead(self.current_settings["revive_ifdead"])
+        self.screen_connector.abilities_treshold = self.current_settings["threshold_abilities"]
+        if self.screen_connector.abilities_treshold <= 0:
+            if self.debug: print("current abilities threshold is negative! setting to positive num 2")
+            self.screen_connector.abilities_treshold = 2
 
     def changeHealStrategy(self, strat: HealingStrategy):
         print("Loading Heal Strategy")
