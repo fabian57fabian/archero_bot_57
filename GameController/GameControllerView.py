@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QResizeEvent
-
+import logging
 from CaveDungeonEngine import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub, ReviveIfDead
 from GameController.GameControllerModel import GameControllerModel, EngineState
 from PyQt5 import QtGui, QtWidgets
@@ -189,17 +189,17 @@ class GameControllerWindow(QWidget):
 
     def onConnectionStateChange(self, connected: bool):
         if connected:
-            print(">>>>>>>> ########################## <<<<<<<<")
-            print(">>>>>>>>  Remember to Open Archero  <<<<<<<<")
-            print(">>>>>>>> ########################## <<<<<<<<")
-            print("******************** BOT READY *******************") 
+            logging.info(">>>>>>>> ########################## <<<<<<<<")
+            logging.info(">>>>>>>>  Remember to Open Archero  <<<<<<<<")
+            logging.info(">>>>>>>> ########################## <<<<<<<<")
+            logging.info("******************** BOT READY *******************")
             self.infoLabel.setText("Device found! Engine is ready")
             self.lblConnectionStatus.setText("Connected")
             self.lblConnectionStatus.setStyleSheet("color: white")
         else:
-            print(">>>>>>>> ########################## <<<<<<<<")
-            print(">>>>>>>> Connect Device or Open NOX <<<<<<<<")
-            print(">>>>>>>> ########################## <<<<<<<<")
+            logging.info(">>>>>>>> ########################## <<<<<<<<")
+            logging.info(">>>>>>>> Connect Device or Open NOX <<<<<<<<")
+            logging.info(">>>>>>>> ########################## <<<<<<<<")
             self.infoLabel.setText("Waiting for a device to be connected")
             self.lblConnectionStatus.setText("NO device!")
             self.lblConnectionStatus.setStyleSheet("background-color: red;color:white")

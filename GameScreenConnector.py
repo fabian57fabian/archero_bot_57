@@ -1,3 +1,4 @@
+import logging
 import json
 import numpy as np
 from PIL import Image
@@ -7,7 +8,6 @@ from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, 
 
 class GameScreenConnector:
     def __init__(self, device_connector=None):
-        self.debug = True # set False to stop print debug messages in console
         self.device_connector = device_connector
         self.width = 0
         self.height = 0
@@ -102,20 +102,20 @@ class GameScreenConnector:
         :return:
         """
         if len(points_list) != len(points_value):
-            print("Wrong size between points and values!")
+            logging.info("Wrong size between points and values!")
             return False
-        if self.debug: print("-----------------------------------")
-        if self.debug: print("|   Smartphone   |     Values     |")
+        logging.debug("-----------------------------------")
+        logging.debug("|   Smartphone   |     Values     |")
         attr_data = self.getFrameAttr(frame, points_list)
         equal = True
         for i in range(len(attr_data)):
-            if self.debug: print("| %4d %4d %4d | %4d %4d %4d |" % (
+            logging.debug("| %4d %4d %4d | %4d %4d %4d |" % (
                 attr_data[i][0], attr_data[i][1], attr_data[i][2], points_value[i][0], points_value[i][1],
                 points_value[i][2]))
             if not self.pixel_equals(attr_data[i], points_value[i], around=around):
                 equal = False
-        if self.debug: print("|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
-        if self.debug: print("-----------------------------------")
+        logging.debug("|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
+        logging.debug("-----------------------------------")
         return equal
 
     def checkBoss6Died(self, frame=None):
@@ -253,9 +253,9 @@ class GameScreenConnector:
         elif coords_name in self.specific_checks_coords.keys():
             dict_to_take = self.specific_checks_coords
         else:
-            print("No coordinates called %s is saved in memory! Returning false." % coords_name)
+            logging.info("No coordinates called %s is saved in memory! Returning false." % coords_name)
             return False
-        if self.debug: print("Checking %s" % (coords_name))
+        logging.debug("Checking %s" % (coords_name))
         if frame is None:
             frame = self.getFrame()
         around = 2 if "around" not in dict_to_take[coords_name].keys() else dict_to_take[coords_name]["around"]
@@ -279,7 +279,7 @@ class GameScreenConnector:
             frame = self.getFrame()
         for k, v in self.static_coords.items():
             around = 2 if "around" not in self.static_coords[k].keys() else self.static_coords[k]["around"]
-            if self.debug: print("Checking %s, around = %d" % (k, around))
+            logging.debug("Checking %s, around = %d" % (k, around))
             result[k] = self._check_screen_points_equal(frame, v["coordinates"], v["values"], around=around)
         return result
 
@@ -343,7 +343,7 @@ class GameScreenConnector:
             crp = frame.crop(v["bbox"])
             crp_np = np.array(crp.getdata())
         if crp_np.shape[0] != v["template"].shape[0] or crp_np.shape[1] != v["template"].shape[1]:
-            print("Error during templates check: wrong shape")
+            logging.info("Error during templates check: wrong shape")
             return False
         dist = np.mean(np.abs(crp_np - v["template"]))
         return dist < v["th"]
@@ -355,7 +355,7 @@ class GameScreenConnector:
             num += 1
             path = os.path.join(self.abilities_unknown_fld, "unknown_ability_{}.png".format(num))
         ability_pil.save(path)
-        print("Unknown ability {} saved in {}".format(num, path))
+        logging.info("Unknown ability {} saved in {}".format(num, path))
 
     def getFrameState(self, frame=None) -> str:
         """
@@ -368,7 +368,7 @@ class GameScreenConnector:
             frame = self.getFrame()
         for k, v in self.static_coords.items():
             around = 2 if "around" not in self.static_coords[k].keys() else self.static_coords[k]["around"]
-            if self.debug: print("Checking %s, around = %d" % (k, around))
+            logging.debug("Checking %s, around = %d" % (k, around))
             if self._check_screen_points_equal(frame, v["coordinates"], v["values"], around=around):
                 state = k
                 break
@@ -475,7 +475,7 @@ class GameScreenConnector:
             dir = "center"
         else:
             dir = "right" if center_diff < 0 else "left"
-        print("Character on the %s side by %dpx" % (dir, abs(center_diff)))
+        logging.info("Character on the %s side by %dpx" % (dir, abs(center_diff)))
         return center_diff, dir
 
     def getLineHpBar(self, frame=None):
@@ -518,7 +518,7 @@ class GameScreenConnector:
         :return:
         """
         if line_name not in self.hor_lines:
-            print("Given line name '%s' is not a known horizontal line name." % line_name)
+            logging.info("Given line name '%s' is not a known horizontal line name." % line_name)
             return []
         return self._getHorLine(self.hor_lines[line_name], frame)
 
@@ -541,7 +541,7 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        if self.debug: print("Checking LineExpBar has changed")
+        logging.debug("Checking LineExpBar has changed")
         new_line = self.getLineExpBar(frame)
         return self._checkBarHasChanged(old_line_hor_bar, new_line, around=2)
 
@@ -552,6 +552,6 @@ class GameScreenConnector:
         :param frame:
         :return:
         """
-        if self.debug: print("Checking LineUpper has changed")
+        logging.debug("Checking LineUpper has changed")
         new_line = self.getHorLine("hor_up_line", frame)
         return self._checkBarHasChanged(old_line, new_line, around=10)

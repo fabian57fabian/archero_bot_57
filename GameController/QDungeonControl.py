@@ -1,3 +1,4 @@
+import logging
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, \
     QFormLayout, QGridLayout
@@ -73,4 +74,4 @@ class QDungeonController(QWidget):
             elif name == 'stop':
                 self.btn_stop.changeEnableState(enabled)
             else:
-                print("No button called %s exists in QDungeonController" % name)
+                logging.error("No button called %s exists in QDungeonController" % name)

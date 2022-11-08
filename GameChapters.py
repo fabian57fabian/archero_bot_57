@@ -1,3 +1,4 @@
+import logging
 import enum
 
 
@@ -292,5 +293,5 @@ def MaxLevelFromType(ch_lvl_tp:ChapterLevelType) -> int:
     elif ch_lvl_tp == ChapterLevelType.T10:
         return 10
     else:
-        print("GOT ERROR: UNABLE TO SET THIS CHAPTER LENGTH")
+        logging.error("UNABLE TO SET THIS CHAPTER LENGTH")
         return 0

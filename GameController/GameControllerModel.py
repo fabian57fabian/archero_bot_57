@@ -1,4 +1,5 @@
 import os
+import logging
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
@@ -26,7 +27,6 @@ class GameControllerModel(QObject):
         super(QObject, self).__init__()
         # Default data
         self.updates_available = False
-        self.debug = True # set False to stop print debug messages in console
         self.engine = CaveEngine()
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
@@ -63,7 +63,7 @@ class GameControllerModel(QObject):
 
     def getLevelsNames(self):
         if str(self.engine.currentDungeon) not in self.engine.chapters_info.keys():
-            print("ERROR: current dungeon is not in chapters_info! ")
+            logging.error("ERROR: current dungeon is not in chapters_info! ")
             return {}
         # Get level type (T50, T20, ....)
         lvl_TXX = self.engine.chapters_info[str(self.engine.currentDungeon)]
@@ -83,7 +83,7 @@ class GameControllerModel(QObject):
     def getChapterImagePath(self, ch_number: int) -> str:
         path = os.path.join(self.ch_images_path, "ch" + str(ch_number) + self.ch_image_ext)
         if not os.path.exists(path):
-            if self.debug: print("Unavailable Dungeon image {}".format(ch_number))
+            logging.warning("Unavailable Dungeon image {}".format(ch_number))
             path = os.path.join(self.ch_images_path, "ch_ERR" + self.ch_image_ext)
         return path
 
@@ -108,65 +108,65 @@ class GameControllerModel(QObject):
         self.engineStatechanged.emit(state)
 
     def requestClose(self):
-        if self.debug: print("GUI Button. *** CLOSE ***")
+        logging.trace("GUI Button. *** CLOSE ***")
         self.engine.device_connector.stopConnectionCheck()
         if self.currentEngineState == EngineState.Playing:
-            if self.debug: print("Stopping engine before closing")
+            logging.debug("Stopping engine before closing")
             self._stopEngineUnsafe()
-        if self.debug: print("Closing game")
+        logging.debug("Closing game")
         self.workerThread = None
         self.engine = None
-        if self.debug: print("Game closed")        
+        logging.debug("Game closed")
 
     def _stopEngineUnsafe(self):
         try:
-            if self.debug: print("Restarting game engine!")
+            logging.debug("Restarting game engine!")
             self.engine.setPauseRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
             self.workerThread = None
         except Exception as e:
-            if self.debug: print("Trying to kill process resulted in: %s" % str(e))
+            logging.error("Trying to kill process resulted in: %s" % str(e))
 
     def _stopEngineUnsafe2(self):
         try:
-            if self.debug: print("Restarting game engine!")
+            logging.debug("Restarting game engine!")
             self.engine.setStopRequested()
             self.waitForEngineEnd()
             self.engine.setStartRequested()
             self.workerThread = None
         except Exception as e:
-            if self.debug: print("Trying to kill process resulted in: %s" % str(e))
+            logging.error("Trying to kill process resulted in: %s" % str(e))
 
     def waitForEngineEnd(self):
         if self.workerThread is not None:
-            if self.debug: print("Waiting on thread")
+            logging.trace("Waiting on thread")
             self.workerThread.join()
-            if self.debug: print("Old thread ended")
+            logging.trace("Old thread ended")
         else:
-            if self.debug: print("No active threads")
+            logging.debug("No active threads")
 
     def playDungeon(self):
-        if self.debug: print("GUI Button *** PLAY ***")
+        logging.trace("GUI Button *** PLAY ***")
         if self.workerThread is not None:
-            if self.debug: print("Another thread is already running")
+            logging.debug("Another thread is already running")
             self.stopDungeon()
         else:
             self.workerThread = WorkerThread()
             self.setEngineState(EngineState.Playing)
             self.workerThread.function = self.engine.start_infinite_play
             self.workerThread.start()
-            if self.debug: print("New thread started")
+            logging.debug("New thread started")
             
     def pauseDungeon(self):
-        if self.debug: print("GUI Button *** PAUSE ***")
+        logging.trace("GUI Button *** PAUSE ***")
         self._stopEngineUnsafe()
-        if self.debug: print("Pause action completed")
+        logging.debug("Pause action completed")
     
     def stopDungeon(self):
-            if self.debug: print("GUI Button *** STOP ***")
+            logging.trace("GUI Button *** STOP ***")
             self._stopEngineUnsafe2()
             self.setEngineState(EngineState.StopInvoked)
             self.setEngineState(EngineState.Ready)
             self.engine.changeCurrentLevel(0)
-            if self.debug: print("Stop action completed")
+            logging.debug("Stop action completed")

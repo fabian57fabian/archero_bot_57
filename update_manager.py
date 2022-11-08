@@ -1,3 +1,4 @@
+import logging
 from requests import get
 
 
@@ -18,28 +19,28 @@ class UpdatesManager:
                 data = r.json()
                 if "result" in data:
                     if data["result"] != "OK":
-                        print("Wrong request for updates: got " + data["result"])
+                        logging.info("Wrong request for updates: got " + data["result"])
                         return False
                     else:
                         res = data["data"]
                         if type(res) == str:
                             if str(res) == "NO_NEW_UPDATES":
-                                print("Updates checked. All right.")
+                                logging.info("Updates checked. All right.")
                                 return False
                             elif str(res) == "NEW_UPDATE_AVAILABLE":
                                 server_ver = "V99"
                                 if "version" in data: server_ver = data["version"]
-                                print("Server have a different version: {}".format(server_ver))
+                                logging.info("Server have a different version: {}".format(server_ver))
                                 return True
                             else:
                                 #unknown
                                 return False
             else:
-                print("Unable to request for updates, got {}".format(r.status_code))
+                logging.error("Unable to request for updates, got {}".format(r.status_code))
                 return False
             return False
         except Exception as e:
-            print("Unable to request for updates. skipping")
+            logging.error("Unable to request for updates. skipping")
             return False
 
 

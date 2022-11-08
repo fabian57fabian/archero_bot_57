@@ -1,5 +1,5 @@
 import math
-
+import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QHBoxLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QScrollArea, QLabel, QFormLayout, QGridLayout
 from PyQt5 import QtCore
@@ -40,7 +40,7 @@ class QDeskArea(QWidget):
 
     def logArrived(self, log: str):
         #if self.model.engine.currentLevel > self.model.engine.max_level:
-            #print("QDeskArea... max_level > 20 might cause problems")
+            #logging.debug("QDeskArea... max_level > 20 might cause problems")
         if self.model.engine.currentLevel <= self.model.engine.max_level:
             self.chapersState[self.model.engine.currentLevel].addLog(log)
 

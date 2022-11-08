@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 import io
 import time
-
+import logging
 from WorkerThread import WorkerThread
 
 """
@@ -39,7 +39,7 @@ class UsbConnector(object):
             f(state)
 
     def stopConnectionCheck(self):
-        print("Stopping continous device check")
+        logging.info("Stopping continous device check")
         self._continousCheckStopRequired = True
 
     def setFunctionToCallOnConnectionStateChanged(self, function):
