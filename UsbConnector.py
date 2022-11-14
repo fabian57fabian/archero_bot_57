@@ -16,7 +16,7 @@ https://pypi.org/project/pure-python-adb/
 
 class UsbConnector(object):
 
-    def __init__(self, connect_now:bool=False):
+    def __init__(self, connect_now:bool=True):
         self.connected = False
         self._client: AdbClient = None
         self.my_device: Device = None

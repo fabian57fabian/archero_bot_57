@@ -111,7 +111,7 @@ class CaveEngine(QObject):
         self.screen_connector = GameScreenConnector()
         self.screen_connector.debug = False # set true to see screen_connector degbug messages in console
         self.width, self.heigth = 1080, 1920 
-        self.device_connector = UsbConnector()
+        self.device_connector = UsbConnector(connect_now=True)
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onConnectionStateChanged)
         self.buttons = {}
         self.movements = {}
