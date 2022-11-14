@@ -1,6 +1,12 @@
 import os
+import numpy as np
 import json
 import logging
+
+
+def get_matrix_diff(mat1, mat2):
+    dist = np.mean(np.abs(mat1 - mat2))
+    return dist
 
 
 def initialize_logging(lvl):

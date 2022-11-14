@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from UsbConnector import UsbConnector
 import os
-from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder
+from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder, get_matrix_diff
 
 class GameScreenConnector:
     def __init__(self, device_connector=None):
@@ -315,7 +315,7 @@ class GameScreenConnector:
         states = {"l":"unknown", "c":"unknown", "r":"unknown"}
         for ab_image, k in zip([a1, a2, a3], states.keys()):
             for ab_name, ab_template in self.abilities_templates.items():
-                dist = np.mean(np.abs(ab_image - ab_template))
+                dist = get_matrix_diff(ab_image, ab_template)
                 if dist < self.abilities_treshold:
                     states[k] = ab_name
                     break
@@ -345,7 +345,7 @@ class GameScreenConnector:
         if crp_np.shape[0] != v["template"].shape[0] or crp_np.shape[1] != v["template"].shape[1]:
             logging.info("Error during templates check: wrong shape")
             return False
-        dist = np.mean(np.abs(crp_np - v["template"]))
+        dist = get_matrix_diff(crp_np, v["template"])
         return dist < v["th"]
 
     def save_unknown_ability(self, ability_pil):
