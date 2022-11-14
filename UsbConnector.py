@@ -16,7 +16,7 @@ https://pypi.org/project/pure-python-adb/
 
 class UsbConnector(object):
 
-    def __init__(self):
+    def __init__(self, connect_now:bool=False):
         self.connected = False
         self._client: AdbClient = None
         self.my_device: Device = None
@@ -26,7 +26,7 @@ class UsbConnector(object):
         self.checkingConnectionFunctions = []
         self.connectionCheckThread = WorkerThread()
         self._continousCheckStopRequired = False
-        self._startConnectionCheck()
+        if connect_now: self._startConnectionCheck()
 
     def _changeConnectedState(self, c):
         if self.connected != c:

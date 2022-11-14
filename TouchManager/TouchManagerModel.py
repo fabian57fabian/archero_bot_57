@@ -21,7 +21,7 @@ class TouchManagerModel(QObject):
 
     MAX_AROUND = 50
 
-    def __init__(self):
+    def __init__(self, connect_archero_now:bool=True):
         super(QObject, self).__init__()
         self.data_pack = 'datas'
         self.coords_folder = 'coords'
@@ -44,9 +44,13 @@ class TouchManagerModel(QObject):
         self.currentMovements = {}
         self.currentFrameChecks = {}
         self.screensFolders = readAllSizesFolders()
-        self.device_connector = UsbConnector()
+        self.device_connector = UsbConnector(connect_now=connect_archero_now)
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDeviceConnectionChangedEventCalled)
         self.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDeviceCheckingConnectionChangedEventCalled)
+
+    def start_connect_to_device(self):
+        if not self.device_connector.connected:
+            self.device_connector._startConnectionCheck()
 
     def onDeviceConnectionChangedEventCalled(self, connected:bool):
         self.onDeviceConnectionChanged.emit(connected)

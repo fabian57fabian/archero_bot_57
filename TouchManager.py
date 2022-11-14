@@ -9,7 +9,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     MainWindow.setWindowTitle("Touch Manager")
-    model = TouchManagerModel()
+    model = TouchManagerModel(connect_archero_now=False)
     controller = TouchManagerController(model)
     ui = TouchManagerWindow(controller, model)
     ui.setupUi(MainWindow)

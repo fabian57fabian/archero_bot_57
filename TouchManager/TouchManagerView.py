@@ -52,6 +52,7 @@ class TouchManagerWindow(QWidget):
         self.cBoxLineWidth = QComboBox()
         self.export_btn = QPushButton()
         self.screen_btn = QPushButton()
+        self.connect_archero_btn = QPushButton()
         self.add_point_btn = QPushButton()
         self.lblCurrentUILocation = QLabel()
         self.showAreaController = CoordinatesSelector(self, self.controller, self.model)
@@ -78,7 +79,9 @@ class TouchManagerWindow(QWidget):
         lay_images_description = QHBoxLayout()
         imagesDescriprionLbl = QLabel("Available screenshots.")
         self.screen_btn.setFixedWidth(80)
+        self.connect_archero_btn.setFixedWidth(80)
         lay_images_description.addWidget(imagesDescriprionLbl)
+        lay_images_description.addWidget(self.connect_archero_btn)
         lay_images_description.addWidget(self.screen_btn)
         lay_images_description.setContentsMargins(0, 5, 0, 5)
 
@@ -94,6 +97,9 @@ class TouchManagerWindow(QWidget):
 
         self.screen_btn.setText("Get screen")
         self.screen_btn.setEnabled(False)
+
+        self.connect_archero_btn.setText("connect")
+        self.connect_archero_btn.setEnabled(True)
 
         self.export_btn.setText("save")
         self.export_btn.setFixedWidth(100)
@@ -184,6 +190,7 @@ class TouchManagerWindow(QWidget):
     def initConnectors(self):
         self.export_btn.clicked.connect(self.model.save_data)
         self.screen_btn.clicked.connect(self.acquire_screen)
+        self.connect_archero_btn.clicked.connect(self.on_connect_device_clicked)
         self.add_point_btn.clicked.connect(self.controller.requestAddPoint)
         self.controller.onElementSelectionChanged.connect(self.update_image_draw)
         self.controller.onImageSelectionChanged.connect(self.update_image_draw)
@@ -194,6 +201,10 @@ class TouchManagerWindow(QWidget):
 
     def onCurrentDeviceConnectionChanged(self, connected: bool):
         self.screen_btn.setEnabled(connected)
+        self.connect_archero_btn.setEnabled(not connected)
+        self.connect_archero_btn.setVisible(not connected)
+        self.connect_archero_btn.setText("" if connected else "connect")
+
 
     def onCurrentDeviceCheckingConnectionChanged(self, checking: bool):
         self.screen_btn.setText("Get screen" if not checking else "...")
@@ -209,6 +220,15 @@ class TouchManagerWindow(QWidget):
             text, ok = QInputDialog.getText(self, "Get name", "Screenshot name:", QLineEdit.Normal, "")
             if ok and text != '':
                 self.model.acquire_screen(text)
+        else:
+            # TODO: show an error message
+            pass
+
+    def on_connect_device_clicked(self):
+        if not self.model.is_device_connected():
+            self.connect_archero_btn.setText("connecting..")
+            self.connect_archero_btn.setEnabled(False)
+            self.model.start_connect_to_device()
         else:
             # TODO: show an error message
             pass
