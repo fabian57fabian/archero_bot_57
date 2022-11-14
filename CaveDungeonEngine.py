@@ -306,9 +306,12 @@ class CaveEngine(QObject):
         self.device_connector.adb_swipe(
             [start[0] * self.width, start[1] * self.heigth, stop[2] * self.width, stop[3] * self.heigth], s)
 
-    def swipe(self, name, s):
+    def swipe(self, name:str, s:float):
         if self.stopRequested:
             exit()
+        name = name.lower() # just in case we wrote something in capital ketters
+        if name not in self.movements:
+            logging.error("Movement '{}' not in movements list".format(name))
         coord = self.movements[name]
         logging.debug("Swiping %s in %f" % (self.print_names_movements[name], s))
         self.log("Swipe %s in %.2f" % (self.print_names_movements[name], s))
@@ -602,6 +605,15 @@ class CaveEngine(QObject):
         elif dir == "center":
             pass
 
+    def move_macro(self, delay:float, coord_and_dur:list):
+        '''
+        Args:
+            delay: delay time between one movement and other
+            coord_and_dur: list of lists having a movement string e.g. 'nw' and a time e.g. 2.1
+                           example: coord_and_dur = [['n', 2], ['e', .9], ['so', .6], ['s', 1]]
+        '''
+        pass
+
     def letPlay(self, _time: int, is_boss = False):
         check_exp_bar = not is_boss
         experience_bar_line = self.screen_connector.getLineExpBar()
@@ -624,151 +636,47 @@ class CaveEngine(QObject):
                     if self.currentDungeon == 7 or self.currentDungeon == 14:
                         logging.debug("Avoiding Boss")
                         self.log("Avoiding Boss")
-                        if self.deadcheck or self.battle_pass_advanced:
-                            if self.currentLevel > 3:
+                        self.checkIfDead()
+                        if self.deadcheck or self.battle_pass_advanced and self.currentLevel > 3:
+                            for d, t in [['sw',1.5],['se',1],['e',.6],['n',.5],['ne',1.2],['w',.4],['ne',1],['w',.7]]:
+                                self.swipe(d, t)
                                 self.checkIfDead()
-                                self.swipe('sw', 1.5)
-                                self.checkIfDead()
-                                self.swipe('se', 1)
-                                self.checkIfDead()
-                                self.swipe('e', 0.6)
-                                self.checkIfDead()
-                                self.swipe('n', 0.5)
-                                self.checkIfDead()
-                                self.swipe('ne', 1.2)
-                                self.checkIfDead()
-                                self.swipe('w', 0.4)
-                                self.checkIfDead()
-                                self.swipe('ne', 1)
-                                self.checkIfDead()
-                                self.swipe('w', 0.7)
-                                self.checkIfDead()
-                            else:
-                                self.wait(1)
-                                self.swipe('sw', 1.5)
-                                self.wait(1)
-                                self.swipe('se', 1)
-                                self.wait(1)
-                                self.swipe('e', 0.6)
-                                self.swipe('n', 0.5)
-                                self.wait(1)
-                                self.swipe('ne', 1.2)
-                                self.wait(1)
-                                self.swipe('w', 0.4)
-                                self.swipe('ne', 1)
-                                self.wait(1)
-                                self.swipe('w', 0.7)
-                                self.wait(1)  
                         else:
-                            self.wait(1)
-                            self.swipe('sw', 1.5)
-                            self.wait(1)
-                            self.swipe('se', 1)
-                            self.wait(1)
-                            self.swipe('e', 0.6)
-                            self.swipe('n', 0.5)
-                            self.wait(1)
-                            self.swipe('ne', 1.2)
-                            self.wait(1)
-                            self.swipe('w', 0.4)
-                            self.swipe('ne', 1)
-                            self.wait(1)
-                            self.swipe('w', 0.7)
-                            self.wait(1)
+                            self.move_macro(1, [['sw',1.5],['se',1],['e',.6],['n',.5],['ne',1.2],['w',.4],['ne',1],['w',.7]])
                     # added movement to increase kill enemy efficency for 20 level chapters
                     elif self.currentDungeon == 3 or self.currentDungeon == 6 or self.currentDungeon == 10 or self.currentDungeon == 16 or self.currentDungeon == 18 or self.currentDungeon == 20:
                         logging.debug("Doing patrol")
                         self.log("Doing Patrol")
-                        if self.deadcheck or self.battle_pass_advanced:
-                            if self.currentLevel > 4:
+                        self.checkIfDead()
+                        if self.deadcheck or self.battle_pass_advanced and self.currentLevel > 4:
+                            for d, t in [['w',.35],['e',.7], ['W',.7], ['w', .7], ['e', .37]]:
+                                self.swipe(d, t)
                                 self.checkIfDead()
-                                self.swipe('w', 0.35) 
-                                self.checkIfDead()
-                                self.swipe('e', 0.7)
-                                self.checkIfDead()
-                                self.swipe('w', 0.7)
-                                self.checkIfDead()
-                                self.swipe('e', 0.7)
-                                self.checkIfDead()
-                                self.swipe('w', 0.37)
-                                self.checkIfDead()
-                            else:
-                                self.wait(2)
-                                self.swipe('w', 0.35)
-                                self.wait(2)
-                                self.swipe('e', 0.7)
-                                self.wait(2)
-                                self.swipe('w', 0.7)
-                                self.wait(2)
-                                self.swipe('e', 0.7)
-                                self.wait(2)
-                                self.swipe('w', 0.37)
                         else:
-                            self.wait(2)
-                            self.swipe('w', 0.35)
-                            self.wait(2)
-                            self.swipe('e', 0.7)
-                            self.wait(2)
-                            self.swipe('w', 0.7)
-                            self.wait(2)
-                            self.swipe('e', 0.7)
-                            self.wait(2)
-                            self.swipe('w', 0.37)
+                            self.move_macro(2,[['w', .35], ['e', .7], ['W', .7], ['w', .7], ['e', .37]])
                     # added random escape methods for 30, 50 level chapters
                     else:
                         if i > _time * .8:
-                                logging.debug("Let-Play. Time < 100%")
-                                self.log("Escape route #1")
-                                self.swipe('s', 0.6)
-                                self.swipe('w', 0.4)
-                                self.swipe('nw', 2)
-                                self.swipe('ne', 3)
-                                self.swipe('s', 0.6)
-                                self.swipe('e', 0.4)
-                                self.swipe('ne', 2)
-                                self.swipe('nw', 3)
+                            logging.debug("Let-Play. Time < 100%")
+                            self.log("Escape route #1")
+                            self.move_macro(.1,[['s', .6], ['w', .4], ['nw', 2], ['ne', 3], ['s', .6], ['e', .4], ['ne', 2], ['nw', 3]])
                         if _time * .6 < i <= _time * .8:
                                 logging.debug("Let-Play. Time < 80%")
                                 self.log("Escape route #2")
-                                self.swipe('s', .5)
-                                self.swipe('sw', 2)
-                                self.swipe('n', 1)
-                                self.swipe('nw', 2)
-                                self.swipe('ne', 2)
-                                self.swipe('s', .5)
-                                self.swipe('se', 2)
-                                self.swipe('n', 1)
-                                self.swipe('ne', 2)
-                                self.swipe('nw', 2)
+                                self.move_macro(.1,[['s', .5], ['sw', 2], ['n', 1], ['nw', 2], ['ne', 2],
+                                                    ['s', .5], ['se', 2], ['n', 1], ['ne', 2], ['nw', 2]])
                         if _time * .4 < i <= _time * .6:
                                 logging.debug("Let-Play. Time < 60%")
                                 self.log("Escape route #3")
-                                self.swipe('s', .3)
-                                self.swipe('ne', 1)
-                                self.swipe('nw', 2)
-                                self.swipe('s', .3)
-                                self.swipe('nw', 1)
-                                self.swipe('ne', 2)
+                                self.move_macro(.1,[['s', .3], ['ne', 1], ['nw', 2], ['s', .3], ['nw', 1], ['ne', 2]])
                         if _time * .2 < i <= _time * .4:
                                 logging.debug("Let-Play. Time < 40%")
                                 self.log("Escape route #4")
-                                self.swipe('sw', 2)
-                                self.swipe('n', 1)
-                                self.swipe('ne', 2)
-                                self.swipe('se', 2)
-                                self.swipe('w', 1)
-                                self.swipe('nw', 2)
-                                self.swipe('ne', 2)
+                                self.move_macro(.1,[['sw', 2], ['n', 1], ['ne', 2], ['se', 2], ['w', 1], ['ne', 2], ['ne', 2]])
                         if i <= _time * .2:
                                 logging.debug("Let-Play. Time < 20%")
                                 self.log("Escape route #4")
-                                self.swipe('se', 2)
-                                self.swipe('n', 1)
-                                self.swipe('nw', 2)
-                                self.swipe('sw', 2)
-                                self.swipe('n', 2)
-                                self.swipe('ne', 2)
-                                self.swipe('nw', 2)
+                                self.move_macro(.1,[['se', 2], ['n', 1], ['nw', 2], ['sw', 2], ['n', 2], ['ne', 2], ['nw', 2]])
                     logging.debug("Start. Exp & Door Checks")
                     if check_exp_bar and self.screen_connector.checkExpBarHasChanged(experience_bar_line, frame):
                         logging.debug("Level ended. Experience gained!")
