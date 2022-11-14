@@ -920,6 +920,13 @@ class CaveEngine(QObject):
                 else:
                     self.tap('wheel_back')
                     self.wait(2)
+            elif state == "special_gift_respin_no_back_button":
+                # Special reward state without back button (down-left location.
+                # Just wait 2 seconds for special_gift_respin state to arrive.
+                if self.battle_pass_advanced:
+                    self.wait(2)
+                else:
+                    self.wait(2)
             elif state == "special_gift_respin":
                 if self.battle_pass_advanced:
                     self.tap('wheel_start')
