@@ -438,12 +438,8 @@ class CaveEngine(QObject):
 
     def exit_movement_dungeon18(self): 
         logging.trace("exit_dungeon_18")
-        if self.currentLevel == 11 or self.currentLevel == 12 or self.currentLevel == 13:
-            self.swipe('w', 1)
-            self.swipe('ne', 3)
-        else:
-            self.swipe('e', 1)
-            self.swipe('nw', 3)
+        self.swipe('e', 1)
+        self.swipe('nw', 3)
 
     def exit_movement_dungeon20(self): 
         logging.trace("exit_dungeon_20")
