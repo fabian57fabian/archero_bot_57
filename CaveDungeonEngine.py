@@ -1024,8 +1024,8 @@ class CaveEngine(QObject):
                 logging.info("HP LESS than 50%")
                 self.smartHealChoice = True
         self.log("Cenering Self")
-        self.swipe('s', 2)
         self.swipe('e', 2)
+        self.swipe('s', 2)
         self.swipe('w', .9)
         self.log("Approaching Healer")
         self.swipe('n', 1.5)
