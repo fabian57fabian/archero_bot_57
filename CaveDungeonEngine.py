@@ -411,13 +411,7 @@ class CaveEngine(QObject):
     def exit_movement_dungeon_old(self):
         logging.trace("exit_dungeon_old 'Improved'")
         #self.centerPlayer()
-        self.swipe('n', 3)
-        self.swipe('ne', .5)
-        self.swipe('nw', 3)
-        self.swipe('ne', 3)
-        self.swipe('nw', 3)
-        self.swipe('ne', 3)
-        self.swipe('w', .7)
+        self.move_macro(0, [['n', 3],['ne', .5],['nw', 3],['ne', 3],['nw', 3],['ne', 3],['w', .7]])
 
     def exit_movement_dungeon_7(self):
         logging.trace("exit_dungeon_7")
@@ -455,28 +449,15 @@ class CaveEngine(QObject):
         self.swipe('n', 2)
         self.swipe('nw', 2.2)
         if self.currentLevel == 16:
-            self.swipe('s', .5)
-            self.swipe('e', .5)
-            self.swipe('n', .5)
+            self.move_macro(0, [['s', .5],['e', .5],['n', .5]])
         else:
-            self.swipe('s', .3)
-            self.swipe('e', .5)
-            self.swipe('n', .3)
-        self.swipe('ne', 1.8)
-        self.swipe('s', .3)
-        self.swipe('w', .5)
-        self.swipe('n', .3)
-        self.swipe('nw', 1.5)
-        self.swipe('ne', 1)
+            self.move_macro(0, [['s', .3],['e', .5],['n', .3]])
+        self.move_macro(0, [['ne', 1.8], ['s', .3], ['w', .5],['n', .3],['nw', 1.5],['ne', 1]])
 
     def goTroughDungeon18(self):
         logging.trace("Going through dungeon (designed for #18)")
         self.log("Crossing Dungeon 18")
-        self.swipe('n', 2)
-        self.swipe('nw', 2)
-        self.swipe('ne', 3)
-        self.swipe('nw', 2)
-        self.swipe('e', .7)
+        self.move_macro(0, [['n',2],['nw',2],['ne',3],['nw',2],['e',.7]])
         if self.currentLevel == 6:
             self.swipe('w', .4)
         elif self.currentLevel == 11 or self.currentLevel == 12 or self.currentLevel == 13:
@@ -486,20 +467,8 @@ class CaveEngine(QObject):
     def goTroughDungeon10(self):
         logging.trace("Going through dungeon (designed for #10)")
         self.log("Crossing Dungeon 10")
-        self.swipe('n', .5)
-        self.swipe('nw', 2.5)
-        self.swipe('ne', 2.5)
-        self.swipe('nw', 1.8)
-        self.swipe('ne', 1)
-        self.swipe('w', .7)
-        self.swipe('s', .6)
-        self.swipe('e', .35)
-        self.swipe('ne', .4)
-        self.swipe('n', 2.5)
-        self.swipe('s', .3)
-        self.swipe('w', .35)
-        self.swipe('nw', .4)
-        self.swipe('n', 1)
+        self.move_macro(0, [['n', .5], ['nw', 2.5],['ne', 2.5],['nw', 1.8],['ne', 1],['w', .7],['s', .6],['e', .35],
+                            ['ne', .4],['n', 2.5],['s', .3],['w', .35],['nw', .4],['n', 1]])
         if self.currentLevel == 18:
             self.swipe('w', .3)
             self.swipe('s', .35)
