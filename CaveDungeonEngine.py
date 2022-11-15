@@ -612,7 +612,9 @@ class CaveEngine(QObject):
             coord_and_dur: list of lists having a movement string e.g. 'nw' and a time e.g. 2.1
                            example: coord_and_dur = [['n', 2], ['e', .9], ['so', .6], ['s', 1]]
         '''
-        pass
+        for d, t in coord_and_dur:
+            self.swipe(d, t)
+            self.wait(delay)
 
     def letPlay(self, _time: int, is_boss = False):
         check_exp_bar = not is_boss
