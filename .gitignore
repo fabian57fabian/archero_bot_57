@@ -3,6 +3,8 @@
 
 # Python cache
 datas/__pycache__/
+datas/1080x1920/screens/
+datas/1080x1920/abilities_sc/
 __pycache__/
 QMyWidgets/__pycache__/
 GameController/__pycache__/
