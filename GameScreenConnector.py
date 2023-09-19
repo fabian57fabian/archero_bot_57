@@ -38,7 +38,11 @@ class GameScreenConnector:
             abs_json = json.load(file_in)
         abilities = {}
         for ab, fn in abs_json.items():
-            with Image.open(os.path.join(abilities_folder, fn)) as im:
+            path = os.path.join(abilities_folder, fn)
+            if not os.path.exists(path):
+                logging.warning(f"Ability '{fn}' from dictionary does not exist. Skipping")
+                continue
+            with Image.open(path) as im:
                 abilities[ab] = np.array(im.getdata())
         return abilities
 
@@ -287,9 +291,9 @@ class GameScreenConnector:
         #TODO: get thoose from json file in coords
         w, h = 1080, 1920
 
-        sw, sh = 239, 239
-        y1 = 1157
-        x1, x2, x3 = 90, 420, 750
+        sw, sh = 195, 195
+        y1 = 810
+        x1, x2, x3 = 105, 441, 777
 
         c1 = (x1, y1, x1 + sw, y1 + sh)
         c2 = (x2, y1, x2 + sw, y1 + sh)

@@ -3,14 +3,19 @@ import numpy as np
 from PIL import Image
 
 
-def crop_abilities(path_screens:str, path_out:str):
+def crop_abilities(path_screens:str, path_out:str, select_ability_new_ui=True):
     if not os.path.exists(path_out): os.makedirs(path_out)
     #if both exists
     w, h = 1080, 1920
 
-    sw, sh = 239, 239
-    y1 = 1157
-    x1, x2, x3 = 90, 420, 750
+    if select_ability_new_ui:
+        sw, sh = 195, 195
+        y1 = 810
+        x1, x2, x3 = 105, 441, 777
+    else:
+        sw, sh = 239, 239
+        y1 = 1157
+        x1, x2, x3 = 90, 420, 750
 
     c1 = (x1, y1, x1+sw, y1+sh)
     c2 = (x2, y1, x2+sw, y1+sh)
@@ -33,4 +38,5 @@ def crop_abilities(path_screens:str, path_out:str):
 
 
 if __name__ == '__main__':
-    crop_abilities(path_screens='..\\datas\\1080x1920\\abilities_sc', path_out='..\\datas\\1080x1920\\abilities_new')
+    crop_abilities(path_screens='..\\datas\\1080x1920\\abilities_sc', path_out='..\\datas\\1080x1920\\abilities_new',
+                   select_ability_new_ui=True)
