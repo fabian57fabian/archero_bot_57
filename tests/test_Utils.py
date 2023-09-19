@@ -1,4 +1,5 @@
 import os
+import shutil
 from unittest import TestCase
 
 from Utils import getCoordFilePath
@@ -12,7 +13,7 @@ class Test(TestCase):
 
     def tearDown(self) -> None:
         if os.path.exists(self.test_datas_dir):
-            os.rmdir(self.test_datas_dir)
+            shutil.rmtree(self.test_datas_dir)
 
     def test_getCoordFilePath_size(self):
         res_path = getCoordFilePath("buttons.json", size=(1080, 1920))
