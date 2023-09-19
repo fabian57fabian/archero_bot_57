@@ -9,9 +9,7 @@ on:
       - wiki_data/**
       - .gitignore
       - .github/**
-  pull_request:
-    types:
-      - closed
+  pull_request: null
 
 jobs:
   build:
