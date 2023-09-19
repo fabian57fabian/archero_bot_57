@@ -12,7 +12,7 @@ Follow these steps to install __adb__, python lisb such as __Pillow__,__matplotl
 Follow these steps:
 - Install latest __python__ from [here](https://www.python.org/downloads/). When installing, make sure to select "Add to PATH" in first page of installation wizard
 - Install __Android Debug Bridge__:
-  - Download adb package from [here](https://www.androidworld.it/2017/01/07/adb-fastboot-download-windows-mac-linux-450541/)
+  - Download adb package from [here]([https://www.androidworld.it/2017/01/07/adb-fastboot-download-windows-mac-linux-450541/](https://dl.google.com/android/repository/platform-tools-latest-windows.zip))
   - Extract the compressed file (Left click -> Extract Here)
   - Rename the extracted folder to 'adb'
   - Copy 'adb' folder into 'C:'
