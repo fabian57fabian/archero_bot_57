@@ -287,6 +287,7 @@ class TouchManagerWindow(QWidget):
         painter = QPainter(pixmap)
         [_x, _y] = location
         [w, h] = self.controller.current_image_size
+        _x, _y, w, h = int(_x), int(_y), int(w), int(h)
         # Qt.red
         r, g, b = color
         pen = QPen(QBrush(QColor(r, g, b)), self.model.currentLineWidth, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
