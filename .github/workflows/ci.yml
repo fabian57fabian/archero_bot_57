@@ -2,9 +2,6 @@ name: Python package
 
 on:
   push:
-    branches:
-      - master
-      - dev
     paths-ignore:
       - README.md
       - _changelogs/**
@@ -13,8 +10,6 @@ on:
       - .gitignore
       - .github/**
   pull_request:
-    branches:
-      - master
     types:
       - closed
 
