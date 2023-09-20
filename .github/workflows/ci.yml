@@ -1,4 +1,4 @@
-name: Python package
+name: Archero code tests
 
 on:
   push:
