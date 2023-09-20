@@ -1,5 +1,7 @@
 # Archero Bot 57
 
+[![Python package](https://github.com/fabian57fabian/archero_bot_57/actions/workflows/ci.yml/badge.svg)](https://github.com/fabian57fabian/archero_bot_57/actions/workflows/ci.yml)
+
 Installation videos (youtube playlist):
 
 <a href="https://www.youtube.com/watch?v=XbjphfEp8yw&list=PLM2cUDSTXRIyGTJmGR0Gv3cvVIHC6EmyK&index=4"><img src="repo_images/video_thumbnail.png" height="100"></a>
