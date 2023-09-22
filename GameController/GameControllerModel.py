@@ -27,7 +27,10 @@ class GameControllerModel(QObject):
         super(QObject, self).__init__()
         # Default data
         self.updates_available = False
-        self.engine = CaveEngine()
+        dev_conn = UsbConnector(connect_now=True)
+        logging.trace("Initalizing Device Connector")
+        dev_conn.connect()
+        self.engine = CaveEngine(dev_conn)
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
         self.dict_buttons = 'data.py'

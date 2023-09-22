@@ -28,6 +28,10 @@ class UsbConnector(object):
         self._continousCheckStopRequired = False
         if connect_now: self._startConnectionCheck()
 
+    def connect(self):
+        if not self.connected:
+            self._startConnectionCheck()
+
     def _changeConnectedState(self, c):
         if self.connected != c:
             self.connected = c

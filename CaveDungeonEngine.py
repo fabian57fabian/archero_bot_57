@@ -92,7 +92,7 @@ class CaveEngine(QObject):
     -------------------------------
     '''
 
-    def __init__(self, connectImmediately: bool = False):
+    def __init__(self, dev_connector: UsbConnector):
         super(QObject, self).__init__()
         self.deadcheck = False # controled by GUI dropdown, works <50% of time to revive; costs gems unless BPAdv Sub
         self.smartHealChoice = False # controled by GUI dropdown, works >90% of the time
@@ -111,7 +111,7 @@ class CaveEngine(QObject):
         self.screen_connector = GameScreenConnector()
         self.screen_connector.debug = False # set true to see screen_connector degbug messages in console
         self.width, self.heigth = 1080, 1920 
-        self.device_connector = UsbConnector(connect_now=True)
+        self.device_connector = dev_connector
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onConnectionStateChanged)
         self.buttons = {}
         self.movements = {}
@@ -128,8 +128,6 @@ class CaveEngine(QObject):
         self.current_settings = {}
         self.current_settings_path = 'current_settings.json'
         self.load_current_settings()
-        if connectImmediately:
-            self.initDeviceConnector()
 
     def load_tier_list(self):
         logging.trace("Loading Abilities Tier List")
@@ -146,10 +144,6 @@ class CaveEngine(QObject):
             logging.error("Not having %s coordinates. Trying with %s" % (deviceFolder, first_folder))
             deviceFolder = first_folder
         self.changeCurrentDataFolder(deviceFolder)
-
-    def initdeviceconnector(self):
-        logging.trace("Initalizing Device Connector")
-        self.device_connector.connect()
 
     def _create_default_current_settings(self):
         logging.debug("Loading Default Settings")
