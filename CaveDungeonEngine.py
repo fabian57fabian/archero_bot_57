@@ -464,79 +464,35 @@ class CaveEngine(QObject):
         self.move_macro(0, [['n', .5], ['nw', 2.5],['ne', 2.5],['nw', 1.8],['ne', 1],['w', .7],['s', .6],['e', .35],
                             ['ne', .4],['n', 2.5],['s', .3],['w', .35],['nw', .4],['n', 1]])
         if self.currentLevel == 18:
-            self.swipe('w', .3)
-            self.swipe('s', .35)
-            self.swipe('ne', .4)
-            self.swipe('n', .4)
+            self.move_macro(0, [['w', .3], ['s', .35], ['ne', .4], ['n', .4]])
 
     def goTroughDungeon16(self):
         logging.trace("Going through dungeon (designed for #16)")
         self.log("Crossing Dungeon 16")
-        self.swipe('n', .5)
-        self.swipe('nw', 2.5)
-        self.swipe('ne', 2.5)
-        self.swipe('nw', 1.8)
-        self.swipe('ne', 1)
-        self.swipe('w', .7)
+        self.move_macro(0, [['n', .5],['nw', 2.5],['ne', 2.5],['nw', 1.8],['ne', 1],['w', .7]])
         if self.currentLevel == 11 or self.currentLevel == 18:
-            self.swipe('sw', .6)
-            self.swipe('nw', .8)
-        self.swipe('se', .65)
-        self.swipe('e', .7)
-        self.swipe('nw', .55)
-        self.swipe('ne', .7)
-        self.swipe('w', .3)
-        self.swipe('s', .6)
-        self.swipe('sw', .3)
-        self.swipe('nw', .7)
+            self.move_macro(0, [['sw', .6], ['nw', .8]])
+        self.move_macro(0, [['se', .65],['e', .7],['nw', .55],['ne', .7],['w', .3],['s', .6],['sw', .3],['nw', .7]])
         if self.currentLevel == 6:
-            self.swipe('s', .4)
-            self.swipe('e', .5)
-            self.swipe('nw', .6)
+            self.move_macro([0, [['s', .4],['e', .5],['nw', .6]]])
         elif self.currentLevel == 11 or self.currentLevel == 18:
-            self.swipe('e', .3)
-            self.swipe('n', .3)
-            self.swipe('nw', .4)
-        self.swipe('ne', .55)
-        self.swipe('w', .3)
-        self.swipe('n', 1.5)
+            self.move_macro([0, [['e', .3], ['n', .3], ['nw', .4]]])
+        self.move_macro([0, [['ne', .55], ['w', .3], ['n', 1.5]]])
 
     def goTroughDungeon6(self):
         logging.trace("Going through dungeon (designed for #6)")
         self.log("Crossing Dungeon 6")
-        self.swipe('n', 1.5)
-        self.swipe('w', .3)
-        self.swipe('n', .6)
-        self.swipe('e', .6)
-        self.swipe('n', .6)
-        self.swipe('w', .6)
-        self.swipe('n', 1.5)
-        self.swipe('e', .3)
-        self.swipe('n', 2)
+        self.move_macro(0, [['n', 1.5],['w', .3],['n', .6],['e', .6],['n', .6],['w', .6],['n', 1.5],['e', .3],['n', 2]])
 
     def goTroughDungeon3(self):
         logging.trace("Going through dungeon (designed for #3)")
         self.log("Crossing Dungeon 3")
-        self.swipe('n', 1.5)
-        self.swipe('w', .25)
-        self.swipe('n', .5)
-        self.swipe('e', .25)
-        self.swipe('n', 2)
-        self.swipe('w', 1)
-        self.swipe('n', .5)
-        self.swipe('e', 1)
-        self.swipe('n', 1.5)
+        self.move_macro(0, [['n', 1.5],['w', .25],['n', .5],['e', .25],['n', 2],['w', 1],['n', .5],['e', 1],['n', 1.5]])
 
     def goTroughDungeon_old(self):
         logging.trace("Going through dungeon old 'Improved'")
         self.log("Crossing Dungeon (Improved)")
-        self.swipe('n', 3)
-        self.swipe('ne', .5)
-        self.swipe('nw', 3)
-        self.swipe('ne', 3)
-        self.swipe('nw', 3)
-        self.swipe('ne', 3)
-        self.swipe('w', .7)
+        self.move_macro(0, [['n', 3],['ne', .5],['nw', 3],['ne', 3],['nw', 3],['ne', 3],['w', .7]])
 
     def goTroughDungeon(self):
         if self.currentDungeon == 3:
@@ -893,9 +849,7 @@ class CaveEngine(QObject):
                 logging.info("HP LESS than 50%")
                 self.smartHealChoice = True
         self.log("Cenering Self")
-        self.swipe('e', 2)
-        self.swipe('s', 2)
-        self.swipe('w', .9)
+        self.move_macro(0, [['e', 2],['s', 2],['w', .9]])
         self.log("Approaching Healer")
         self.swipe('n', 1.5)
         self.reactGamePopups()
@@ -903,9 +857,7 @@ class CaveEngine(QObject):
         self.reactGamePopups()
         logging.debug("Exiting Heal")
         self.log("Leaving Healer")
-        self.swipe('e', 1)
-        self.swipe('n', .25)
-        self.swipe('nw', 2.5)
+        self.move_macro(0, [['e', 1],['n', .25],['nw', 2.5]])
         self.log("Left Dungeon")
         self.wait(0.5) # for GUI log to load
 
@@ -913,51 +865,31 @@ class CaveEngine(QObject):
         logging.debug("boss_lvl")
         self.crash_level_restart()
         self.log("Attacking Boss")
-        self.swipe('n', 0.2)
-        self.swipe('n', 0.7)
-        self.swipe('e', 1)
-        self.swipe('nw', 2)
+        self.move_macro(0, [['n', 0.2],['n', 0.7],['e', 1],['nw', 2]])
         if self.currentDungeon == 16:
             if self.currentLevel == 10:
                 self.reactGamePopups()
-                self.swipe('nw', 1.5)
-                self.swipe('ne', 1.5)
+                self.move_macro(0, [['nw', 1.5], ['ne', 1.5]])
             elif self.currentLevel == 15:
-                self.swipe('n', .4)
-                self.swipe('w', .4)
+                self.move_macro(0, [['n', .4], ['w', .4]])
         self.swipe('ne', 2)
         self.swipe('nw', 1.25)
         self.letPlay(self.playtime, is_boss = True)
         self.reactGamePopups()
         if self.currentDungeon == 7 or self.currentDungeon == 14:
-            self.swipe('w', 0.7)
-            self.swipe('e', 0.8)
-            self.swipe('w', 0.6)
+            self.move_macro(0, [['w', 0.7],['e', 0.8],['w', 0.6]])
             self.wait(2) # wait for popups to laod
             self.reactGamePopups()
         self.log("Moving to Door")
-        self.swipe('s', .5)
-        self.swipe('w', .3)
-        self.swipe('nw', 2.5)
-        self.swipe('e', .4)
-        self.swipe('n', 1.5)
-        self.swipe('e', .65)
+        self.move_macro(0, [['s', .5],['w', .3],['nw', 2.5],['e', .4],['n', 1.5],['e', .65]])
         if self.currentDungeon == 7 or self.currentDungeon == 14:
-            self.swipe('s', 0.5)
-            self.swipe('e', 0.85)
-            self.swipe('ne', 0.75)
-            self.swipe('nw', 0.7)
-            self.swipe('w', 0.55)
+            self.move_macro(0, [['s', 0.5],['e', 0.85],['ne', 0.75],['nw', 0.7],['w', 0.55]])
             self.wait(2) # wait for popups to laod
             self.reactGamePopups()
             if self.currentLevel == 5 or self.currentLevel == 6:
-                self.swipe('s', 0.3)
-                self.swipe('ne', 0.6)
-                self.swipe('nw', 0.6)
+                self.move_macro(0, [['s', 0.3],['ne', 0.6],['nw', 0.6]])
             if self.currentLevel == 8 or self.currentLevel == 9:
-                self.swipe('s', 0.3)
-                self.swipe('w', 0.3)
-                self.swipe('nw', 0.6)
+                self.move_macro(0, [['s', 0.3],['w', 0.3],['nw', 0.6]])
         self.exit_dungeon_uncentered()
 
     def checkIfDead(self):
@@ -1006,16 +938,10 @@ class CaveEngine(QObject):
             self.log("No Loot Left")
             logging.debug("Exiting the Dungeon Final Boss")
             self.log("Leaving Dungeon")
-            self.swipe('n', 5)
-            self.swipe('ne', 3)
+            self.move_macro(0, [['n', 5],['ne', 3]])
             self.log("Left Dungeon!")
         else:
-            self.swipe('n', 0.2)
-            self.swipe('n', 0.7)
-            self.swipe('e', 1)
-            self.swipe('nw', 1.8)
-            self.swipe('ne', 1.8)
-            self.swipe('nw', 1)
+            self.move_macro(0, [['n', 0.2],['n', 0.7],['e', 1],['nw', 1.8],['ne', 1.8],['nw', 1]])
             i = 1
             while i < self.max_wait:
                 self.log("Avoiding Boss")
@@ -1027,29 +953,19 @@ class CaveEngine(QObject):
                     self.checkIfDead()
                     self.swipe('w', 0.5)
                 else:
-                    self.swipe('w', 0.5)
-                    self.swipe('e', 1)
-                    self.swipe('w', 0.5)
+                    self.move_macro(0, [['w', 0.5], ['e', 1], ['w', 0.5]])
                     self.wait(self.sleep_btw_screens)
                 i += 1
             self.reactGamePopups()
             self.log("Moving to Door")
-            self.swipe('s', .5)
-            self.swipe('w', .5)
-            self.swipe('nw', 3)
-            self.swipe('n', 2)
-            self.swipe('e', .85)
+            self.move_macro(0, [['s', .5], ['w', .5], ['nw', 3], ['n', 2], ['e', .85]])
             if self.currentDungeon == 7 or self.currentDungeon == 14:
-                self.swipe('s', 0.5)
-                self.swipe('e', 0.8)
-                self.swipe('ne', 0.5)
-                self.swipe('nw', 0.8)
+                self.move_macro(0, [['s', .5], ['e', .8], ['ne', .5], ['nw', .8]])
                 self.reactGamePopups()
             self.log("No Loot Left")
             logging.debug("Exiting the Dungeon Final Boss")
             self.log("Leaving Dungeon")
-            self.swipe('e', 1)
-            self.swipe('nw', 2.5)
+            self.move_macro(0, [['e', 1], ['nw', 2.5]])
             self.log("Left Dungeon!")
         i = 0
         self.wait(8) # wait for endgame loot screen to load
@@ -1070,56 +986,35 @@ class CaveEngine(QObject):
                 self.log("Escape Plan A!")
                 if self.deadcheck or self.battle_pass_advanced:
                     self.checkIfDead()
-                self.swipe('n', 1.5)
-                self.swipe('s', .6)
-                self.swipe('e', .3)
-                self.swipe('ne', 1)
+                self.move_macro(0, [['n', 1.5], ['s', .6], ['e', .3], ['ne', 1]])
             elif i == 2:
                 logging.info("Trying now; escape plan B!")
                 self.log("Escape Plan B!")
                 if self.deadcheck or self.battle_pass_advanced:
                     self.checkIfDead()
-                self.swipe('n', 1.5)
-                self.swipe('s', .6)
-                self.swipe('w', .3)
-                self.swipe('nw', 1)
+                self.move_macro(0, [['n', 1.5], ['s', .6], ['w', .3], ['nw', 1]])
                 self.wait(8) # wait killing mobs/boss
             elif i == 3:
                 logging.info("Trying now; escape plan C!")
                 self.log("Escape Plan C!")
                 if self.deadcheck or self.battle_pass_advanced:
                     self.checkIfDead()
-                self.swipe('n', 1.5)
-                self.swipe('s', .9)
-                self.swipe('e', .6)
-                self.swipe('nw', 2)
+                self.move_macro(0, [['n', 1.5], ['s', .9], ['e', .6], ['nw', 2]])
                 self.wait(10) # wait killing mobs/boss
             elif i == 4:
                 logging.info("Trying now; escape plan D!")
                 self.log("Escape Plan D!")
                 if self.deadcheck or self.battle_pass_advanced:
                     self.checkIfDead()
-                self.swipe('n', 1.5)
-                self.swipe('s', .9)
-                self.swipe('w', .6)
-                self.swipe('ne', 2)
+                self.move_macro(0, [['n', 1.5], ['s', .9], ['w', .6], ['ne', 2]])
                 self.wait(10) # wait killing mobs/boss
             elif i == 5:
                 logging.info("YOLO; escape plan E!")
                 self.log("Escape Plan E!")
                 if self.deadcheck or self.battle_pass_advanced:
                     self.checkIfDead()
-                self.swipe('n', 1.66)
-                self.swipe('s', .66)
-                self.swipe('w', .66)
-                self.swipe('n', .66)
-                self.swipe('ne', .66)
-                self.swipe('s', .66)
-                self.swipe('e', .66)
-                self.swipe('n', .66)
-                self.swipe('nw', .66)
-                self.swipe('ne', 1.66)
-                self.swipe('nw', 1.66)
+                self.move_macro(0, [['n', 1.66], ['s', .66], ['w', .66], ['n', .66], ['ne', .66], ['s', .66],
+                                    ['e', .66], ['n', .66], ['nw', .66], ['ne', 1.66], ['nw', 1.66]])
                 self.wait(10) # wait killing mobs/boss
             elif i > 6:
                 break
@@ -1132,21 +1027,11 @@ class CaveEngine(QObject):
                     logging.debug("Popups. NormalHeal")
                     self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
-                self.swipe('n', .65)
-                self.swipe('e', .9)
-                self.swipe('n', .25)
-                self.swipe('nw', 1.8)
+                self.move_macro(0, [['n', .65], ['e', .9], ['n', .25], ['nw', 1.8]])
                 self.wait(2) # wait for room transition to complete
                 state = self.screen_connector.getFrameState()
-            self.swipe('n', 1.5)
-            self.swipe('nw', 1.5)
-            self.swipe('s', .3)
-            self.swipe('e', .5)
-            self.swipe('n', .3)
-            self.swipe('ne', 1.5)
-            self.swipe('s', .3)
-            self.swipe('w', .5)
-            self.swipe('n', 1.5)
+            self.move_macro(0, [['n', 1.5], ['nw', 1.5], ['s', .3], ['e', .5], ['n', .3], ['ne', 1.5], ['s', .3],
+                                ['w', .5], ['n', 1.5]])
             self.wait(2) # wait for room transition to complete
             i += 1
                     
