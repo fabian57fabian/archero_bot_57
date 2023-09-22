@@ -1,6 +1,7 @@
 # Archero Bot 57
 
 [![Python package](https://github.com/fabian57fabian/archero_bot_57/actions/workflows/ci.yml/badge.svg)](https://github.com/fabian57fabian/archero_bot_57/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/fabian57fabian/archero_bot_57/badge.svg?branch=master)](https://coveralls.io/github/fabian57fabian/archero_bot_57?branch=master)
 
 Installation videos (youtube playlist):
 
