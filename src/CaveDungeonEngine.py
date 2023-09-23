@@ -8,32 +8,10 @@ from src.GameScreenConnector import GameScreenConnector
 from src.StatisticsManager import StatisticsManager
 from src.Utils import loadJsonData, saveJsonData_oneIndent, readAllSizesFolders, buildDataFolder, getCoordFilePath
 from src.GameChapters import DungeonLevelType, BuildChapters, BuildLevelsTypes, MaxLevelFromType
-import enum
+from src.BotStrategies import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub, ReviveIfDead
+from src.LocalEngineSettingsManager import LocalEngineSettingsManager, LocalEngineSettings
 import os
 
-class HealingStrategy(str, enum.Enum):
-    AlwaysHeal = "always_heal"
-    AlwaysPowerUp = "always_power"
-    SmartHeal = "smart_heal"
-
-class EnergyStrategy(str, enum.Enum):
-    AlwaysBuy = "always_buy"
-    AlwaysBuy2 = "always_buy2"
-    AlwaysBuy3 = "always_buy3"
-    AlwaysBuy4 = "always_buy4"
-    AlwaysIgnore = "always_ignore"
-
-class VIPSub(str, enum.Enum):
-    TrueVIP = "vip_true"
-    FalseVIP = "vip_false"
-
-class BattlepassAdvSub(str, enum.Enum):
-    TrueBPAdv = "bpadv_true"
-    FalseBPAdv = "bpadv_false"
-
-class ReviveIfDead(str, enum.Enum):
-    TrueRevive = "revive_true"
-    FalseRevive = "revive_false"
 
 class CaveEngine(QObject):
     levelChanged = pyqtSignal(int)
@@ -119,15 +97,11 @@ class CaveEngine(QObject):
         self.stopRequested = False # do not change
         self.currentDataFolder = ''
         self.dataFolders = {}
-        self.healingStrategy = HealingStrategy.SmartHeal
-        self.energyStrategy = EnergyStrategy.AlwaysIgnore
-        self.vipSub = VIPSub.FalseVIP
-        self.bpadvSub = BattlepassAdvSub.FalseBPAdv
-        self.reviveIfDead = ReviveIfDead.FalseRevive
         self.centerAfterCrossingDungeon = False # do not ghange
-        self.current_settings = {}
-        self.current_settings_path = 'current_settings.json'
-        self.load_current_settings()
+        self.local_settings_path = 'current_settings.json'
+        self.local_settings_manager = LocalEngineSettingsManager(self.local_settings_path)
+        self.local_settings = self.local_settings_manager.load()
+        self.initLocalSettings()
 
     def load_tier_list(self):
         logging.trace("Loading Abilities Tier List")
@@ -145,87 +119,50 @@ class CaveEngine(QObject):
             deviceFolder = first_folder
         self.changeCurrentDataFolder(deviceFolder)
 
-    def _create_default_current_settings(self):
-        logging.debug("Loading Default Settings")
-        new_sett = {
-            "selected_dungeon": 3,
-            "healing_strategy": HealingStrategy.SmartHeal,
-            "energy_strategy": EnergyStrategy.AlwaysIgnore,
-            "vip_sub": VIPSub.FalseVIP,
-            "bpadv_sub": BattlepassAdvSub.FalseBPAdv,
-            "revive_ifdead": ReviveIfDead.FalseRevive,
-            "threshold_abilities": 5
-        }
-        saveJsonData_oneIndent(self.current_settings_path, new_sett)
-
-    def load_current_settings(self):
-        logging.trace("Loading Current Settings")
-        if not os.path.exists(self.current_settings_path):
-            logging.debug("Creating basic current settings...")
-            self._create_default_current_settings()
-        try:
-            new_sett = loadJsonData(self.current_settings_path)
-        except Exception as e:
-            logging.error("Unable to load existing {}: {}. setting to default.".format(self.current_settings_path, str(e)))
-            self._create_default_current_settings()
-            new_sett = loadJsonData(self.current_settings_path)
-        if "selected_dungeon" not in new_sett or "healing_strategy" not in new_sett or "energy_strategy" not in new_sett or "vip_sub" not in new_sett or "bpadv_sub" not in new_sett or "revive_ifdead" not in new_sett or "threshold_abilities" not in new_sett:
-            logging.warning("Corrupted/errored current settings. ")
-            logging.warning("Creating basic current settings...")
-            self._create_default_current_settings()
-        new_sett = loadJsonData(self.current_settings_path)
-        self.current_settings = new_sett
-        self.currentDungeon = int(self.current_settings["selected_dungeon"])
-        self.healingStrategy = HealingStrategy(self.current_settings["healing_strategy"])
-        self.energyStrategy = EnergyStrategy(self.current_settings["energy_strategy"])
-        self.vipSub = VIPSub(self.current_settings["vip_sub"])
-        self.bpadvSub = BattlepassAdvSub(self.current_settings["bpadv_sub"])
-        self.reviveIfDead = ReviveIfDead(self.current_settings["revive_ifdead"])
-        self.screen_connector.abilities_treshold = self.current_settings["threshold_abilities"]
+    def initLocalSettings(self):
+        self.screen_connector.abilities_treshold = self.local_settings.threshold_abilities
+        self.currentDungeon = self.local_settings.selected_dungeon
         if self.screen_connector.abilities_treshold <= 0:
             logging.warning("current abilities threshold is negative! setting to positive num 2")
             self.screen_connector.abilities_treshold = 2
+            self.local_settings.threshold_abilities = 2
+            self.local_settings_manager.save(self.local_settings)
 
     def changeHealStrategy(self, strat: HealingStrategy):
         logging.debug("Loading Heal Strategy")
-        self.healingStrategy = strat
-        self.current_settings['healing_strategy'] = self.healingStrategy
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.local_settings.healing_strategy = strat
+        self.local_settings_manager.save(self.local_settings)
         self.healingStrategyChanged.emit(strat)
 
-    def changeEnergyStrategy(self, strat1: EnergyStrategy):
+    def changeEnergyStrategy(self, strat: EnergyStrategy):
         logging.debug("Loading Energy Strategy")
-        self.energyStrategy = strat1
-        self.current_settings['energy_strategy'] = self.energyStrategy
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
-        self.energyStrategyChanged.emit(strat1)
+        self.local_settings.energy_strategy = strat
+        self.local_settings_manager.save(self.local_settings)
+        self.energyStrategyChanged.emit(strat)
 
-    def changeVIPSub(self, strat2: VIPSub):
+    def changeVIPSub(self, strat: VIPSub):
         logging.debug("Updating VIP Subscripton")
-        self.vipSub = strat2
-        self.current_settings['vip_sub'] = self.vipSub
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
-        self.vipSubChanged.emit(strat2)
+        self.local_settings.vipSub = strat
+        self.local_settings_manager.save(self.local_settings)
+        self.vipSubChanged.emit(strat)
 
-    def changeBattlepassAdvSub(self, strat3: BattlepassAdvSub):
+    def changeBattlepassAdvSub(self, strat: BattlepassAdvSub):
         logging.debug("Updating Battlepass Choice")
-        self.bpadvSub = strat3
-        self.current_settings['bpadv_sub'] = self.bpadvSub
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
-        self.bpadvSubChanged.emit(strat3)
+        self.local_settings.bpadv_sub = strat
+        self.local_settings_manager.save(self.local_settings)
+        self.bpadvSubChanged.emit(strat)
 
-    def changeReviveIfDead(self, strat4: ReviveIfDead):
+    def changeReviveIfDead(self, strat: ReviveIfDead):
         logging.debug("Updating Revive Choice")
-        self.reviveIfDead = strat4
-        self.current_settings['revive_ifdead'] = self.reviveIfDead
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
-        self.reviveIfDeadChanged.emit(strat4)
+        self.local_settings.revive_ifdead = strat
+        self.local_settings_manager.save(self.local_settings)
+        self.reviveIfDeadChanged.emit(strat)
         
-    def changeChapter(self, new_chapter):
-        logging.debug("Loading Selected Chapter")
+    def changeChapter(self, new_chapter: int):
+        logging.debug("Updating Selected Dungeon")
         self.currentDungeon = new_chapter
-        self.current_settings['selected_dungeon'] = str(self.currentDungeon)
-        saveJsonData_oneIndent(self.current_settings_path, self.current_settings)
+        self.local_settings.selected_dungeon = new_chapter
+        self.local_settings_manager.save(self.local_settings)
         self.currentDungeonChanged.emit(new_chapter)
 
     def onConnectionStateChanged(self, connected):
@@ -760,12 +697,12 @@ class CaveEngine(QObject):
                     self.tap('wheel_back')
                     self.wait(2)
             elif state == "angel_heal":
-                if self.healingStrategy == HealingStrategy.SmartHeal:
+                if self.local_settings.healing_strategy == HealingStrategy.SmartHeal:
                     logging.debug("Popups. SmartHeal")
                     self.tap('heal_right' if self.smartHealChoice else 'heal_left')
                 else:
                     logging.debug("Popups. NormalHeal")
-                    self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
+                    self.tap('heal_right' if self.local_settings.healing_strategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
             elif state == "on_pause":
                 self.tap('resume')
@@ -840,7 +777,7 @@ class CaveEngine(QObject):
 
     def heal_lvl(self):
         logging.debug("heal_lvl")
-        if self.healingStrategy == HealingStrategy.SmartHeal:
+        if self.local_settings.healing_strategy == HealingStrategy.SmartHeal:
             logging.debug("Smart Heal Check")
             if self.screen_connector.checkFrame("smart_heal_hp_check"):
                 logging.debug("HP GREATER than 50%")
@@ -1020,12 +957,12 @@ class CaveEngine(QObject):
                 break
             state = self.screen_connector.getFrameState()
             if state == "angel_heal":
-                if self.healingStrategy == HealingStrategy.SmartHeal:
+                if self.local_settings.healing_strategy == HealingStrategy.SmartHeal:
                     logging.debug("Popups. SmartHeal")
                     self.tap('heal_right' if self.smartHealChoice else 'heal_left')
                 else:
                     logging.debug("Popups. NormalHeal")
-                    self.tap('heal_right' if self.healingStrategy == HealingStrategy.AlwaysHeal else 'heal_left')
+                    self.tap('heal_right' if self.local_settings.healing_strategy == HealingStrategy.AlwaysHeal else 'heal_left')
                 self.wait(2)
                 self.move_macro(0, [['n', .65], ['e', .9], ['n', .25], ['nw', 1.8]])
                 self.wait(2) # wait for room transition to complete
@@ -1039,15 +976,15 @@ class CaveEngine(QObject):
         self.unknownStatus = 0
         i = 0
         while i <= self.max_loops_game:
-            if self.vipSub == VIPSub.TrueVIP:
+            if self.local_settings.vip_sub == VIPSub.TrueVIP:
                 self.vip_priv_rewards = True
             else:
                 self.vip_priv_rewards = False
-            if self.bpadvSub == BattlepassAdvSub.TrueBPAdv:
+            if self.local_settings.bpadv_sub == BattlepassAdvSub.TrueBPAdv:
                 self.battle_pass_advanced = True
             else:
                 self.battle_pass_advanced = False
-            if self.reviveIfDead == ReviveIfDead.TrueRevive:
+            if self.local_settings.revive_ifdead == ReviveIfDead.TrueRevive:
                 self.deadcheck = True
             else:
                 self.deadcheck = False
@@ -1254,16 +1191,16 @@ class CaveEngine(QObject):
                 if check_energy:
                     logging.info("Energy Strategy Check")
                     self.log("Energy Strategy Check")
-                    if self.energyStrategy == EnergyStrategy.AlwaysBuy:
+                    if self.local_settings.energy_strategy == EnergyStrategy.AlwaysBuy:
                         self.buy_energy = True
                         self.max_buy_energy = 1
-                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy2:
+                    elif self.local_settings.energy_strategy == EnergyStrategy.AlwaysBuy2:
                         self.buy_energy = True
                         self.max_buy_energy = 2
-                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy3:
+                    elif self.local_settings.energy_strategy == EnergyStrategy.AlwaysBuy3:
                         self.buy_energy = True
                         self.max_buy_energy = 3
-                    elif self.energyStrategy == EnergyStrategy.AlwaysBuy4:
+                    elif self.local_settings.energy_strategy == EnergyStrategy.AlwaysBuy4:
                         self.buy_energy = True
                         self.max_buy_energy = 4
                     else:

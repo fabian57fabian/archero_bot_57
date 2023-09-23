@@ -40,6 +40,13 @@ def loadJsonData(path: str)->dict:
         data = json.load(json_file)
     return data
 
+def saveJsonObject(path: str, o: dict):
+    with open(path, 'w') as file:
+        file.write(json.dumps(o, indent=2))
+
+def writeToFile(path: str, o: str):
+    with open(path, 'w') as file:
+        file.write(o)
 
 def saveJsonData_oneIndent(path: str, coords: dict):
     indent = 4
