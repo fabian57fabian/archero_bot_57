@@ -1,13 +1,11 @@
 import os
 import logging
-from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import pyqtSignal, QObject, QThread
-from CaveDungeonEngine import CaveEngine
-import time
-from UsbConnector import UsbConnector
-from WorkerThread import WorkerThread
-from update_manager import UpdatesManager
+from PyQt5.QtCore import pyqtSignal, QObject
+from src.CaveDungeonEngine import CaveEngine
+from src.UsbConnector import UsbConnector
+from src.WorkerThread import WorkerThread
+from src.update_manager import UpdatesManager
 import enum
 
 class EngineState(enum.Enum):

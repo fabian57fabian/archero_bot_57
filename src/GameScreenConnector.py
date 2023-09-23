@@ -2,9 +2,8 @@ import logging
 import json
 import numpy as np
 from PIL import Image
-from UsbConnector import UsbConnector
 import os
-from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, buildDataFolder, get_matrix_diff
+from src.Utils import loadJsonData, buildDataFolder, get_matrix_diff
 
 class GameScreenConnector:
     def __init__(self, device_connector=None):

@@ -1,10 +1,7 @@
 import matplotlib.pyplot as plt
-import time
-import datetime
-import csv
 import numpy as np
 
-from StatisticsManager import StatisticsManager
+from src.StatisticsManager import StatisticsManager
 
 
 def plot_bar_x(labels, y, title, xlabel, ylabel):

@@ -1,4 +1,4 @@
-from Utils import saveJsonData_twoIndent
+from src.Utils import saveJsonData_twoIndent
 static_coords = {
     "in_game": {"coordinates": [[56 / 1080, 48 / 2220], [56 / 1080, 85 / 2220], [79 / 1080, 79 / 2220],
                                 [76 / 1080, 85 / 2220]],

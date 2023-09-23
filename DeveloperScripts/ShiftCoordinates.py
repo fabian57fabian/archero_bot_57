@@ -1,5 +1,4 @@
-import os
-from Utils import *
+from src.Utils import *
 import shutil
 
 old_width = 1080

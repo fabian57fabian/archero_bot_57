@@ -6,7 +6,7 @@ import numpy as np
 import io
 import time
 import logging
-from WorkerThread import WorkerThread
+from src.WorkerThread import WorkerThread
 
 """
 This is the library

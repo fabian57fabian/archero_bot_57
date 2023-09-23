@@ -3,11 +3,11 @@ import json
 import time
 from datetime import datetime
 from PyQt5.QtCore import QObject, pyqtSignal
-from UsbConnector import UsbConnector
-from GameScreenConnector import GameScreenConnector
-from StatisticsManager import StatisticsManager
-from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, buildDataFolder, getCoordFilePath
-from GameChapters import ChapterInfo, ChapterLevelType, DungeonLevelType, BuildChapters, BuildLevelsTypes, MaxLevelFromType
+from src.UsbConnector import UsbConnector
+from src.GameScreenConnector import GameScreenConnector
+from src.StatisticsManager import StatisticsManager
+from src.Utils import loadJsonData, saveJsonData_oneIndent, readAllSizesFolders, buildDataFolder, getCoordFilePath
+from src.GameChapters import DungeonLevelType, BuildChapters, BuildLevelsTypes, MaxLevelFromType
 import enum
 import os
 

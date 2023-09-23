@@ -1,8 +1,7 @@
-import json
 import os
 from PyQt5.QtCore import pyqtSignal, QObject
-from UsbConnector import UsbConnector
-from Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, getCoordFilePath
+from src.UsbConnector import UsbConnector
+from src.Utils import loadJsonData, saveJsonData_oneIndent, saveJsonData_twoIndent, readAllSizesFolders, getCoordFilePath
 
 
 class TouchManagerModel(QObject):

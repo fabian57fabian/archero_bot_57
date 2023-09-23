@@ -2,7 +2,7 @@ import os
 import shutil
 from unittest import TestCase
 
-from Utils import getCoordFilePath
+from src.Utils import getCoordFilePath
 
 
 class Test(TestCase):

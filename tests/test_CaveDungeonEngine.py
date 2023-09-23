@@ -3,9 +3,9 @@ import os
 import shutil
 import json
 from unittest import TestCase
-from CaveDungeonEngine import CaveEngine
-from UsbConnector import UsbConnector
-from Utils import initialize_logging
+from src.CaveDungeonEngine import CaveEngine
+from src.UsbConnector import UsbConnector
+from src.Utils import initialize_logging
 
 class TestCaveEngine(TestCase):
 

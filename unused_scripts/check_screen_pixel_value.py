@@ -1,7 +1,5 @@
-import os
 import numpy as np
 from PIL import Image
-from UsbConnector import adb_screen_getpixels
 
 screenshot_path = 'screens/samsung_s10e/Screenshot_20200315-002432_Archero.png'
 x,y = 0.194444, 0.675676

@@ -1,6 +1,5 @@
-import time
-from UsbConnector import *
-from GameScreenConnector import GameScreenConnector
+from src.UsbConnector import *
+from src.GameScreenConnector import GameScreenConnector
 
 playtime = 70
 

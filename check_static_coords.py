@@ -1,11 +1,9 @@
 import os
-import sys
-import json
 from PIL import Image
 # from pure_adb_connector import *
 import numpy as np
-from GameScreenConnector import GameScreenConnector
-from Utils import readAllSizesFolders
+from src.GameScreenConnector import GameScreenConnector
+from src.Utils import readAllSizesFolders
 
 
 def getImageFrame(path: str):

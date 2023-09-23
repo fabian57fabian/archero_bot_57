@@ -2,8 +2,7 @@ import os
 from PIL import Image
 import numpy as np
 import sys
-sys.path.insert(0, "../")
-from Utils import get_matrix_diff
+from src.Utils import get_matrix_diff
 
 
 def test_diffs(templates, images_unknown, plot=False, thresh=1.0, debug=True):
