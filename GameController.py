@@ -9,7 +9,7 @@ from GameController.GameControllerModel import GameControllerModel
 from GameController.GameControllerController import GameControllerController
 
 if __name__ == "__main__":
-    lvl = logging.DEBUG # logging.DEBUG
+    lvl = logging.INFO # logging.DEBUG
     initialize_logging(lvl)
     logging.info(f"******** ARCHERO BOT v{__version__} STARTED ********")
     logging.info("Stuff is loading, promise it is. Please wait")
