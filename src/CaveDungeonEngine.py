@@ -58,8 +58,7 @@ class CaveEngine(QObject):
     sleep_btw_screens = 8 # set wait between loops for final_boss (default 8, in seconds)
 
     UseGeneratedData = False # Set True to use TouchManager generated data
-    
-    data_pack = 'datas'
+
     coords_path = 'coords'
     buttons_filename = "buttons.json"
     movements_filename = "movements.json"
@@ -92,8 +91,9 @@ class CaveEngine(QObject):
     -------------------------------
     '''
 
-    def __init__(self, dev_connector: UsbConnector):
+    def __init__(self, dev_connector: UsbConnector, datas_dir: str):
         super(QObject, self).__init__()
+        self.data_path = datas_dir
         self.deadcheck = False # controled by GUI dropdown, works <50% of time to revive; costs gems unless BPAdv Sub
         self.smartHealChoice = False # controled by GUI dropdown, works >90% of the time
         self.currentLevel = 0
@@ -108,7 +108,7 @@ class CaveEngine(QObject):
         self.statisctics_manager = StatisticsManager()
         self.start_date = datetime.now()
         self.stat_lvl_start = 0
-        self.screen_connector = GameScreenConnector()
+        self.screen_connector = GameScreenConnector(datas_dir)
         self.screen_connector.debug = False # set true to see screen_connector degbug messages in console
         self.width, self.heigth = 1080, 1920 
         self.device_connector = dev_connector
@@ -131,13 +131,13 @@ class CaveEngine(QObject):
 
     def load_tier_list(self):
         logging.trace("Loading Abilities Tier List")
-        file = os.path.join("datas", "abilities", "tier_list.json")
+        file = os.path.join(self.data_path, "abilities", "tier_list.json")
         with open(file) as file_in:
             self.tier_list_abilities = json.load(file_in)
 
     def initDataFolders(self):
         logging.trace("Initalizing Data Folders")
-        self.dataFolders = readAllSizesFolders()
+        self.dataFolders = readAllSizesFolders(self.data_path)
         deviceFolder = buildDataFolder(self.width, self.heigth)
         first_folder = list(self.dataFolders.keys())[0]
         if deviceFolder not in self.dataFolders:

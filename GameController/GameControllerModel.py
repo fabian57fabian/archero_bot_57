@@ -21,13 +21,13 @@ class GameControllerModel(QObject):
     dataFolderChanged = pyqtSignal(str)
     updatesAvailableEvent = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, data_path):
         super(QObject, self).__init__()
         # Default data
         self.updates_available = False
         dev_conn = UsbConnector(connect_now=True)
         logging.trace("Initalizing Device Connector")
-        self.engine = CaveEngine(dev_conn)
+        self.engine = CaveEngine(dev_conn, data_path)
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
         self.dict_buttons = 'data.py'

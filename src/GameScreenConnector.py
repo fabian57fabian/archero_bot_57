@@ -6,7 +6,8 @@ import os
 from src.Utils import loadJsonData, buildDataFolder, get_matrix_diff
 
 class GameScreenConnector:
-    def __init__(self, device_connector=None):
+    def __init__(self, data_path, device_connector=None):
+        self.data_path = data_path
         self.device_connector = device_connector
         self.width = 0
         self.height = 0
@@ -31,8 +32,8 @@ class GameScreenConnector:
         self.general_templates = {}
 
     def load_abilities_templates(self):
-        file = os.path.join("datas", "abilities", "abilities_templates_fns.json")
-        abilities_folder = os.path.join("datas", "abilities", "abilities_templates")
+        file = os.path.join(self.data_path, "abilities", "abilities_templates_fns.json")
+        abilities_folder = os.path.join(self.data_path, "abilities", "abilities_templates")
         with open(file) as file_in:
             abs_json = json.load(file_in)
         abilities = {}
@@ -46,8 +47,8 @@ class GameScreenConnector:
         return abilities
 
     def load_general_templates(self):
-        file = os.path.join("datas", "general", "general_templates.json")
-        general_folder = os.path.join("datas", "general", "general_templates")
+        file = os.path.join(self.data_path, "general", "general_templates.json")
+        general_folder = os.path.join(self.data_path, "general", "general_templates")
         with open(file) as file_in:
             gen_json = json.load(file_in)
         templates = {}
@@ -62,11 +63,11 @@ class GameScreenConnector:
 
     def changeScreenSize(self, w, h):
         self.width, self.height = w, h
-        self.coords_path = os.path.join("datas", buildDataFolder(self.width, self.height), "coords",
+        self.coords_path = os.path.join(self.data_path, buildDataFolder(self.width, self.height), "coords",
                                         "static_coords.json")
-        self.specific_checks_path = os.path.join("datas", buildDataFolder(self.width, self.height), "coords",
+        self.specific_checks_path = os.path.join(self.data_path, buildDataFolder(self.width, self.height), "coords",
                                                  "static_specific_coords.json")
-        self.hor_lines_path = os.path.join("datas", buildDataFolder(self.width, self.height), "coords",
+        self.hor_lines_path = os.path.join(self.data_path, buildDataFolder(self.width, self.height), "coords",
                                            "hor_lines.json")
 
         self.specific_checks_coords = loadJsonData(self.specific_checks_path)

@@ -20,9 +20,9 @@ class TouchManagerModel(QObject):
 
     MAX_AROUND = 50
 
-    def __init__(self, connect_archero_now:bool=True):
+    def __init__(self, data_path:str, connect_archero_now:bool=True):
         super(QObject, self).__init__()
-        self.data_pack = 'datas'
+        self.data_path = data_path
         self.coords_folder = 'coords'
         self.screens_folder = "screens"
         self.currentScreensFolder = "1080x1920"
@@ -42,7 +42,7 @@ class TouchManagerModel(QObject):
         self.currentDict = {}
         self.currentMovements = {}
         self.currentFrameChecks = {}
-        self.screensFolders = readAllSizesFolders()
+        self.screensFolders = readAllSizesFolders(data_path)
         self.device_connector = UsbConnector(connect_now=connect_archero_now)
         self.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDeviceConnectionChangedEventCalled)
         self.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDeviceCheckingConnectionChangedEventCalled)
@@ -68,7 +68,7 @@ class TouchManagerModel(QObject):
         return getCoordFilePath(dict_name, sizePath=self.currentScreensFolder)
 
     def currentScreensPath(self):
-        return os.path.join(self.data_pack, self.currentScreensFolder, self.screens_folder)
+        return os.path.join(self.data_path, self.currentScreensFolder, self.screens_folder)
 
     def is_device_connected(self):
         return self.device_connector.connected

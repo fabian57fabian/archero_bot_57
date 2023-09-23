@@ -67,8 +67,8 @@ def saveJsonData_twoIndent(path: str, data: dict):
         json_file.write('{\n' + ',\n'.join(main_attrs) + '\n}')
 
 
-def readAllSizesFolders() -> dict:
-    folders = [f for f in os.listdir("datas") if os.path.isdir(os.path.join("datas", f))]
+def readAllSizesFolders(datas_dir) -> dict:
+    folders = [f for f in os.listdir(datas_dir) if os.path.isdir(os.path.join(datas_dir, f))]
     dataFolders = {}
     for folder in folders:
         try:

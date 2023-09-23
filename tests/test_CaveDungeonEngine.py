@@ -20,7 +20,7 @@ class TestCaveEngine(TestCase):
             file.write(json.dumps({"multishot": 1,"front_arrow_1": 2}))
 
         dev_conn = UsbConnector(connect_now=False)
-        self.engine = CaveEngine(dev_conn)
+        self.engine = CaveEngine(dev_conn, "datas")
 
     def tearDown(self) -> None:
         self.engine.setStopRequested()

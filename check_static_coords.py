@@ -12,7 +12,7 @@ def getImageFrame(path: str):
     return pixval
 
 
-screens_data = readAllSizesFolders()
+screens_data = readAllSizesFolders("datas")
 keys = [k for k in screens_data.keys()]
 
 for i in range(len(keys)):
@@ -31,7 +31,7 @@ if selected_debug != None:
 width, heigth = screens_data[folder]
 excluded = []
 
-screen_conector = GameScreenConnector()
+screen_conector = GameScreenConnector("datas")
 screen_conector.changeScreenSize(width, heigth)
 screen_conector.debug = debug
 static_coords = screen_conector.static_coords

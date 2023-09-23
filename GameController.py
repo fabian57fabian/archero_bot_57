@@ -1,3 +1,4 @@
+import os
 import logging
 from src.Utils import initialize_logging
 from src import __version__
@@ -16,7 +17,8 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     MainWindow.setWindowTitle("Game Controller")
-    model = GameControllerModel()
+    data_path = os.path.join(os.getcwd(), "datas")
+    model = GameControllerModel(data_path)
     controller = GameControllerController(model)
     ui = GameControllerWindow(model, controller)
     ui.setupUi(MainWindow)
