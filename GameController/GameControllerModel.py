@@ -26,7 +26,7 @@ class GameControllerModel(QObject):
         # Default data
         self.updates_available = False
         dev_conn = UsbConnector(connect_now=True)
-        logging.trace("Initalizing Device Connector")
+        logging.log(logging.DEBUG-5,"Initalizing Device Connector")
         self.engine = CaveEngine(dev_conn, data_path)
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
@@ -108,7 +108,7 @@ class GameControllerModel(QObject):
         self.engineStatechanged.emit(state)
 
     def requestClose(self):
-        logging.trace("GUI Button. *** CLOSE ***")
+        logging.log(logging.DEBUG-5,"GUI Button. *** CLOSE ***")
         self.engine.device_connector.stopConnectionCheck()
         if self.currentEngineState == EngineState.Playing:
             logging.debug("Stopping engine before closing")
@@ -140,14 +140,14 @@ class GameControllerModel(QObject):
 
     def waitForEngineEnd(self):
         if self.workerThread is not None:
-            logging.trace("Waiting on thread")
+            logging.log(logging.DEBUG-5,"Waiting on thread")
             self.workerThread.join()
-            logging.trace("Old thread ended")
+            logging.log(logging.DEBUG-5,"Old thread ended")
         else:
             logging.debug("No active threads")
 
     def playDungeon(self):
-        logging.trace("GUI Button *** PLAY ***")
+        logging.log(logging.DEBUG-5,"GUI Button *** PLAY ***")
         if self.workerThread is not None:
             logging.debug("Another thread is already running")
             self.stopDungeon()
@@ -159,12 +159,12 @@ class GameControllerModel(QObject):
             logging.debug("New thread started")
             
     def pauseDungeon(self):
-        logging.trace("GUI Button *** PAUSE ***")
+        logging.log(logging.DEBUG-5,"GUI Button *** PAUSE ***")
         self._stopEngineUnsafe()
         logging.debug("Pause action completed")
     
     def stopDungeon(self):
-            logging.trace("GUI Button *** STOP ***")
+            logging.log(logging.DEBUG-5,"GUI Button *** STOP ***")
             self._stopEngineUnsafe2()
             self.setEngineState(EngineState.StopInvoked)
             self.setEngineState(EngineState.Ready)

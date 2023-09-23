@@ -104,13 +104,13 @@ class CaveEngine(QObject):
         self.initLocalSettings()
 
     def load_tier_list(self):
-        logging.trace("Loading Abilities Tier List")
+        logging.log(logging.DEBUG-5,"Loading Abilities Tier List")
         file = os.path.join(self.data_path, "abilities", "tier_list.json")
         with open(file) as file_in:
             self.tier_list_abilities = json.load(file_in)
 
     def initDataFolders(self):
-        logging.trace("Initalizing Data Folders")
+        logging.log(logging.DEBUG-5,"Initalizing Data Folders")
         self.dataFolders = readAllSizesFolders(self.data_path)
         deviceFolder = buildDataFolder(self.width, self.heigth)
         first_folder = list(self.dataFolders.keys())[0]
@@ -166,9 +166,9 @@ class CaveEngine(QObject):
         self.currentDungeonChanged.emit(new_chapter)
 
     def onConnectionStateChanged(self, connected):
-        logging.trace("Detecting Connection State")
+        logging.log(logging.DEBUG-5,"Detecting Connection State")
         if connected:
-            logging.trace("Device Detected")
+            logging.log(logging.DEBUG-5,"Device Detected")
             self.initDataFolders()
             self.screen_connector.changeDeviceConnector(self.device_connector)
             self.updateScreenSizeByPhone()
@@ -189,24 +189,24 @@ class CaveEngine(QObject):
         self.dataFolderChanged.emit(new_folder)
 
     def loadCoords(self):
-        logging.trace("Loading Coordinates")
+        logging.log(logging.DEBUG-5,"Loading Coordinates")
         self.buttons = loadJsonData(getCoordFilePath(self.buttons_filename, sizePath = self.currentDataFolder))
         self.movements = loadJsonData(getCoordFilePath(self.movements_filename, sizePath = self.currentDataFolder))
 
     def setPauseRequested(self):
-        logging.trace("Pause Requested")
+        logging.log(logging.DEBUG-5,"Pause Requested")
         self.stopRequested = True
         self.screen_connector.stopRequested = True
         self.changeEndStatus(self.endStatus + 10) # Pause-Requested
         self.runStatiscticsSave()
 
     def setStopRequested(self):
-        logging.trace("Stop Requested")
+        logging.log(logging.DEBUG-5,"Stop Requested")
         self.stopRequested = True
         self.screen_connector.stopRequested = True
 
     def setStartRequested(self):
-        logging.trace("Start Requested")
+        logging.log(logging.DEBUG-5,"Start Requested")
         self.stopRequested = False
         self.screen_connector.stopRequested = False
         self.gamePaused.emit()
@@ -291,7 +291,7 @@ class CaveEngine(QObject):
             self.currentLevel = 0
 
     def exit_dungeon_uncentered(self):
-        logging.trace("exit_dungeon_uncentered")
+        logging.log(logging.DEBUG-5,"exit_dungeon_uncentered")
         if self.screen_connector.getFrameState() != "in_game":
             self.reactGamePopups()
         self.log("No Loot Left")
@@ -316,7 +316,7 @@ class CaveEngine(QObject):
 
     def exit_dungeon_uncentered_simplified(self, do_second_check = True):
         if do_second_check:
-            logging.trace("exit_dungeon_uncentered_simplified_check")
+            logging.log(logging.DEBUG-5,"exit_dungeon_uncentered_simplified_check")
             if self.screen_connector.getFrameState() == "endgame":
                 logging.debug("Endgame Detected and Return")
                 self.exit_dungeon_uncentered_simplified(do_second_check = False)
@@ -337,45 +337,45 @@ class CaveEngine(QObject):
                     self.exit_movement_dungeon_old()
                 self.log("Left Dungeon Again")
                 self.wait(0.5) # wait to load to GUI
-        logging.trace("exit_dungeon_uncentered_simplified")
+        logging.log(logging.DEBUG-5,"exit_dungeon_uncentered_simplified")
         
     def exit_movement_dungeon_old(self):
-        logging.trace("exit_dungeon_old 'Improved'")
+        logging.log(logging.DEBUG-5,"exit_dungeon_old 'Improved'")
         #self.centerPlayer()
         self.move_macro(0, [['n', 3],['ne', .5],['nw', 3],['ne', 3],['nw', 3],['ne', 3],['w', .7]])
 
     def exit_movement_dungeon_7(self):
-        logging.trace("exit_dungeon_7")
+        logging.log(logging.DEBUG-5,"exit_dungeon_7")
         self.swipe('w', .7)
         self.swipe('ne', 1.9)
 
     def exit_movement_dungeon6(self):
-        logging.trace("exit_dungeon_6")
+        logging.log(logging.DEBUG-5,"exit_dungeon_6")
         self.swipe('w', 2)
         self.swipe('ne', 3)
 
     def exit_movement_dungeon10(self): 
-        logging.trace("exit_dungeon_10")
+        logging.log(logging.DEBUG-5,"exit_dungeon_10")
         self.swipe('e', 1.5)
         self.swipe('nw', 3)
 
     def exit_movement_dungeon16(self): 
-        logging.trace("exit_dungeon_16")
+        logging.log(logging.DEBUG-5,"exit_dungeon_16")
         self.swipe('e', 1.2)
         self.swipe('nw', 3)
 
     def exit_movement_dungeon18(self): 
-        logging.trace("exit_dungeon_18")
+        logging.log(logging.DEBUG-5,"exit_dungeon_18")
         self.swipe('e', 1)
         self.swipe('nw', 3)
 
     def exit_movement_dungeon20(self): 
-        logging.trace("exit_dungeon_20")
+        logging.log(logging.DEBUG-5,"exit_dungeon_20")
         self.swipe('e', 1.5)
         self.swipe('nw', 3)
 
     def goTroughDungeon20(self):
-        logging.trace("Going through dungeon (designed for #20)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #20)")
         self.log("Crossing Dungeon 20")
         self.swipe('n', 2)
         self.swipe('nw', 2.2)
@@ -386,7 +386,7 @@ class CaveEngine(QObject):
         self.move_macro(0, [['ne', 1.8], ['s', .3], ['w', .5],['n', .3],['nw', 1.5],['ne', 1]])
 
     def goTroughDungeon18(self):
-        logging.trace("Going through dungeon (designed for #18)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #18)")
         self.log("Crossing Dungeon 18")
         self.move_macro(0, [['n',2],['nw',2],['ne',3],['nw',2],['e',.7]])
         if self.currentLevel == 6:
@@ -396,7 +396,7 @@ class CaveEngine(QObject):
             self.swipe('nw', .5)
 
     def goTroughDungeon10(self):
-        logging.trace("Going through dungeon (designed for #10)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #10)")
         self.log("Crossing Dungeon 10")
         self.move_macro(0, [['n', .5], ['nw', 2.5],['ne', 2.5],['nw', 1.8],['ne', 1],['w', .7],['s', .6],['e', .35],
                             ['ne', .4],['n', 2.5],['s', .3],['w', .35],['nw', .4],['n', 1]])
@@ -404,7 +404,7 @@ class CaveEngine(QObject):
             self.move_macro(0, [['w', .3], ['s', .35], ['ne', .4], ['n', .4]])
 
     def goTroughDungeon16(self):
-        logging.trace("Going through dungeon (designed for #16)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #16)")
         self.log("Crossing Dungeon 16")
         self.move_macro(0, [['n', .5],['nw', 2.5],['ne', 2.5],['nw', 1.8],['ne', 1],['w', .7]])
         if self.currentLevel == 11 or self.currentLevel == 18:
@@ -417,17 +417,17 @@ class CaveEngine(QObject):
         self.move_macro([0, [['ne', .55], ['w', .3], ['n', 1.5]]])
 
     def goTroughDungeon6(self):
-        logging.trace("Going through dungeon (designed for #6)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #6)")
         self.log("Crossing Dungeon 6")
         self.move_macro(0, [['n', 1.5],['w', .3],['n', .6],['e', .6],['n', .6],['w', .6],['n', 1.5],['e', .3],['n', 2]])
 
     def goTroughDungeon3(self):
-        logging.trace("Going through dungeon (designed for #3)")
+        logging.log(logging.DEBUG-5,"Going through dungeon (designed for #3)")
         self.log("Crossing Dungeon 3")
         self.move_macro(0, [['n', 1.5],['w', .25],['n', .5],['e', .25],['n', 2],['w', 1],['n', .5],['e', 1],['n', 1.5]])
 
     def goTroughDungeon_old(self):
-        logging.trace("Going through dungeon old 'Improved'")
+        logging.log(logging.DEBUG-5,"Going through dungeon old 'Improved'")
         self.log("Crossing Dungeon (Improved)")
         self.move_macro(0, [['n', 3],['ne', .5],['nw', 3],['ne', 3],['nw', 3],['ne', 3],['w', .7]])
 
@@ -1434,7 +1434,7 @@ class CaveEngine(QObject):
         self.pressCloseEndIfEndedFrame()
 
     def pressCloseEndIfEndedFrame(self):
-        logging.trace("pressCoseEndIfEndedFrame Check")
+        logging.log(logging.DEBUG-5,"pressCoseEndIfEndedFrame Check")
         state = self.screen_connector.getFrameState()
         logging.debug("state: %s" % state)
         if state == 'endgame':
@@ -1444,7 +1444,7 @@ class CaveEngine(QObject):
             self.pressCloseEndgame()
 
     def pressCloseEndgame(self):
-        logging.trace("Press_Close_End. Going back to main Menu")
+        logging.log(logging.DEBUG-5,"Press_Close_End. Going back to main Menu")
         self.tap('close_end')
         self.currentLevel = 0
         self.wait(8) # wait for go back to main menu
