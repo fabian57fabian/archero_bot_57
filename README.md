@@ -97,7 +97,7 @@ The bot takes screenshots over time and detecting what is currently on the scree
 If the program is clicking in wrong places, then use [TouchManager](TouchManager.py) script.
 Create a folder with all your screenshots.
 Set [images_path](https://github.com/fabian57fabian/archero_bot_57/blob/7c698dc856576cb986093dd3b352cb54c774df84/checkCoordinates.py#L46) to screenshots path.
-launch TouchManager script and use the interface (for windows double-click on 'checkCoordinates.py.').
+launch TouchManager script and use the interface (for windows double-click on 'TouchManager.py.').
 Current version: basic_usage.
 
 ## How it works
