@@ -26,6 +26,7 @@ class UsbConnector(object):
         self.checkingConnectionFunctions = []
         self.connectionCheckThread = WorkerThread()
         self._continousCheckStopRequired = False
+        self.started = False
         if connect_now: self._startConnectionCheck()
 
     def connect(self):
@@ -280,8 +281,12 @@ class UsbConnector(object):
                     self._changeConnectedState(True)
                     # self.connect() changed into tryConnect
             time.sleep(5)
+        self.started = False
 
     def _startConnectionCheck(self):
+        if self.started:
+            return
+        self.started = True
         self._continousCheckStopRequired = False
         self.connectionCheckThread.function = self._oneCheck
         self.connectionCheckThread.start()

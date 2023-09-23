@@ -29,7 +29,6 @@ class GameControllerModel(QObject):
         self.updates_available = False
         dev_conn = UsbConnector(connect_now=True)
         logging.trace("Initalizing Device Connector")
-        dev_conn.connect()
         self.engine = CaveEngine(dev_conn)
         self.engine.device_connector.setFunctionToCallOnConnectionStateChanged(self.onDevConnChanged)
         self.engine.device_connector.setFunctionToCallOnCheckingConnectionStateChanged(self.onDevCheckConnectionChanged)
