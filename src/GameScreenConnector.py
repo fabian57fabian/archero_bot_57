@@ -108,18 +108,19 @@ class GameScreenConnector:
         if len(points_list) != len(points_value):
             logging.info("Wrong size between points and values!")
             return False
-        logging.debug("-----------------------------------")
-        logging.debug("|   Smartphone   |     Values     |")
+        lvl = logging.DEBUG - 1
+        logging.log(lvl, "-----------------------------------")
+        logging.log(lvl,"|   Smartphone   |     Values     |")
         attr_data = self.getFrameAttr(frame, points_list)
         equal = True
         for i in range(len(attr_data)):
-            logging.debug("| %4d %4d %4d | %4d %4d %4d |" % (
+            logging.log(lvl,"| %4d %4d %4d | %4d %4d %4d |" % (
                 attr_data[i][0], attr_data[i][1], attr_data[i][2], points_value[i][0], points_value[i][1],
                 points_value[i][2]))
             if not self.pixel_equals(attr_data[i], points_value[i], around=around):
                 equal = False
-        logging.debug("|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
-        logging.debug("-----------------------------------")
+        logging.log(lvl,"|-->         %s" % ("  equal           <--|" if equal else "not equal         <--|"))
+        logging.log(lvl,"-----------------------------------")
         return equal
 
     def checkBoss6Died(self, frame=None):
