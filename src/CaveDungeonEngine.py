@@ -411,10 +411,10 @@ class CaveEngine(QObject):
             self.move_macro(0, [['sw', .6], ['nw', .8]])
         self.move_macro(0, [['se', .65],['e', .7],['nw', .55],['ne', .7],['w', .3],['s', .6],['sw', .3],['nw', .7]])
         if self.currentLevel == 6:
-            self.move_macro([0, [['s', .4],['e', .5],['nw', .6]]])
+            self.move_macro(0, [['s', .4],['e', .5],['nw', .6]])
         elif self.currentLevel == 11 or self.currentLevel == 18:
-            self.move_macro([0, [['e', .3], ['n', .3], ['nw', .4]]])
-        self.move_macro([0, [['ne', .55], ['w', .3], ['n', 1.5]]])
+            self.move_macro(0, [['e', .3], ['n', .3], ['nw', .4]])
+        self.move_macro(0, [['ne', .55], ['w', .3], ['n', 1.5]])
 
     def goTroughDungeon6(self):
         logging.log(logging.DEBUG-5,"Going through dungeon (designed for #6)")
