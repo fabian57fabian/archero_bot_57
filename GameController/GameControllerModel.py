@@ -6,6 +6,7 @@ from src.CaveDungeonEngine import CaveEngine
 from src.UsbConnector import UsbConnector
 from src.WorkerThread import WorkerThread
 from src.update_manager import UpdatesManager
+from src import __version__
 import enum
 
 class EngineState(enum.Enum):
@@ -38,6 +39,7 @@ class GameControllerModel(QObject):
         self.currentEngineState: EngineState = EngineState.Ready
         self.workerThread: WorkerThread = None
         self.updates_man = UpdatesManager()
+        self.updates_man.CURRENT_VERSION = __version__
 
     def connected(self):
         return self.engine.device_connector.connected
