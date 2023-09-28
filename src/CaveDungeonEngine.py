@@ -493,13 +493,13 @@ class CaveEngine(QObject):
                 logging.debug("Let Play. Checking screen...")
                 logging.debug("state: %s" % state)
                 if state == "in_game":
-                    continue_loop = self.letPlay_ingame(start_exp_bar, frame, check_exp_bar=not is_boss)
+                    continue_loop = self.letPlay_ingame(i, start_exp_bar, frame, check_exp_bar=not is_boss)
                 else:
-                    continue_loop, recheck = self.letPlay_outgame()
+                    continue_loop, recheck = self.letPlay_outgame(i)
                 if not continue_loop:
                     return
 
-    def letPlay_ingame(self, start_exp_bar: list, frame: int, check_exp_bar: bool) -> bool:
+    def letPlay_ingame(self, i:int, start_exp_bar: list, frame: int, check_exp_bar: bool) -> bool:
         """
         Manages in game loop with screen checks to see if it solved the room or not.
         @param start_exp_bar: start experience upper bar (checks if changed)
@@ -585,7 +585,7 @@ class CaveEngine(QObject):
         logging.debug("End. Exp & Door Checks")
         return True
 
-    def letPlay_outgame(self) -> (bool, bool):
+    def letPlay_outgame(self, i: int) -> (bool, bool):
         """
         Manages archero not in game mode.
         @return: (continue_loop, recheck) as continue the loop in game and if screen recheck is needed
