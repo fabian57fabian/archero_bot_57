@@ -6,7 +6,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from src.UsbConnector import UsbConnector
 from src.GameScreenConnector import GameScreenConnector
 from src.StatisticsManager import StatisticsManager
-from src.Utils import loadJsonData, saveJsonData_oneIndent, readAllSizesFolders, buildDataFolder, getCoordFilePath
+from src.Utils import loadJsonData, readAllSizesFolders, buildDataFolder, getCoordFilePath
 from src.GameChapters import DungeonLevelType, BuildChapters, BuildLevelsTypes, MaxLevelFromType
 from src.BotStrategies import HealingStrategy, EnergyStrategy, VIPSub, BattlepassAdvSub, ReviveIfDead
 from src.LocalEngineSettingsManager import LocalEngineSettingsManager, LocalEngineSettings
@@ -14,19 +14,19 @@ import os
 
 
 class CaveEngine(QObject):
-    levelChanged = pyqtSignal(int)
-    addLog = pyqtSignal(str)
-    resolutionChanged = pyqtSignal(int, int)
-    dataFolderChanged = pyqtSignal(str)
-    noEnergyLeft = pyqtSignal()
-    gameWon = pyqtSignal()
-    gamePaused = pyqtSignal()
-    healingStrategyChanged = pyqtSignal(HealingStrategy)
-    energyStrategyChanged = pyqtSignal(EnergyStrategy)
-    vipSubChanged = pyqtSignal(VIPSub)
-    bpadvSubChanged = pyqtSignal(BattlepassAdvSub)
-    reviveIfDeadChanged = pyqtSignal(ReviveIfDead)
-    currentDungeonChanged = pyqtSignal(int)
+    levelChanged = pyqtSignal(int, name="levelChanged")
+    addLog = pyqtSignal(str, name="addLog")
+    resolutionChanged = pyqtSignal(int, int, name="resolutionChanged")
+    dataFolderChanged = pyqtSignal(str, name="dataFolderChanged")
+    noEnergyLeft = pyqtSignal(name="noEnergyLeft")
+    gameWon = pyqtSignal(name="gameWon")
+    gamePaused = pyqtSignal(name="gamePaused")
+    healingStrategyChanged = pyqtSignal(HealingStrategy, name="healingStrategyChanged")
+    energyStrategyChanged = pyqtSignal(EnergyStrategy, name="energyStrategyChanged")
+    vipSubChanged = pyqtSignal(VIPSub, name="vipSubChanged")
+    bpadvSubChanged = pyqtSignal(BattlepassAdvSub, name="bpadvSubChanged")
+    reviveIfDeadChanged = pyqtSignal(ReviveIfDead, name="reviveIfDeadChanged")
+    currentDungeonChanged = pyqtSignal(int, name="currentDungeonChanged")
 
     max_level = 20  # set loops for playCave and linked to GUI logs(default is 20, DO NOT CHANGE)
     playtime = 60  # set loop time for letPlay (default 60, total loops = playtime/self.check_seconds)
@@ -103,7 +103,7 @@ class CaveEngine(QObject):
         self.centerAfterCrossingDungeon = False  # do not ghange
         self.local_settings_path = 'current_settings.json'
         self.local_settings_manager = LocalEngineSettingsManager(self.local_settings_path)
-        self.local_settings = self.local_settings_manager.load()
+        self.local_settings: LocalEngineSettings = self.local_settings_manager.load()
         self.initLocalSettings()
 
     def load_tier_list(self) -> dict:
