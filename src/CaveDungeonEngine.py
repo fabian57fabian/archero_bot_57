@@ -476,14 +476,14 @@ class CaveEngine(QObject):
             self.swipe(d, t)
             self.wait(delay)
 
-    def letPlay(self, _time: int, is_boss=False):
+    def letPlay(self, _play_time: int, is_boss=False):
         start_exp_bar = self.screen_connector.getLineExpBar()
         recheck = False
         logging.debug("Let-Play. Auto playing...")
         self.log("Searching Dungeon")
         if self.deadcheck or self.battle_pass_advanced:
             self.checkIfDead()
-        for i in range(_time, 0, -1):
+        for i in range(_play_time, 0, -1):
             if i % self.check_seconds == 0 or recheck:
                 recheck = False
                 frame = self.screen_connector.getFrame()
@@ -493,15 +493,17 @@ class CaveEngine(QObject):
                 logging.debug("Let Play. Checking screen...")
                 logging.debug("state: %s" % state)
                 if state == "in_game":
-                    continue_loop = self.letPlay_ingame(i, start_exp_bar, frame, check_exp_bar=not is_boss)
+                    continue_loop = self.letPlay_ingame(i, _play_time, start_exp_bar, frame, check_exp_bar=not is_boss)
                 else:
-                    continue_loop, recheck = self.letPlay_outgame(i)
+                    continue_loop, recheck = self.letPlay_outgame(i, state)
                 if not continue_loop:
                     return
 
-    def letPlay_ingame(self, i:int, start_exp_bar: list, frame: int, check_exp_bar: bool) -> bool:
+    def letPlay_ingame(self, i:int, _time, start_exp_bar: list, frame: int, check_exp_bar: bool) -> bool:
         """
         Manages in game loop with screen checks to see if it solved the room or not.
+        @param i: Loop index
+        @param _time: max play time allowed for outher loop
         @param start_exp_bar: start experience upper bar (checks if changed)
         @param frame: the screen frame to see what's in the game
         @param check_exp_bar: know if to check upper experience bar or not
@@ -585,12 +587,12 @@ class CaveEngine(QObject):
         logging.debug("End. Exp & Door Checks")
         return True
 
-    def letPlay_outgame(self, i: int) -> (bool, bool):
+    def letPlay_outgame(self, i: int, state: str) -> (bool, bool):
         """
         Manages archero not in game mode.
         @return: (continue_loop, recheck) as continue the loop in game and if screen recheck is needed
         """
-        logging.debug("State Checks Start")
+        logging.debug(f"State Checks Start on {i}")
         if state == "endgame" or state == "repeat_endgame_question":
             self.changeEndStatus(self.endStatus + 7)  # You-Died
             logging.debug("React-Popup. Endgame Detected")
